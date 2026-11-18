@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Le Club by LCS — espace coach</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif}
+button{font-family:inherit;cursor:pointer;border:0;background:none;padding:0;color:inherit;text-align:left}
+input{font-family:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid #191E39;outline-offset:2px}
+.h{margin:0;font-family:'Archivo','Tussilago',sans-serif;font-stretch:125%;font-weight:800;text-transform:uppercase}
+
+.liquid{background-color:#FFF5FD;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='none'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23FFF5FD'/><stop offset='1' stop-color='%23FBE3FB'/></linearGradient><filter id='b' x='-50%25' y='-50%25' width='200%25' height='200%25'><feGaussianBlur stdDeviation='34'/></filter></defs><rect width='390' height='844' fill='url(%23g)'/><g filter='url(%23b)'><ellipse cx='330' cy='80' rx='150' ry='120' fill='%23FA94FF' opacity='.7'/><path d='M-50 290C60 200 210 320 170 460C130 600 -70 570 -50 290Z' fill='%23C980B1' opacity='.55'/><ellipse cx='370' cy='560' rx='130' ry='160' fill='%23191E39' opacity='.22'/><ellipse cx='50' cy='810' rx='180' ry='110' fill='%23DEFD62' opacity='.55'/><ellipse cx='210' cy='680' rx='90' ry='70' fill='%23FA94FF' opacity='.55'/></g></svg>");background-size:100% 100%;background-repeat:no-repeat}
+.card,[style*="border:1px solid #F3D3F3"]{background:rgba(255,255,255,.52)!important;border:1px solid rgba(255,255,255,.75)!important;-webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -1px 0 rgba(201,128,177,.18),0 14px 34px rgba(25,30,57,.16),0 2px 6px rgba(25,30,57,.08)}
+[style*="background:#FBE3FB"]{background:rgba(255,255,255,.38)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(201,128,177,.14)}
+button[style*="background:#191E39"],a[style*="background:#191E39"]{box-shadow:inset 0 1.5px 0 rgba(255,255,255,.28),0 12px 26px rgba(25,30,57,.34)}
+[style*="background:#fff;color"],[style*="background:#fff;border:2px"]{background:rgba(255,255,255,.7)!important;box-shadow:inset 0 1px 0 #fff,0 4px 10px rgba(25,30,57,.10)}
+input[type=text],input[type=password],textarea{-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.glassnav{background:rgba(255,255,255,.55)!important;-webkit-backdrop-filter:blur(26px) saturate(1.7);backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.8)!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),0 16px 38px rgba(25,30,57,.22)}
+.dark input{background:rgba(255,255,255,.12)!important;border-color:rgba(255,255,255,.35)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+</style>
+</helmet>
+<div class="liquid" style="width:1180px;height:760px;box-sizing:border-box;display:flex;flex-direction:column;color:#191E39;overflow:hidden;font-family:'Inter','Helvetica Neue',Helvetica,Arial,sans-serif">
+  <div style="flex:none;height:68px;background:#191E39;display:flex;align-items:center;justify-content:space-between;padding:0 28px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <div style="font-family:'Archivo','Tussilago',sans-serif;font-stretch:125%;font-weight:800;font-size:30px;line-height:1;color:#DEFD62">le club</div>
+      <div style="font-size:15px;font-weight:700;color:#C5C9E3">Espace coach</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="font-size:14px;font-weight:700;color:#fff">Martin</div>
+      <div style="width:36px;height:36px;border-radius:50%;background:#FA94FF;color:#191E39;font-weight:800;display:flex;align-items:center;justify-content:center">M</div>
+    </div>
+  </div>
+  <div style="flex:1;min-height:0;display:flex">
+    <div style="width:310px;flex:none;border-right:1px solid #F3D3F3;padding:22px 18px;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;background:#FFF5FD">
+      <h1 class="h" style="font-size:22px;font-weight:800">Athlètes</h1>
+      <input type="text" aria-label="Rechercher un athlète" placeholder="Rechercher un athlète" value="{{ search }}" onChange="{{ onSearch }}" style="height:46px;border-radius:14px;border:1.5px solid #C980B1;background:#fff;font-size:15px;padding:0 14px;box-sizing:border-box;color:#191E39" />
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ athletes }}" as="a" hint-placeholder-count="4">
+          <button type="button" aria-pressed="{{ a.selected }}" onClick="{{ a.pick }}" style="{{ a.style }}">
+            <span style="{{ a.avatarStyle }}">{{ a.initial }}</span>
+            <span style="display:flex;flex-direction:column;gap:2px">
+              <span style="font-size:16px;font-weight:800">{{ a.name }}</span>
+              <span style="{{ a.subStyle }}">{{ a.level }}</span>
+            </span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="flex:1;min-width:0;padding:26px 32px;box-sizing:border-box;display:flex;flex-direction:column;gap:18px;overflow-y:auto">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+        <div>
+          <h2 class="h" style="font-size:30px;font-weight:800;line-height:1.1">{{ cur.name }}</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+            <span style="background:#191E39;color:#DEFD62;font-size:13px;font-weight:800;border-radius:999px;padding:5px 12px">Niveau {{ cur.level }}</span>
+            <sc-for list="{{ cur.objectives }}" as="o" hint-placeholder-count="2">
+              <span style="background:#fff;border:1px solid #C980B1;font-size:13px;font-weight:700;border-radius:999px;padding:5px 12px">{{ o.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+        <div style="font-size:13px;color:#565B78;max-width:300px;line-height:1.4;font-weight:600;text-align:right">Historique en lecture seule, pour retrouver ses séances quand il ou elle pose une question.</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <sc-for list="{{ filters }}" as="f" hint-placeholder-count="2">
+          <button type="button" aria-pressed="{{ f.selected }}" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+      <div style="background:#fff;border:1px solid #F3D3F3;border-radius:20px;overflow:hidden">
+        <div style="display:grid;grid-template-columns:110px 110px 200px 70px 100px minmax(0, 1fr);gap:12px;padding:12px 20px;background:#FBE3FB;font-size:12px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;color:#191E39">
+          <div>Date</div><div>Sport</div><div>Séance</div><div>RPE</div><div>Douleur</div><div>Commentaire</div>
+        </div>
+        <sc-for list="{{ rows }}" as="r" hint-placeholder-count="5">
+          <div style="display:grid;grid-template-columns:110px 110px 200px 70px 100px minmax(0, 1fr);gap:12px;padding:14px 20px;border-top:1px solid #F7E4F7;align-items:center;font-size:14px">
+            <div style="font-weight:700">{{ r.date }}</div>
+            <div style="font-weight:600;color:#565B78">{{ r.sport }}</div>
+            <div style="font-weight:700">{{ r.title }}</div>
+            <div><span style="{{ r.rpeStyle }}">{{ r.rpe }}</span></div>
+            <div>
+              <sc-if value="{{ r.pain }}" hint-placeholder-val="{{ false }}"><span style="background:#191E39;color:#DEFD62;font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px">Douleur</span></sc-if>
+              <sc-if value="{{ r.noPain }}" hint-placeholder-val="{{ true }}"><span style="color:#565B78;font-weight:600">Non</span></sc-if>
+            </div>
+            <div style="color:#191E39;line-height:1.35">{{ r.note }}</div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:28px 20px;text-align:center;color:#565B78;font-weight:600">Aucune séance pour ce filtre.</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1180,"height":760}}'>
+class Component extends DCLogic {
+  state = { sel: 'camille', filter: 'all', search: '' };
+
+  data() {
+    return [
+      { id: 'camille', name: 'Caroline D.', level: 'Challenger', objectives: ['Bloc S · 20 déc. 2026', 'Bloc L · 30 mai 2027'], sessions: [
+        ['Dim. 15 nov.', 'Course', 'Sortie longue', 6, false, 'Jambes un peu lourdes sur la fin.'],
+        ['Sam. 14 nov.', 'Vélo', 'Sortie longue', 5, false, ''],
+        ['Jeu. 12 nov.', 'Vélo', 'Sweet spot', 8, false, 'Dur sur le 3e intervalle.'],
+        ['Mer. 11 nov.', 'Renfo', 'Gainage & stabilité', 4, false, ''],
+        ['Mar. 10 nov.', 'Course', 'Footing endurance', 5, true, 'Gêne au mollet droit sur les lignes droites.'],
+        ['Lun. 9 nov.', 'Natation', 'Technique & endurance', 6, false, ''] ] },
+      { id: 'thomas', name: 'Thomas B.', level: 'Finisher', objectives: ['Bloc M · 16 mai 2027'], sessions: [
+        ['Dim. 15 nov.', 'Course', 'Sortie longue', 7, false, 'Premier 1 h 20 sans marcher.'],
+        ['Sam. 14 nov.', 'Vélo', 'Sortie longue', 6, false, ''],
+        ['Jeu. 12 nov.', 'Vélo', 'Sweet spot', 7, false, ''],
+        ['Mar. 10 nov.', 'Course', 'Footing endurance', 4, false, ''],
+        ['Lun. 9 nov.', 'Natation', 'Technique & endurance', 8, false, 'Souffle court sur les 200 m.'] ] },
+      { id: 'lea', name: 'Léa M.', level: 'Performer', objectives: ['Bloc L · 30 mai 2027'], sessions: [
+        ['Dim. 15 nov.', 'Course', 'Sortie longue', 7, false, ''],
+        ['Sam. 14 nov.', 'Vélo', 'Sortie longue', 6, false, 'Bien passé malgré le vent.'],
+        ['Jeu. 12 nov.', 'Vélo', 'Sweet spot', 9, true, 'Douleur genou gauche en fin de séance.'],
+        ['Mer. 11 nov.', 'Renfo', 'Gainage & stabilité', 5, false, ''],
+        ['Mar. 10 nov.', 'Course', 'Footing endurance', 5, false, ''],
+        ['Lun. 9 nov.', 'Natation', 'Technique & endurance', 6, false, ''] ] },
+      { id: 'hugo', name: 'Hugo R.', level: 'Challenger', objectives: ['Bloc S · 13 déc. 2026'], sessions: [
+        ['Dim. 15 nov.', 'Course', 'Sortie longue', 8, false, 'Séance dure, mal dormi.'],
+        ['Jeu. 12 nov.', 'Vélo', 'Sweet spot', 6, false, ''],
+        ['Mar. 10 nov.', 'Course', 'Footing endurance', 5, false, ''],
+        ['Lun. 9 nov.', 'Natation', 'Technique & endurance', 5, false, ''] ] }
+    ];
+  }
+
+  renderVals() {
+    const st = this.state;
+    const all = this.data();
+    const q = (st.search || '').toLowerCase();
+    const athletes = all.filter((a) => a.name.toLowerCase().indexOf(q) >= 0).map((a) => {
+      const on = a.id === st.sel;
+      return {
+        name: a.name, level: a.level, initial: a.name.charAt(0), selected: on,
+        pick: () => this.setState({ sel: a.id }),
+        style: 'display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;box-sizing:border-box;width:100%;' + (on ? 'background:#191E39;color:#fff;' : 'background:#fff;border:1px solid #F3D3F3;color:#191E39;'),
+        avatarStyle: 'width:40px;height:40px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;' + (on ? 'background:#DEFD62;color:#191E39;' : 'background:#F7C9FA;color:#191E39;'),
+        subStyle: 'font-size:13px;font-weight:600;' + (on ? 'color:#C5C9E3;' : 'color:#565B78;')
+      };
+    });
+    const a = all.find((x) => x.id === st.sel) || all[0];
+    const rowsAll = a.sessions.map((r) => ({ date: r[0], sport: r[1], title: r[2], rpe: r[3], pain: r[4], noPain: !r[4], note: r[5] || '—',
+      rpeStyle: 'display:inline-flex;align-items:center;justify-content:center;width:38px;height:30px;border-radius:10px;font-weight:800;font-size:14px;' + (r[3] >= 8 ? 'background:#191E39;color:#DEFD62;' : r[3] >= 5 ? 'background:#FA94FF;color:#191E39;' : 'background:#FBE3FB;color:#191E39;border:1px solid #C980B1;') }));
+    const rows = st.filter === 'pain' ? rowsAll.filter((r) => r.pain) : rowsAll;
+    const filters = [['all', 'Toutes les séances'], ['pain', 'Douleur signalée']].map((f) => ({
+      label: f[1], selected: st.filter === f[0], pick: () => this.setState({ filter: f[0] }),
+      style: 'height:40px;padding:0 16px;border-radius:999px;font-size:14px;font-weight:800;display:flex;align-items:center;' + (st.filter === f[0] ? 'background:#191E39;color:#DEFD62;' : 'background:#fff;color:#191E39;border:1px solid #C980B1;')
+    }));
+    return {
+      athletes, filters, rows, empty: rows.length === 0, search: st.search,
+      onSearch: (e) => this.setState({ search: e.target.value }),
+      cur: { name: a.name, level: a.level, objectives: a.objectives.map((o) => ({ label: o })) }
+    };
+  }
+}
+</script>
+</body>
+</html>
