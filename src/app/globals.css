@@ -1,0 +1,42 @@
+:root {
+  --fond: #090a0f;
+  --aurore: #fa94ff;
+  --pourpre: #c980b1;
+  --abysse: #191e39;
+  --cendre: #0c1321;
+  --accent: #defd62;
+  --texte: #f4eeff;
+
+  /* Polices sous licence : à ajouter dans public/fonts lorsqu'elles seront fournies. */
+  --police-titre: "Tussilago", "Helvetica Neue", Arial, sans-serif;
+  --police-texte: "Helvetica Neue LT Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  min-height: 100%;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--police-texte);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--police-titre);
+  font-weight: 700;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

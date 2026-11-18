@@ -1,0 +1,24 @@
+/** Fuseau de référence de toute l'application. */
+export const FUSEAU = "Europe/Paris";
+
+/** Date au format français, ex. « 1 janvier 2027 ». */
+export function formatDateFr(date: Date): string {
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: FUSEAU,
+  }).format(date);
+}
+
+/** Heure au format français, ex. « 14 h 30 ». */
+export function formatHeureFr(date: Date): string {
+  const parts = new Intl.DateTimeFormat("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: FUSEAU,
+  }).formatToParts(date);
+  const h = parts.find((p) => p.type === "hour")?.value ?? "";
+  const m = parts.find((p) => p.type === "minute")?.value ?? "";
+  return `${h} h ${m}`;
+}

@@ -67,3 +67,16 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
    - lancer les tests ;
    - expliquer **en une phrase simple** ce qui marche ;
    - faire un **commit**.
+
+## Commandes
+
+- `npm run dev` : lancer l'app en local
+- `npm test` : tests (Vitest ; les tests de sécurité RLS utilisent une base PostgreSQL locale via `TEST_DATABASE_URL`)
+- `npm run typecheck` / `npm run lint` / `npm run build`
+
+## Repères techniques
+
+- Next.js 16 : lire `AGENTS.md` et la doc dans `node_modules/next/dist/docs/` avant d'écrire du code (ex. `middleware` s'appelle désormais `proxy`, fichier `src/proxy.ts`).
+- Connexions Supabase : `src/lib/supabase/client.ts` (navigateur) et `server.ts` (serveur).
+- Toute modification de la base passe par un nouveau fichier dans `supabase/migrations/`, avec la sécurité par ligne activée et testée dans `tests/rls.test.ts`.
+- Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris).
