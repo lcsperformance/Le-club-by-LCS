@@ -88,3 +88,17 @@ describe("onglet dans l'adresse", () => {
     expect(sportDepuisAdresse(undefined)).toBe("course");
   });
 });
+
+describe("exemples de référence", () => {
+  it("seuil course 4:30 /km → zone 3 environ 4:44 à 5:07 /km", () => {
+    const z3 = calculerZones("course", { ...tests, allure_seuil_course: 4 * 60 + 30 })[2];
+    expect(z3.zone).toBe(3);
+    expect(z3.cible).toBe("4:44–5:07 /km");
+  });
+
+  it("FTP 220 W → zone 3 environ 167 à 200 W", () => {
+    const z3 = calculerZones("velo", { ...tests, ftp: 220 })[2];
+    expect(z3.zone).toBe(3);
+    expect(z3.cible).toBe("167–200 W");
+  });
+});
