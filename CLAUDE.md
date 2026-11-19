@@ -75,6 +75,8 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - `npm run typecheck` / `npm run lint` / `npm run build`
 - `npm run test:e2e` (après `npm run build`) : vérifie dans un navigateur que chaque écran tient sur un téléphone (320, 360, 390 px). Les écrans connectés sont testés via les pages d'aperçu `/apercu-espace/…` et `/apercu-membre/…` (données fictives, actives seulement avec `APERCU=1`, jamais en production). Tout nouvel écran doit y être ajouté.
 
+- `npm run test:paiement` : parcours de paiement de bout en bout avec les faux paiements Stripe (mode test → webhook en ligne → Supabase en ligne) ; hors vérifications GitHub ; nettoie tout à la fin. Variables : `STRIPE_SECRET_KEY` (sk_test_…), `SUPABASE_PROJECT_REF`, `SUPABASE_ACCESS_TOKEN`.
+
 - Vérifications automatiques GitHub (`.github/workflows/verifications.yml`) à chaque pull request : zones, lint, types, tests (avec PostgreSQL), compilation, affichage mobile. Ne pas fusionner si une croix rouge apparaît.
 
 ## Repères techniques

@@ -76,6 +76,10 @@ et annuel (`plink_1UdWK7B1uelR3FW9mVlRi0vU`), tous deux avec retour vers `/bienv
 `we_1UdWaCB1uelR3FW9GFPiJTvJ` (5 événements). Variables Vercel publiques `STRIPE_LIEN_PAIEMENT` et
 `STRIPE_LIEN_PAIEMENT_ANNUEL` en place (sans la seconde, seul le mensuel est proposé).
 
+**Test de bout en bout** : `npm run test:paiement` (`tests-paiement/`) joue tout le parcours avec les faux
+paiements Stripe et une horloge de test (inscription, doublon, carte refusée, résiliation, réactivation,
+webhook reçu deux fois), sur le site en ligne, puis supprime tout ce qu'il a créé.
+
 **Secrets à saisir dans Vercel** (Settings > Environment Variables, cocher **Sensitive**, environnements
 Production et Preview), puis redéployer :
 
