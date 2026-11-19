@@ -34,7 +34,7 @@ export function EnTeteMembre({
         </p>
       )}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span className="titre" style={{ fontSize: 30, lineHeight: 1, color: "var(--accent)", textTransform: "none" }}>
+        <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
           le club
         </span>
         <form action={seDeconnecter}>

@@ -46,8 +46,8 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 
 ### Typographie
 
-- Titres : **Tussilago Bold**
-- Texte : **Helvetica Neue LT Pro**
+- Titres : **Tussilago Bold** (en attendant les fichiers : Archivo 800, version large)
+- Texte : **Helvetica Neue LT Pro** (en attendant : Inter)
 
 ## Règles métier
 
@@ -84,4 +84,5 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Pas d'inscription libre : jamais de `signUp` dans l'app.
 - Composants Neon dans `src/components/ui` (import depuis `@/components/ui`) : `Carte`, `BoutonPrincipal`, `BoutonSecondaire`, `Champ`, `PastilleZone`. Les utiliser plutôt que de recopier des styles ; vitrine sur `/admin/composants`.
 - Fond : `FondNeon`. Espace membre dans `src/app/(membre)` avec la `BarreOnglets` (onglets définis dans `src/lib/onglets.ts`) ; espaces coach et admin dans `src/app/(espace)`.
-- Classes globales restantes : `.titre`, `.lien`, `.message-info`, `.message-erreur`.
+- Classes globales restantes : `.titre` (capitales), `.logo` (« le club »), `.lien`, `.message-info`, `.message-erreur`.
+- Polices : déclarées **uniquement** dans `src/app/polices.ts` (next/font), exposées en `--police-titre` et `--police-texte`. Style des titres via `--titre-graisse`, `--titre-largeur`, `--titre-casse` dans `globals.css`. Ne jamais nommer une police ailleurs (vérifié par `tests/polices.test.ts`).

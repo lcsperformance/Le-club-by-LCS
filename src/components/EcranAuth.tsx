@@ -8,7 +8,7 @@ export function EcranAuth({ titre, children }: { titre: string; children: ReactN
       <div className={styles.halo} aria-hidden />
       <div className={styles.point} aria-hidden />
       <div className={styles.logo}>
-        <div className={styles.club}>
+        <div className={`logo ${styles.club}`}>
           le
           <br />
           club

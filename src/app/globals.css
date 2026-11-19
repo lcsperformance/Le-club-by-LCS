@@ -9,9 +9,14 @@
   --texte-doux: #b8b4d6;
   --erreur: #ff8a9a;
 
-  /* Tussilago et Helvetica Neue LT Pro sont sous licence : à ajouter dans public/fonts. */
-  --police-titre: "Tussilago", var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
-  --police-texte: "Helvetica Neue LT Pro", var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /*
+   * Typographie. Les familles --police-titre et --police-texte sont déclarées
+   * dans src/app/polices.ts (next/font) : c'est là qu'on change de police.
+   * Ici, seulement le style des titres.
+   */
+  --titre-graisse: 800;
+  --titre-largeur: 125%;
+  --titre-casse: uppercase;
 
   color-scheme: dark;
 }
@@ -31,15 +36,17 @@ html,
 body {
   min-height: 100%;
   color: var(--texte);
-  font-family: var(--police-texte);
+  font-family: var(--police-texte), "Helvetica Neue", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
-h3 {
-  font-family: var(--police-titre);
-  font-weight: 700;
+h3,
+.titre {
+  font-family: var(--police-titre), "Helvetica Neue", Arial, sans-serif;
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
 }
 
 a {
@@ -54,13 +61,18 @@ a {
 
 /* ---------- Neon Glassmorphism ---------- */
 
-/* Titre large de la maquette (Archivo étiré, en majuscules). */
+/* Titre en capitales, comme sur la maquette. */
 .titre {
-  font-family: var(--police-titre);
-  font-stretch: 125%;
-  font-weight: 800;
-  text-transform: uppercase;
+  text-transform: var(--titre-casse);
   letter-spacing: -0.01em;
+}
+
+/* Logo « le club » : police et style des titres, mais en minuscules. */
+.logo {
+  font-family: var(--police-titre), "Helvetica Neue", Arial, sans-serif;
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  color: var(--accent);
 }
 
 .lien {
