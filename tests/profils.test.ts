@@ -86,3 +86,35 @@ describe("enregistrement d'un choix", () => {
     expect((await enregistrerChoix("profil", "intensif")).erreur).toMatch(/session a expiré/);
   });
 });
+
+describe("enregistrement du prénom", () => {
+  const update = vi.fn();
+  const eq = vi.fn();
+  beforeEach(() => {
+    vi.resetModules();
+    update.mockReset();
+    eq.mockReset().mockResolvedValue({ error: null });
+    update.mockReturnValue({ eq });
+    vi.doMock("@/lib/auth", () => ({ utilisateurConnecte: async () => ({ id: "moi" }) }));
+    vi.doMock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: () => ({ update }) }) }));
+  });
+
+  it("enregistre le prénom nettoyé sur la fiche du membre connecté", async () => {
+    const { enregistrerPrenom } = await import("@/app/(membre)/profil/actions");
+    expect(await enregistrerPrenom("  Anne-Sophie ")).toEqual({ prenom: "Anne-Sophie" });
+    expect(update).toHaveBeenCalledWith({ prenom: "Anne-Sophie" });
+    expect(eq).toHaveBeenCalledWith("id", "moi");
+  });
+
+  it("vide = efface le prénom", async () => {
+    const { enregistrerPrenom } = await import("@/app/(membre)/profil/actions");
+    expect(await enregistrerPrenom("")).toEqual({ prenom: null });
+    expect(update).toHaveBeenCalledWith({ prenom: null });
+  });
+
+  it("refuse une saisie invalide sans toucher la base", async () => {
+    const { enregistrerPrenom } = await import("@/app/(membre)/profil/actions");
+    expect((await enregistrerPrenom("<script>")).erreur).toMatch(/lettres/);
+    expect(update).not.toHaveBeenCalled();
+  });
+});

@@ -61,6 +61,7 @@ type Fiche = MembreConnu & {
   stripe_customer_id: string | null;
   abonnement_fin: string | null;
   annulation_prevue: boolean;
+  prenom: string | null;
 };
 
 let fiches: Fiche[];
@@ -69,12 +70,13 @@ let abonnementsStripe: Record<string, AbonnementStripe>;
 let emailsBienvenue: string[];
 let emailsReabonnement: string[];
 let creationConcurrente: boolean;
+let nomClientStripe: string | null;
 
 function deps(): Dependances {
   return {
     stripe: {
       abonnement: async (id) => abonnementsStripe[id],
-      emailClient: async () => "client@exemple.fr",
+      infoClient: async () => ({ email: "client@exemple.fr", nom: nomClientStripe }),
     },
     base: {
       dejaTraite: async (id) => traites.has(id),
@@ -96,6 +98,10 @@ function deps(): Dependances {
       mettreAJour: async (id, champs) => {
         Object.assign(fiches.find((f) => f.id === id)!, champs);
       },
+      definirPrenomSiVide: async (id, prenom) => {
+        const f = fiches.find((x) => x.id === id)!;
+        if (f.prenom === null) f.prenom = prenom;
+      },
     },
     emails: { reabonnement: async (e) => void emailsReabonnement.push(e) },
   };
@@ -111,14 +117,15 @@ function nouvelleFiche(email: string, autres: Partial<Fiche> = {}): Fiche {
     stripe_customer_id: null,
     abonnement_fin: null,
     annulation_prevue: false,
+    prenom: null,
     ...autres,
   };
 }
 
-const paiementInitial = (email = "Nouvelle@Exemple.fr", sub = "sub_1"): EvenementStripe => ({
+const paiementInitial = (email = "Nouvelle@Exemple.fr", sub = "sub_1", nom: string | null = "caroline DUPONT"): EvenementStripe => ({
   id: `evt_checkout_${sub}`,
   type: "checkout.session.completed",
-  data: { object: { mode: "subscription", subscription: sub, customer: "cus_1", customer_details: { email } } },
+  data: { object: { mode: "subscription", subscription: sub, customer: "cus_1", customer_details: { email, name: nom } } },
 });
 const facture = (type: string, n: number, sub = "sub_1"): EvenementStripe => ({
   id: `evt_${type}_${n}`,
@@ -138,6 +145,7 @@ beforeEach(() => {
   emailsBienvenue = [];
   emailsReabonnement = [];
   creationConcurrente = false;
+  nomClientStripe = null;
 });
 
 describe("webhook : paiement réussi", () => {
@@ -284,5 +292,29 @@ describe("phrase « Mon abonnement »", async () => {
     [{ statut: "inactif", fin: null, annulationPrevue: false }, "Ton abonnement n'est pas encore actif."],
   ] as const)("%o", (a, phrase) => {
     expect(descriptionAbonnement(a, maintenant)).toBe(phrase);
+  });
+});
+
+describe("webhook : prénom", () => {
+  it("le prénom vient du nom saisi au paiement", async () => {
+    await traiterEvenement(paiementInitial(), deps());
+    expect(fiches[0].prenom).toBe("Caroline");
+  });
+
+  it("sans nom dans l'événement, il est lu sur le client Stripe", async () => {
+    nomClientStripe = "ÉLODIE martin";
+    await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_1", null), deps());
+    expect(fiches[0].prenom).toBe("Élodie");
+  });
+
+  it("un prénom déjà présent (corrigé par le membre) n'est jamais écrasé", async () => {
+    fiches.push(nouvelleFiche("nouvelle@exemple.fr", { prenom: "Caro", statut_abonnement: "resilie", stripe_subscription_id: "sub_ancien" }));
+    await traiterEvenement(paiementInitial(), deps());
+    expect(fiches[0].prenom).toBe("Caro");
+  });
+
+  it("sans nom nulle part : pas de prénom, et le compte est quand même créé", async () => {
+    await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_1", null), deps());
+    expect(fiches[0]).toMatchObject({ prenom: null, statut_abonnement: "actif" });
   });
 });

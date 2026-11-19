@@ -7,6 +7,7 @@
  * - un événement déjà traité est ignoré (webhook reçu deux fois) ;
  * - chaque traitement peut être rejoué sans effet en double.
  */
+import { prenomDepuisNom } from "../prenom";
 import { estPaye, etatDepuisAbonnement, type AbonnementStripe, type EtatAbonnement } from "./etat";
 
 export const EVENEMENTS_SUIVIS = [
@@ -30,7 +31,8 @@ export type MembreConnu = {
 export type Dependances = {
   stripe: {
     abonnement(id: string): Promise<AbonnementStripe>;
-    emailClient(id: string): Promise<string | null>;
+    /** E-mail et nom du client Stripe (nom du titulaire, pour le prénom). */
+    infoClient(id: string): Promise<{ email: string | null; nom: string | null }>;
   };
   base: {
     dejaTraite(evenementId: string): Promise<boolean>;
@@ -49,6 +51,8 @@ export type Dependances = {
         annulation_prevue: boolean;
       },
     ): Promise<void>;
+    /** Enregistre le prénom seulement s'il est encore vide (jamais d'écrasement d'un prénom corrigé). */
+    definirPrenomSiVide(membreId: string, prenom: string): Promise<void>;
   };
   emails: {
     /** Ancien membre qui se réabonne : il a déjà ses identifiants. */
@@ -75,6 +79,7 @@ export function lireEvenement(evenement: EvenementStripe) {
         abonnementId: id(o.subscription),
         clientId: id(o.customer),
         email: texte((o.customer_details as { email?: unknown } | null)?.email),
+        nom: texte((o.customer_details as { name?: unknown } | null)?.name),
       };
     case "invoice.paid":
     case "invoice.payment_failed": {
@@ -83,13 +88,14 @@ export function lireEvenement(evenement: EvenementStripe) {
         abonnementId: id(parent?.subscription_details?.subscription) ?? id(o.subscription),
         clientId: id(o.customer),
         email: texte(o.customer_email),
+        nom: texte(o.customer_name),
       };
     }
     case "customer.subscription.updated":
     case "customer.subscription.deleted":
-      return { abonnementId: id(o.id), clientId: id(o.customer), email: null };
+      return { abonnementId: id(o.id), clientId: id(o.customer), email: null, nom: null };
     default:
-      return { abonnementId: null, clientId: null, email: null };
+      return { abonnementId: null, clientId: null, email: null, nom: null };
   }
 }
 
@@ -107,14 +113,17 @@ export async function traiterEvenement(evenement: EvenementStripe, d: Dependance
 }
 
 async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Resultat> {
-  const { abonnementId, clientId, email: emailEvenement } = lireEvenement(evenement);
+  const { abonnementId, clientId, email: emailEvenement, nom: nomEvenement } = lireEvenement(evenement);
   if (!abonnementId || !clientId) return { action: "ignore", raison: "pas d'abonnement concerné" };
 
   // État réel, relu chez Stripe (et non celui, peut-être ancien, porté par l'événement).
   const etat = etatDepuisAbonnement(await d.stripe.abonnement(abonnementId));
 
   let membre = await d.base.membreParClient(clientId);
-  const email = emailEvenement ?? (membre ? null : await d.stripe.emailClient(clientId));
+  // Infos du client Stripe, lues seulement si l'événement ne les porte pas.
+  const client = !nomEvenement || (!membre && !emailEvenement) ? await d.stripe.infoClient(clientId) : null;
+  const email = emailEvenement ?? (membre ? null : client?.email ?? null);
+  const nom = nomEvenement ?? client?.nom ?? null;
   if (!membre && email) membre = await d.base.membreParEmail(normaliser(email));
 
   let cree = false; // compte créé par ce traitement
@@ -155,6 +164,9 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
     abonnement_fin: etat.fin,
     annulation_prevue: etat.annulationPrevue,
   });
+
+  const prenom = prenomDepuisNom(nom);
+  if (prenom) await d.base.definirPrenomSiVide(membre.id, prenom);
 
   if (cree) return { action: "compte-cree", membreId: membre.id, etat };
   if (reprise) {

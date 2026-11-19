@@ -314,3 +314,24 @@ describe("droits du serveur (clé secrète Supabase = rôle service_role)", () =
     await enTantQueServeur("select id, email, role from membres where email = 'a@club.fr'");
   });
 });
+
+describe("prénom", () => {
+  it("le membre modifie son propre prénom", async () => {
+    const rows = await enTantQue(A, "update membres set prenom = 'Caroline' where id = $1 returning prenom", [A]);
+    expect(rows).toEqual([{ prenom: "Caroline" }]);
+  });
+
+  it("le membre ne peut ni lire ni modifier le prénom d'un autre", async () => {
+    expect(await enTantQue(A, "update membres set prenom = 'Pirate' where id = $1 returning id", [B])).toEqual([]);
+    expect(await enTantQue(A, "select prenom from membres where id = $1", [B])).toEqual([]);
+    const [b] = await enTantQue<{ prenom: string | null }>(B, "select prenom from membres where id = $1", [B]);
+    expect(b.prenom).toBeNull();
+  });
+
+  it("un prénom vide ou trop long est refusé par la base", async () => {
+    await expect(enTantQue(A, "update membres set prenom = '   ' where id = $1", [A])).rejects.toThrow(/check constraint/);
+    await expect(enTantQue(A, `update membres set prenom = '${"x".repeat(41)}' where id = $1`, [A])).rejects.toThrow(
+      /check constraint/,
+    );
+  });
+});

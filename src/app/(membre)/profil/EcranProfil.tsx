@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
+import { ChampPrenom } from "@/components/ChampPrenom";
 import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
+import { initiale } from "@/components/IdentiteMembre";
 import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 
@@ -54,16 +56,18 @@ export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisat
             justifyContent: "center",
           }}
         >
-          {utilisateur.email.charAt(0).toUpperCase()}
+          {initiale(utilisateur)}
         </span>
         <div style={{ minWidth: 0 }}>
-          <h1 className="titre" style={{ fontSize: 24, lineHeight: 1.1 }}>
-            Mon profil
+          <h1 className="titre" style={{ fontSize: 24, lineHeight: 1.1, overflowWrap: "anywhere" }}>
+            {utilisateur.prenom ?? "Mon profil"}
           </h1>
           <p style={{ fontSize: 14, color: "#a9a4c9", marginTop: 4, overflowWrap: "anywhere" }}>{utilisateur.email}</p>
           <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{STATUT[utilisateur.role]}</p>
         </div>
       </header>
+
+      <ChampPrenom prenom={utilisateur.prenom} />
 
       {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
       {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
