@@ -282,3 +282,35 @@ describe("abonnement Stripe", () => {
     await expect(enTantQue(null, "select * from stripe_evenements")).rejects.toThrow(/permission denied/);
   });
 });
+
+describe("droits du serveur (clé secrète Supabase = rôle service_role)", () => {
+  /** Requête exécutée comme le webhook Stripe : rôle service_role, sans membre connecté. */
+  async function enTantQueServeur(sql: string, params: unknown[] = []) {
+    await db.query("begin");
+    try {
+      await db.query("set local role service_role");
+      const r = await db.query(sql, params);
+      await db.query("rollback");
+      return r.rows;
+    } catch (e) {
+      await db.query("rollback");
+      throw e;
+    }
+  }
+
+  it("peut noter un événement Stripe traité et le relire", async () => {
+    await enTantQueServeur("insert into stripe_evenements (id, type) values ('evt_serveur', 'invoice.paid')");
+    await enTantQueServeur("select id from stripe_evenements");
+  });
+
+  it("peut lire et mettre à jour l'abonnement d'un membre", async () => {
+    const rows = await enTantQueServeur(
+      `update membres set statut_abonnement = 'actif', abonnement_fin = now() + interval '30 days',
+         stripe_customer_id = 'cus_x', stripe_subscription_id = 'sub_x', annulation_prevue = false
+       where id = $1 returning statut_abonnement`,
+      [A],
+    );
+    expect(rows).toEqual([{ statut_abonnement: "actif" }]);
+    await enTantQueServeur("select id, email, role from membres where email = 'a@club.fr'");
+  });
+});
