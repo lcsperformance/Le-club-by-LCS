@@ -79,14 +79,33 @@ describe("abonnement", () => {
     expect(await page.getByText("Le Club · 49 €/mois").isVisible()).toBe(true);
     expect(await page.getByText("Abonnement actif. Prochain prélèvement le 10 février 2027.").isVisible()).toBe(true);
     expect(await page.getByRole("button", { name: "Gérer mon abonnement" }).isVisible()).toBe(true);
+    expect(
+      await page
+        .getByText("Envie de passer à l'année (499 €/an, 89 € d'économie) ? Choisis « Gérer mon abonnement ».")
+        .isVisible(),
+    ).toBe(true);
+  });
+
+  it("abonné à l'année : la carte affiche 499 €/an et comment repasser au mois", async () => {
+    const p = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
+    await p.goto(`${BASE}/apercu-membre/profil-annuel`, { waitUntil: "networkidle" });
+    expect(await p.getByText("Le Club · 499 €/an").isVisible()).toBe(true);
+    expect(await p.getByText(/le changement se fera à la fin de ton année/).isVisible()).toBe(true);
+    await p.close();
   });
 
   it("abonnement terminé : page dédiée avec « Me réabonner » vers le lien de paiement (e-mail prérempli)", async () => {
     const p = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
     await p.goto(`${BASE}/apercu-membre/abonnement-termine`, { waitUntil: "networkidle" });
     expect(await p.getByText("Ton abonnement est terminé depuis le 1 janvier 2027.").isVisible()).toBe(true);
-    const lien = await p.getByRole("link", { name: /Me réabonner/ }).getAttribute("href");
-    expect(lien).toBe("https://buy.stripe.com/test_exemple?prefilled_email=prenom.nom-tres-long%40exemple-de-domaine.fr");
+    const email = "?prefilled_email=prenom.nom-tres-long%40exemple-de-domaine.fr";
+    expect(await p.getByRole("link", { name: "Me réabonner · 49 €/mois" }).getAttribute("href")).toBe(
+      `https://buy.stripe.com/test_exemple${email}`,
+    );
+    expect(await p.getByRole("link", { name: "Me réabonner à l'année · 499 €/an" }).getAttribute("href")).toBe(
+      `https://buy.stripe.com/test_annuel${email}`,
+    );
+    expect(await p.getByText("Soit 41,58 € par mois : 89 € d'économie sur l'année.").isVisible()).toBe(true);
     await p.close();
   });
 });

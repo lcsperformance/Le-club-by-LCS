@@ -4,6 +4,13 @@
  */
 import { beforeEach, describe, expect, it } from "vitest";
 import { aAcces, etatDepuisAbonnement, type AbonnementStripe } from "@/lib/abonnement/etat";
+import {
+  economieAnnuelle,
+  equivalentMensuel,
+  formuleDepuisAbonnement,
+  prixFormule,
+} from "@/lib/abonnement/formules";
+import { changementDeFormule } from "@/lib/abonnement/textes";
 import { traiterEvenement, type Dependances, type EvenementStripe, type MembreConnu } from "@/lib/abonnement/webhook";
 
 const JOUR = 24 * 3600;
@@ -62,6 +69,7 @@ type Fiche = MembreConnu & {
   abonnement_fin: string | null;
   annulation_prevue: boolean;
   prenom: string | null;
+  formule?: string | null;
 };
 
 let fiches: Fiche[];
@@ -341,5 +349,46 @@ describe("webhook : prénom", () => {
   it("sans nom nulle part : pas de prénom, et le compte est quand même créé", async () => {
     await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_1", null), deps());
     expect(fiches[0]).toMatchObject({ prenom: null, statut_abonnement: "actif" });
+  });
+});
+
+describe("formules mensuelle et annuelle", () => {
+  const avecPrix = (interval: string): AbonnementStripe =>
+    abonnement("active", { items: { data: [{ current_period_end: FIN, price: { recurring: { interval } } }] } });
+
+  it("prix affichés", () => {
+    expect(prixFormule("mensuelle")).toBe("49 €/mois");
+    expect(prixFormule("annuelle")).toBe("499 €/an");
+    expect(equivalentMensuel()).toBe("41,58 € par mois");
+    expect(economieAnnuelle()).toBe("89 €");
+  });
+
+  it("formule lue sur l'abonnement Stripe (mois ou an)", () => {
+    expect(formuleDepuisAbonnement(avecPrix("month"))).toBe("mensuelle");
+    expect(formuleDepuisAbonnement(avecPrix("year"))).toBe("annuelle");
+    expect(formuleDepuisAbonnement(abonnement("active"))).toBeNull();
+  });
+
+  it("le webhook enregistre la formule, et le changement de formule fait dans le portail", async () => {
+    abonnementsStripe.sub_1 = avecPrix("month");
+    await traiterEvenement(paiementInitial(), deps());
+    expect(fiches[0].formule).toBe("mensuelle");
+    // Passage à l'année dans le portail Stripe : même abonnement, nouveau prix.
+    abonnementsStripe.sub_1 = avecPrix("year");
+    const r = await traiterEvenement(majAbonnement("customer.subscription.updated", 2), deps());
+    expect(r.action).toBe("mis-a-jour");
+    expect(fiches[0]).toMatchObject({ formule: "annuelle", statut_abonnement: "actif" });
+    expect(emailsReabonnement).toEqual([]);
+  });
+
+  it("phrase pour changer de formule", () => {
+    const actif = { statut: "actif" as const, annulationPrevue: false };
+    expect(changementDeFormule({ ...actif, formule: "mensuelle" })).toBe(
+      "Envie de passer à l'année (499 €/an, 89 € d'économie) ? Choisis « Gérer mon abonnement ».",
+    );
+    expect(changementDeFormule({ ...actif, formule: "annuelle" })).toMatch(/fin de ton année/);
+    expect(changementDeFormule({ ...actif, formule: null })).toBeNull();
+    expect(changementDeFormule({ statut: "actif", annulationPrevue: true, formule: "mensuelle" })).toBeNull();
+    expect(changementDeFormule({ statut: "resilie", annulationPrevue: false, formule: "mensuelle" })).toBeNull();
   });
 });

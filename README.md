@@ -52,7 +52,12 @@ Les e-mails pointent alors directement vers `/auth/confirm` (lien utilisable sur
 
 ## Abonnement Stripe (mode test)
 
-**Parcours** : lien de paiement Stripe (49 €/mois, sans engagement) → page `/bienvenue` → Stripe appelle le
+**Formules** : 49 €/mois (sans engagement) ou 499 €/an, au choix sur `/abonnement` ; prix affichés dans
+`src/lib/abonnement/formules.ts` (à garder identiques à Stripe). Le membre change de formule dans le portail
+client : passage à l'année immédiat (le reste du mois est déduit), retour au mois à la fin de l'année.
+La formule en cours est enregistrée dans `membres.formule` par le webhook.
+
+**Parcours** : lien de paiement Stripe (mensuel ou annuel) → page `/bienvenue` → Stripe appelle le
 webhook `/api/stripe/webhook` → compte créé dans Supabase et e-mail « Bienvenue au Club » (lien pour choisir
 son mot de passe) → le membre se connecte. Le Profil affiche « Mon abonnement » et ouvre le portail client
 Stripe (résiliation en fin de période, carte, factures).
@@ -65,9 +70,11 @@ Stripe (résiliation en fin de période, carte, factures).
 - e-mail déjà connu (ancien membre) : pas de nouveau compte, abonnement rattaché, e-mail « Bon retour » ;
 - les comptes coach et admin ne sont jamais modifiés par un paiement et gardent toujours l'accès.
 
-**Déjà configuré dans Stripe (mode test)** : lien de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`,
-retour vers `/bienvenue`), portail client (résiliation en fin de période), webhook
-`we_1UdWaCB1uelR3FW9GFPiJTvJ` (5 événements). Variable Vercel `STRIPE_LIEN_PAIEMENT` en place.
+**Déjà configuré dans Stripe (mode test)** : liens de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`)
+et annuel (`plink_1UdWK7B1uelR3FW9mVlRi0vU`), tous deux avec retour vers `/bienvenue` ; portail client
+(résiliation en fin de période, changement de formule mois ↔ année) ; webhook
+`we_1UdWaCB1uelR3FW9GFPiJTvJ` (5 événements). Variables Vercel publiques `STRIPE_LIEN_PAIEMENT` et
+`STRIPE_LIEN_PAIEMENT_ANNUEL` en place (sans la seconde, seul le mensuel est proposé).
 
 **Secrets à saisir dans Vercel** (Settings > Environment Variables, cocher **Sensitive**, environnements
 Production et Preview), puis redéployer :

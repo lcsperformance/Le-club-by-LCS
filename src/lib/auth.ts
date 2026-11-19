@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { aAcces, type StatutAbonnement } from "@/lib/abonnement/etat";
+import type { Formule } from "@/lib/abonnement/formules";
 import { estSessionDeReinitialisation } from "@/lib/reinitialisation";
 import type { Niveau, Profil } from "@/lib/profils";
 import { cheminAccueil, type Role } from "@/lib/roles";
@@ -21,6 +22,8 @@ export type Utilisateur = {
     /** Fin de la période payée (ISO) : accès ouvert jusqu'à cette date. */
     fin: string | null;
     annulationPrevue: boolean;
+    /** Mensuelle ou annuelle ; null tant qu'aucun abonnement n'a été pris. */
+    formule: Formule | null;
     /** A un compte client Stripe (peut ouvrir le portail pour gérer son abonnement). */
     clientStripe: boolean;
   };
@@ -38,7 +41,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, stripe_customer_id")
+    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
@@ -54,6 +57,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
       statut: membre.statut_abonnement as StatutAbonnement,
       fin: (membre.abonnement_fin as string | null) ?? null,
       annulationPrevue: !!membre.annulation_prevue,
+      formule: (membre.formule as Formule | null) ?? null,
       clientStripe: !!membre.stripe_customer_id,
     },
   };

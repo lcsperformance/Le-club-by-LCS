@@ -8,6 +8,7 @@
  * - chaque traitement peut être rejoué sans effet en double.
  */
 import { prenomDepuisNom } from "../prenom";
+import { formuleDepuisAbonnement, type Formule } from "./formules";
 import { estPaye, etatDepuisAbonnement, type AbonnementStripe, type EtatAbonnement } from "./etat";
 
 export const EVENEMENTS_SUIVIS = [
@@ -49,6 +50,7 @@ export type Dependances = {
         statut_abonnement: string;
         abonnement_fin: string | null;
         annulation_prevue: boolean;
+        formule: Formule | null;
       },
     ): Promise<void>;
     /** Enregistre le prénom seulement s'il est encore vide (jamais d'écrasement d'un prénom corrigé). */
@@ -117,7 +119,8 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
   if (!abonnementId || !clientId) return { action: "ignore", raison: "pas d'abonnement concerné" };
 
   // État réel, relu chez Stripe (et non celui, peut-être ancien, porté par l'événement).
-  const etat = etatDepuisAbonnement(await d.stripe.abonnement(abonnementId));
+  const abonnementStripe = await d.stripe.abonnement(abonnementId);
+  const etat = etatDepuisAbonnement(abonnementStripe);
 
   let membre = await d.base.membreParClient(clientId);
   // Infos du client Stripe, lues seulement si l'événement ne les porte pas.
@@ -170,6 +173,7 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
     statut_abonnement: etat.statut,
     abonnement_fin: etat.fin,
     annulation_prevue: etat.annulationPrevue,
+    formule: formuleDepuisAbonnement(abonnementStripe),
   });
 
   const prenom = prenomDepuisNom(nom);

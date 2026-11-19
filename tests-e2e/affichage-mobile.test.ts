@@ -25,6 +25,7 @@ const ECRANS = [
   "/apercu-membre/records",
   "/apercu-membre/progres",
   "/apercu-membre/abonnement-termine",
+  "/apercu-membre/profil-annuel",
   "/bienvenue",
 ];
 

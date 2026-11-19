@@ -12,7 +12,7 @@ export type AbonnementStripe = {
   cancel_at_period_end: boolean;
   ended_at: number | null;
   /** Depuis 2025, la fin de période est portée par chaque élément de l'abonnement. */
-  items: { data: { current_period_end: number }[] };
+  items: { data: { current_period_end: number; price?: { recurring?: { interval?: string } | null } | null }[] };
   current_period_end?: number;
 };
 

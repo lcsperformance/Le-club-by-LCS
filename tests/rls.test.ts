@@ -268,6 +268,7 @@ describe("abonnement Stripe", () => {
     ["stripe_subscription_id", "'sub_pirate'"],
     ["abonnement_fin", "'2099-01-01'"],
     ["annulation_prevue", "true"],
+    ["formule", "'annuelle'"],
   ])("le membre ne peut pas modifier %s (ni se prolonger lui-même)", async (colonne, valeur) => {
     await expect(enTantQue(A, `update membres set ${colonne} = ${valeur} where id = $1`, [A])).rejects.toThrow(
       /permission denied/,
@@ -306,7 +307,8 @@ describe("droits du serveur (clé secrète Supabase = rôle service_role)", () =
   it("peut lire et mettre à jour l'abonnement d'un membre", async () => {
     const rows = await enTantQueServeur(
       `update membres set statut_abonnement = 'actif', abonnement_fin = now() + interval '30 days',
-         stripe_customer_id = 'cus_x', stripe_subscription_id = 'sub_x', annulation_prevue = false
+         stripe_customer_id = 'cus_x', stripe_subscription_id = 'sub_x', annulation_prevue = false,
+         formule = 'annuelle'
        where id = $1 returning statut_abonnement`,
       [A],
     );
