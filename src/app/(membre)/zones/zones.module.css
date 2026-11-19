@@ -67,3 +67,38 @@
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
+
+/* Réglage « Début de zone » sous la carte, en mode personnalisation. */
+.reglage {
+  flex: 1 0 100%;
+}
+.reglage output {
+  font-size: 14px;
+}
+
+.pastillePerso {
+  justify-self: start;
+  background: var(--aurore);
+  color: var(--fond);
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.retourClub {
+  min-height: 44px;
+  border: 0;
+  background: none;
+  color: var(--texte);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.retourClub:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

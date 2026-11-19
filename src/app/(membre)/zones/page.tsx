@@ -4,7 +4,8 @@ import { Chargement } from "@/components/Chargement";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { sportDepuisAdresse } from "@/lib/zones";
+import { CONFIG_ZONES, sportDepuisAdresse } from "@/lib/zones";
+import { bornesPersoApplicables } from "@/lib/zones-perso";
 import { AffichageZones } from "./AffichageZones";
 import { EnTeteZones } from "./EnTeteZones";
 
@@ -44,5 +45,18 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
     );
   }
 
-  return <AffichageZones sport={sport} test={test} />;
+  const { data: perso } = await supabase
+    .from("zones")
+    .select("bornes")
+    .eq("membre_id", utilisateur.id)
+    .eq("sport", sport)
+    .maybeSingle();
+
+  return (
+    <AffichageZones
+      sport={sport}
+      test={test}
+      bornesEnregistrees={bornesPersoApplicables(perso?.bornes, CONFIG_ZONES[sport])}
+    />
+  );
 }

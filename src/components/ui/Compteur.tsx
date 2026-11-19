@@ -4,9 +4,13 @@ import { useState } from "react";
 import styles from "./ui.module.css";
 
 type Props = {
-  /** Nom du champ envoyé avec le formulaire. */
-  name: string;
-  valeurInitiale: number;
+  /** Nom du champ envoyé avec le formulaire (facultatif si la valeur est gérée par le parent). */
+  name?: string;
+  /** Valeur de départ, quand le compteur gère lui-même sa valeur. */
+  valeurInitiale?: number;
+  /** Valeur imposée par le parent (mode « piloté »), avec `onChange`. */
+  valeur?: number;
+  onChange?: (valeur: number) => void;
   pas: number;
   min: number;
   max: number;
@@ -26,7 +30,9 @@ export function pasSuivant(r: { pas: number; min: number; max: number }, valeur:
 /** Réglage « − valeur + », borné, qui envoie sa valeur avec le formulaire. */
 export function Compteur({
   name,
-  valeurInitiale,
+  valeurInitiale = 0,
+  valeur: valeurPilotee,
+  onChange,
   pas,
   min,
   max,
@@ -35,8 +41,14 @@ export function Compteur({
   libellePlus,
   intitule,
 }: Props) {
-  const [valeur, setValeur] = useState(valeurInitiale);
-  const changer = (sens: -1 | 1) => setValeur((v) => pasSuivant({ pas, min, max }, v, sens));
+  const [valeurInterne, setValeurInterne] = useState(valeurInitiale);
+  const valeur = valeurPilotee ?? valeurInterne;
+  const changer = (sens: -1 | 1) => {
+    const suivante = pasSuivant({ pas, min, max }, valeur, sens);
+    if (suivante === valeur) return;
+    if (valeurPilotee === undefined) setValeurInterne(suivante);
+    onChange?.(suivante);
+  };
 
   return (
     <div className={styles.compteur}>
@@ -61,7 +73,7 @@ export function Compteur({
       >
         +
       </button>
-      <input type="hidden" name={name} value={valeur} />
+      {name && <input type="hidden" name={name} value={valeur} />}
     </div>
   );
 }

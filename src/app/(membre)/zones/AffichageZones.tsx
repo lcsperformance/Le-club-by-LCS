@@ -1,14 +1,22 @@
 import Link from "next/link";
-import { Carte, PastilleZone } from "@/components/ui";
+import type { Bornes } from "@/lib/config-zones";
 import { formatDateFr } from "@/lib/dates";
-import { calculerZones, SPORTS, type Sport, type Tests } from "@/lib/zones";
+import { SPORTS, type Sport, type Tests } from "@/lib/zones";
+import { ListeZones } from "./ListeZones";
 import styles from "./zones.module.css";
 
 /** Sélecteur de sport et cartes des 5 zones, calculées à partir d'un test. */
-export function AffichageZones({ sport, test }: { sport: Sport; test: Tests & { date_test: string } }) {
-  const zones = calculerZones(sport, test);
-  const libelleSport = SPORTS.find((s) => s.cle === sport)!.libelle;
-
+export function AffichageZones({
+  sport,
+  test,
+  bornesEnregistrees = null,
+  personnalisationOuverte = false,
+}: {
+  sport: Sport;
+  test: Tests & { date_test: string };
+  bornesEnregistrees?: Bornes | null;
+  personnalisationOuverte?: boolean;
+}) {
   return (
     <>
       <nav className={styles.selecteur} aria-label="Choix du sport">
@@ -25,21 +33,13 @@ export function AffichageZones({ sport, test }: { sport: Sport; test: Tests & { 
         ))}
       </nav>
 
-      <section aria-label={`Zones ${libelleSport}`} style={{ display: "grid", gap: 10 }}>
-        {zones.map((z) => (
-          <Carte key={z.zone} className={styles.zone}>
-            <PastilleZone zone={z.zone} />
-            <div className={styles.infos}>
-              <h2 className={`titre-carte ${styles.nom}`}>{z.nom}</h2>
-              <p className={styles.detail}>{z.pourcentages}</p>
-            </div>
-            <div className={styles.valeurs}>
-              <p className={styles.cible}>{z.cible ?? "—"}</p>
-              {z.frequenceCardiaque && <p className={styles.fc}>{z.frequenceCardiaque}</p>}
-            </div>
-          </Carte>
-        ))}
-      </section>
+      <ListeZones
+        key={sport}
+        sport={sport}
+        test={test}
+        bornesEnregistrees={bornesEnregistrees}
+        personnalisationOuverte={personnalisationOuverte}
+      />
 
       <p style={{ fontSize: 13, color: "#a9a4c9", textAlign: "center", lineHeight: 1.5 }}>
         D&apos;après tes tests du {formatDateFr(new Date(`${test.date_test}T12:00:00`))}.{" "}
