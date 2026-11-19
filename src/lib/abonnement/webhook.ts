@@ -153,6 +153,13 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
   // Les comptes de l'équipe (coach, admin) ne sont jamais modifiés par un paiement.
   if (membre.role !== "membre") return { action: "ignore", raison: `compte ${membre.role} non modifié` };
 
+  // Événement d'un AUTRE abonnement, terminé ou impayé (ancien abonnement, message renvoyé en retard
+  // par Stripe…) : il ne remplace jamais l'abonnement en cours du membre. Seul un nouvel abonnement
+  // payé prend la place de l'ancien (réabonnement).
+  if (membre.stripe_subscription_id && membre.stripe_subscription_id !== abonnementId && !estPaye(etat)) {
+    return { action: "ignore", raison: "ancien abonnement, différent de l'abonnement en cours" };
+  }
+
   // Compte déjà existant qui prend un NOUVEL abonnement (ancien membre, compte créé à la main…) :
   // on le prévient une seule fois, quel que soit l'ordre des événements, car le premier
   // traitement enregistre le nouvel abonnement.

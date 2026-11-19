@@ -252,6 +252,31 @@ describe("webhook : cas de bord", () => {
     expect(emailsReabonnement).toHaveLength(1);
   });
 
+  it("message d'un ancien abonnement renvoyé en retard : l'abonnement en cours n'est pas écrasé", async () => {
+    // Constaté en vrai : Stripe renvoie une heure plus tard un « paiement réussi » de l'ancien
+    // abonnement (déjà terminé) ; le membre s'est réabonné entre-temps avec la même adresse.
+    abonnementsStripe.sub_ancien = abonnement("canceled", { ended_at: FIN - 86400 });
+    await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_1"), deps());
+    const avant = { ...fiches[0] };
+    const r = await traiterEvenement(
+      {
+        id: "evt_retard",
+        type: "invoice.paid",
+        data: {
+          object: {
+            customer: "cus_ancien",
+            customer_email: "nouvelle@exemple.fr",
+            parent: { subscription_details: { subscription: "sub_ancien" } },
+          },
+        },
+      },
+      deps(),
+    );
+    expect(r.action).toBe("ignore");
+    expect(fiches[0]).toEqual(avant);
+    expect(fiches[0]).toMatchObject({ statut_abonnement: "actif", stripe_subscription_id: "sub_1" });
+  });
+
   it.each(["coach", "admin"])("l'e-mail d'un compte %s : jamais modifié", async (role) => {
     fiches.push(nouvelleFiche("nouvelle@exemple.fr", { role }));
     const r = await traiterEvenement(paiementInitial(), deps());
