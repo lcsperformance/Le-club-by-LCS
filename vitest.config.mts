@@ -3,5 +3,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  test: { include: ["tests/**/*.test.ts"] },
+  css: { modules: { generateScopedName: "[local]" } },
+  test: {
+    include: ["tests/**/*.test.{ts,tsx}"],
+    css: { include: [/\.module\.css$/], modules: { classNameStrategy: "non-scoped" } },
+  },
 });

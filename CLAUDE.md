@@ -82,4 +82,6 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris).
 - Rôles `membre`, `coach`, `admin` (colonne `membres.role`). Une page protégée appelle `exigerRole(...)` de `src/lib/auth.ts` dans un composant placé sous `<Suspense>` (Cache Components activé).
 - Pas d'inscription libre : jamais de `signUp` dans l'app.
-- Styles Neon réutilisables dans `src/app/globals.css` : `.verre`, `.champ`, `.bouton-principal`, `.bouton-secondaire`, `.lien`, `.titre`.
+- Composants Neon dans `src/components/ui` (import depuis `@/components/ui`) : `Carte`, `BoutonPrincipal`, `BoutonSecondaire`, `Champ`, `PastilleZone`. Les utiliser plutôt que de recopier des styles ; vitrine sur `/admin/composants`.
+- Fond : `FondNeon`. Espace membre dans `src/app/(membre)` avec la `BarreOnglets` (onglets définis dans `src/lib/onglets.ts`) ; espaces coach et admin dans `src/app/(espace)`.
+- Classes globales restantes : `.titre`, `.lien`, `.message-info`, `.message-erreur`.

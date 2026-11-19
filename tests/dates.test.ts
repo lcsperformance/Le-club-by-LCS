@@ -11,3 +11,10 @@ describe("dates au format français, fuseau Europe/Paris", () => {
     expect(formatHeureFr(new Date("2027-07-01T13:30:00Z"))).toBe("15 h 30");
   });
 });
+
+describe("jour au format français", () => {
+  it("affiche le jour de la semaine avec une majuscule", async () => {
+    const { formatJourFr } = await import("@/lib/dates");
+    expect(formatJourFr(new Date("2026-11-16T10:00:00Z"))).toBe("Lundi 16 novembre");
+  });
+});

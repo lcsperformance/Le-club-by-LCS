@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { BoutonPrincipal, Champ } from "@/components/ui";
 import type { EtatFormulaire } from "@/app/connexion/actions";
 import { LONGUEUR_MIN_MOT_DE_PASSE } from "@/lib/mot-de-passe";
 import { changerMotDePasse } from "./actions";
@@ -13,22 +14,16 @@ export function FormulaireNouveau() {
       <p className="message-info" style={{ color: "var(--texte-doux)" }}>
         Au moins {LONGUEUR_MIN_MOT_DE_PASSE} caractères, avec au moins une lettre et un chiffre.
       </p>
-      <label className="champ">
-        Nouveau mot de passe
-        <input type="password" name="mot_de_passe" autoComplete="new-password" required />
-      </label>
-      <label className="champ">
-        Confirme le mot de passe
-        <input type="password" name="confirmation" autoComplete="new-password" required />
-      </label>
+      <Champ libelle="Nouveau mot de passe" name="mot_de_passe" type="password" autoComplete="new-password" required />
+      <Champ libelle="Confirme le mot de passe" name="confirmation" type="password" autoComplete="new-password" required />
       {etat.erreur && (
         <p className="message-erreur" role="alert">
           {etat.erreur}
         </p>
       )}
-      <button type="submit" className="bouton-principal" disabled={enCours} style={{ marginTop: 6 }}>
-        {enCours ? "Enregistrement…" : "Enregistrer"}
-      </button>
+      <BoutonPrincipal type="submit" enCours={enCours} texteEnCours="Enregistrement…" style={{ marginTop: 6 }}>
+        Enregistrer
+      </BoutonPrincipal>
     </form>
   );
 }
