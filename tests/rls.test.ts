@@ -243,3 +243,36 @@ describe("zones personnalisées : bornes cohérentes", () => {
     await expect(essayer(bornes)).rejects.toThrow(/zones_bornes_valides/);
   });
 });
+
+describe("historique des tests", () => {
+  const saisir = (uid: string, date: string, ftp: number) =>
+    enTantQue(
+      uid,
+      `insert into tests (date_test, ftp) values ($1, $2)
+       on conflict (membre_id, date_test) do update set ftp = excluded.ftp`,
+      [date, ftp],
+    );
+
+  it("chaque série reste avec sa date ; le même jour, la ligne est remplacée", async () => {
+    await saisir(A, "2027-01-10", 200);
+    await saisir(A, "2027-02-10", 210);
+    await saisir(A, "2027-03-10", 215);
+    await saisir(A, "2027-03-10", 218); // refait le même jour
+    const rows = await enTantQue<{ date_test: string; ftp: number }>(
+      A,
+      "select to_char(date_test, 'YYYY-MM-DD') as date_test, ftp from tests where date_test >= '2027-01-01' order by date_test",
+    );
+    expect(rows).toEqual([
+      { date_test: "2027-01-10", ftp: 200 },
+      { date_test: "2027-02-10", ftp: 210 },
+      { date_test: "2027-03-10", ftp: 218 },
+    ]);
+  });
+
+  it("un membre ne voit pas l'historique d'un autre ; le coach le lit", async () => {
+    const parB = await enTantQue(B, "select 1 from tests where membre_id = $1 and date_test >= '2027-01-01'", [A]);
+    expect(parB).toHaveLength(0);
+    const parCoach = await enTantQue(COACH, "select 1 from tests where membre_id = $1 and date_test >= '2027-01-01'", [A]);
+    expect(parCoach).toHaveLength(3);
+  });
+});
