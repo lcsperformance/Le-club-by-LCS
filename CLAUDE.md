@@ -85,6 +85,7 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris), dont `dateDuJourParis()` pour les colonnes `date`.
 - Tests de départ : mesures, pas et limites dans `src/lib/tests-depart.ts` ; écran `/tests` ; un test par membre et par jour (upsert).
 - Zones : pourcentages dans `config/zones.json` (modifiable par Martin, validé avant chaque compilation par `npm run verifier-zones`, logique dans `src/lib/config-zones.ts`), calculs dans `src/lib/zones.ts`, écran `/zones?sport=course|velo|natation`. Ne jamais écrire ces pourcentages en dur dans le code.
+- Zones personnalisées : table `zones` (une ligne par membre et par sport, 6 bornes vérifiées par `bornes_valides`), règles dans `src/lib/zones-perso.ts`. Pas de ligne = valeurs du Club ; « Revenir aux valeurs du Club » supprime la ligne. La FC n'est pas personnalisable.
 - Rôles `membre`, `coach`, `admin` (colonne `membres.role`). Une page protégée appelle `exigerRole(...)` de `src/lib/auth.ts` dans un composant placé sous `<Suspense>` (Cache Components activé).
 - Pas d'inscription libre : jamais de `signUp` dans l'app.
 - Écrans : séparer l'affichage (composant qui reçoit les données) de la lecture en base (page), pour pouvoir l'afficher dans les aperçus.

@@ -56,8 +56,8 @@ beforeAll(async () => {
   await db.query("update membres set role = 'admin' where id = $1", [ADMIN]);
   await db.query(
     `insert into public.tests (membre_id, date_test, ftp) values ($1, '2026-11-01', 250), ($2, '2026-11-02', 300);
-     insert into public.zones (membre_id, sport, bornes) values ($1, 'velo', '[{"nom":"Z1","min":0,"max":140}]'),
-                                                              ($2, 'velo', '[{"nom":"Z1","min":0,"max":170}]');
+     insert into public.zones (membre_id, sport, bornes) values ($1, 'velo', '[45, 57, 76, 91, 106, 120]'),
+                                                              ($2, 'velo', '[45, 55, 76, 91, 106, 120]');
      insert into public.objectifs (membre_id, bloc, date_objectif) values ($1, 'M', '2027-06-14'), ($2, 'XL', '2027-09-05');`
       .replaceAll("$1", `'${A}'`).replaceAll("$2", `'${B}'`),
   );
@@ -220,5 +220,26 @@ describe("tests de départ : un par jour", () => {
     ).rejects.toThrow(/row-level security|check constraint/);
     const [b] = await enTantQue<{ ftp: number }>(B, "select ftp from tests where date_test = '2026-12-01'");
     expect(b.ftp).toBe(220);
+  });
+});
+
+describe("zones personnalisées : bornes cohérentes", () => {
+  const essayer = (bornes: string) =>
+    enTantQue(A, "insert into zones (sport, bornes) values ('natation', $1::jsonb)", [bornes]);
+
+  it("accepte 6 entiers qui montent", async () => {
+    await essayer("[80, 86, 93, 97, 102, 108]");
+    await enTantQue(A, "delete from zones where sport = 'natation'");
+  });
+
+  it.each([
+    ["des bornes qui ne montent pas", "[80, 93, 87, 97, 102, 108]"],
+    ["deux bornes égales", "[80, 87, 87, 97, 102, 108]"],
+    ["5 bornes seulement", "[80, 87, 93, 97, 102]"],
+    ["un nombre à virgule", "[80, 87.5, 93, 97, 102, 108]"],
+    ["un début sous 30 %", "[20, 87, 93, 97, 102, 108]"],
+    ["l'ancien format", '[{"nom":"Z1","min":0,"max":140}]'],
+  ])("refuse %s", async (_, bornes) => {
+    await expect(essayer(bornes)).rejects.toThrow(/zones_bornes_valides/);
   });
 });

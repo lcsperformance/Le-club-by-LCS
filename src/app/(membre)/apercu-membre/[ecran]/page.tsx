@@ -33,6 +33,13 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
         </>
       );
+    case "zones-personnalisation":
+      return (
+        <>
+          <EnTeteZones />
+          <AffichageZones sport="course" test={TEST_FICTIF} bornesEnregistrees={[60, 78, 90, 95, 102, 110]} personnalisationOuverte />
+        </>
+      );
     default: {
       const sport = SPORTS.find((s) => `zones-${s.cle}` === ecran)?.cle;
       if (!sport) notFound();

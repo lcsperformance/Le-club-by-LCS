@@ -3,7 +3,7 @@
  * Les pourcentages viennent de config/zones.json (modifiable par le coach sans toucher au code).
  */
 import configBrute from "../../config/zones.json";
-import { validerConfig, type ConfigZones } from "./config-zones";
+import { validerConfig, type Bornes, type ConfigZones } from "./config-zones";
 import { formatMinSec } from "./tests-depart";
 
 export { validerConfig, type Bornes, type ConfigZones } from "./config-zones";
@@ -62,8 +62,14 @@ function cible(sport: Sport, tests: Tests, bas: number, haut: number): string | 
 }
 
 /** Les 5 zones d'un sport, calculées à partir des tests. */
-export function calculerZones(sport: Sport, tests: Tests, config: ConfigZones = CONFIG_ZONES): LigneZone[] {
-  const bornes = config[sport];
+export function calculerZones(
+  sport: Sport,
+  tests: Tests,
+  config: ConfigZones = CONFIG_ZONES,
+  /** Bornes personnalisées par le membre ; sinon celles du Club. */
+  bornesPerso?: Bornes | null,
+): LigneZone[] {
+  const bornes = bornesPerso ?? config[sport];
   const bornesFc = config.frequence_cardiaque;
   const fc = tests.fc_seuil;
 
