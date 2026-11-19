@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { urlDuSite } from "@/lib/site";
 import { configAbonnement } from "./config";
+import { emailDoublon, emailReprise } from "./emails";
 import type { AbonnementStripe } from "./etat";
 import { stripe } from "./stripe";
 import type { Dependances, MembreConnu } from "./webhook";
@@ -85,36 +86,32 @@ export function dependancesReelles(): Dependances {
       },
     },
     emails: {
-      reabonnement: async (email) => {
-        const cle = configAbonnement.cleResend();
-        if (!cle) {
-          console.warn("RESEND_API_KEY absente : e-mail de reprise non envoyé à un ancien membre.");
-          return;
-        }
-        const r = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: { authorization: `Bearer ${cle}`, "content-type": "application/json" },
-          body: JSON.stringify({
-            from: configAbonnement.expediteur,
-            to: email,
-            subject: "Bon retour au Club by LCS !",
-            html: emailReprise(urlDuSite()),
-          }),
-        });
-        // Un e-mail de courtoisie ne doit pas faire échouer le webhook.
-        if (!r.ok) console.error("Envoi de l'e-mail de reprise impossible", r.status);
-      },
+      reabonnement: (email) =>
+        envoyerEmail(email, "Bon retour au Club by LCS !", emailReprise(urlDuSite()), "e-mail de reprise"),
+      doublonRembourse: (email, abonnementId) =>
+        envoyerEmail(email, "Le Club by LCS : ton second paiement est remboursé", emailDoublon(urlDuSite()), "e-mail de doublon", {
+          // Envoyé une seule fois, même si deux messages Stripe du même doublon arrivent en même temps.
+          cle: `doublon-${abonnementId}`,
+        }),
     },
   };
 }
 
-function emailReprise(site: string) {
-  return `<div style="background:#090A0F;padding:32px 24px;font-family:Helvetica,Arial,sans-serif;color:#F4EEFF">
-  <p style="font-size:28px;font-weight:800;color:#DEFD62;margin:0 0 24px">le club</p>
-  <p style="font-size:16px;line-height:1.5">Bonjour,</p>
-  <p style="font-size:16px;line-height:1.5">Ton abonnement au Club by LCS est de nouveau actif. Tu gardes ton compte : connecte-toi avec ton adresse e-mail et ton mot de passe habituel.</p>
-  <p style="margin:28px 0"><a href="${site}/connexion" style="background:#DEFD62;color:#090A0F;padding:14px 22px;border-radius:14px;font-weight:800;text-decoration:none;display:inline-block">Me connecter</a></p>
-  <p style="font-size:14px;line-height:1.5;color:#B8B4D6">Mot de passe oublié ? Utilise le lien « Mot de passe oublié ? » sur l'écran de connexion.</p>
-  <p style="font-size:14px;line-height:1.5;color:#B8B4D6">L'équipe LCS Performance</p>
-</div>`;
+/** E-mail de courtoisie par Resend : un échec est noté mais ne fait jamais échouer le webhook. */
+async function envoyerEmail(email: string, sujet: string, html: string, nom: string, options: { cle?: string } = {}) {
+  const cle = configAbonnement.cleResend();
+  if (!cle) {
+    console.warn(`RESEND_API_KEY absente : ${nom} non envoyé.`);
+    return;
+  }
+  const r = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${cle}`,
+      "content-type": "application/json",
+      ...(options.cle ? { "idempotency-key": options.cle } : {}),
+    },
+    body: JSON.stringify({ from: configAbonnement.expediteur, to: email, subject: sujet, html }),
+  }).catch((e: unknown) => ({ ok: false, status: String(e) }) as const);
+  if (!r.ok) console.error(`Envoi impossible (${nom})`, r.status);
 }

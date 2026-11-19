@@ -61,6 +61,8 @@ export type Dependances = {
   emails: {
     /** Ancien membre qui se réabonne : il a déjà ses identifiants. */
     reabonnement(email: string): Promise<void>;
+    /** Doublon annulé et remboursé : la personne est prévenue (une seule fois par doublon). */
+    doublonRembourse(email: string, abonnementId: string): Promise<void>;
   };
 };
 
@@ -173,6 +175,7 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
     const actuel = etatDepuisAbonnement(await d.stripe.abonnement(membre.stripe_subscription_id));
     if (actuel.statut === "actif" && !actuel.annulationPrevue) {
       await d.stripe.annulerEtRembourser(abonnementId);
+      await d.emails.doublonRembourse(membre.email, abonnementId);
       return { action: "doublon-rembourse", membreId: membre.id, abonnementId };
     }
   }

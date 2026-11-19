@@ -93,6 +93,7 @@ let emailsReabonnement: string[];
 let creationConcurrente: boolean;
 let nomClientStripe: string | null;
 let rembourses: string[];
+let emailsDoublon: string[];
 
 function deps(): Dependances {
   return {
@@ -129,7 +130,10 @@ function deps(): Dependances {
         if (f.prenom === null) f.prenom = prenom;
       },
     },
-    emails: { reabonnement: async (e) => void emailsReabonnement.push(e) },
+    emails: {
+      reabonnement: async (e) => void emailsReabonnement.push(e),
+      doublonRembourse: async (e) => void emailsDoublon.push(e),
+    },
   };
 }
 
@@ -172,6 +176,7 @@ beforeEach(() => {
     sub_ancien: abonnement("canceled", { id: "sub_ancien", ended_at: MAINTENANT - 60 * JOUR }),
   };
   rembourses = [];
+  emailsDoublon = [];
   emailsBienvenue = [];
   emailsReabonnement = [];
   creationConcurrente = false;
@@ -315,6 +320,7 @@ describe("webhook : cas de bord", () => {
     const r = await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_2"), deps());
     expect(r).toMatchObject({ action: "doublon-rembourse", abonnementId: "sub_2" });
     expect(rembourses).toEqual(["sub_2"]);
+    expect(emailsDoublon).toEqual(["nouvelle@exemple.fr"]);
     expect(fiches).toHaveLength(1);
     expect(fiches[0]).toEqual(avant);
     expect(emailsBienvenue).toHaveLength(1);
@@ -323,6 +329,7 @@ describe("webhook : cas de bord", () => {
     await traiterEvenement(facture("invoice.paid", 5, "sub_2"), deps());
     await traiterEvenement({ id: "evt_suppr_2", type: "customer.subscription.deleted", data: { object: { id: "sub_2", customer: "cus_1" } } }, deps());
     expect(rembourses).toEqual(["sub_2"]);
+    expect(emailsDoublon).toHaveLength(1);
     expect(fiches[0]).toEqual(avant);
   });
 
@@ -333,6 +340,7 @@ describe("webhook : cas de bord", () => {
     const r = await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_2"), deps());
     expect(r.action).toBe("reabonnement");
     expect(rembourses).toEqual([]);
+    expect(emailsDoublon).toEqual([]);
     expect(fiches[0]).toMatchObject({ statut_abonnement: "actif", stripe_subscription_id: "sub_2" });
   });
 
