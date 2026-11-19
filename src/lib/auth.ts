@@ -24,6 +24,10 @@ export type Utilisateur = {
     annulationPrevue: boolean;
     /** Mensuelle ou annuelle ; null tant qu'aucun abonnement n'a été pris. */
     formule: Formule | null;
+    /** Accès offert à la main par l'admin jusqu'à cette date (ISO), ou null. */
+    offertJusqua: string | null;
+    /** Accès coupé par l'admin. */
+    coupe: boolean;
     /** A un compte client Stripe (peut ouvrir le portail pour gérer son abonnement). */
     clientStripe: boolean;
   };
@@ -41,7 +45,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id")
+    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
@@ -59,6 +63,8 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
       annulationPrevue: !!membre.annulation_prevue,
       formule: (membre.formule as Formule | null) ?? null,
       clientStripe: !!membre.stripe_customer_id,
+      offertJusqua: (membre.acces_offert_jusqua as string | null) ?? null,
+      coupe: !!membre.acces_coupe,
     },
   };
 });
@@ -72,7 +78,15 @@ export async function peutChoisirNouveauMotDePasse(): Promise<boolean> {
 
 /** Vrai si la personne peut utiliser l'espace membre (abonnement en cours, ou équipe du Club). */
 export const aAccesEspace = (u: Utilisateur, maintenant = new Date()) =>
-  aAcces({ role: u.role, abonnement_fin: u.abonnement.fin }, maintenant);
+  aAcces(
+    {
+      role: u.role,
+      abonnement_fin: u.abonnement.fin,
+      acces_offert_jusqua: u.abonnement.offertJusqua,
+      acces_coupe: u.abonnement.coupe,
+    },
+    maintenant,
+  );
 
 /**
  * À appeler en tête d'une page protégée : renvoie vers la bonne page sinon.

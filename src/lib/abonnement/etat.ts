@@ -92,14 +92,23 @@ export function etatDepuisAbonnement(abonnement: AbonnementStripe): EtatAbonneme
 export const estPaye = (etat: EtatAbonnement) => etat.statut === "actif";
 
 /**
- * Accès à l'espace membre : ouvert tant que la période payée n'est pas terminée,
- * quel que soit le statut (résiliation prévue, paiement en échec…).
+ * Accès à l'espace membre :
+ * - coupé par l'admin → fermé, même avec un abonnement payé ;
+ * - sinon ouvert tant que la période payée n'est pas terminée (résiliation prévue, paiement en échec…)
+ *   ou tant qu'un accès offert par l'admin court.
  * Le coach et l'admin ont toujours accès.
  */
 export function aAcces(
-  personne: { role: string; abonnement_fin: string | null },
+  personne: {
+    role: string;
+    abonnement_fin: string | null;
+    acces_offert_jusqua?: string | null;
+    acces_coupe?: boolean;
+  },
   maintenant: Date = new Date(),
 ): boolean {
   if (personne.role !== "membre") return true;
-  return !!personne.abonnement_fin && new Date(personne.abonnement_fin) > maintenant;
+  if (personne.acces_coupe) return false;
+  const enCours = (fin: string | null | undefined) => !!fin && new Date(fin) > maintenant;
+  return enCours(personne.abonnement_fin) || enCours(personne.acces_offert_jusqua);
 }

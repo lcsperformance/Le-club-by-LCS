@@ -13,6 +13,7 @@ const ECRANS = [
   "/auth/confirm?code=exemple",
   "/apercu-espace/admin",
   "/apercu-espace/coach",
+  "/apercu-espace/admin-membres",
   "/apercu-membre/accueil",
   "/apercu-membre/accueil-tests-faits",
   "/apercu-membre/accueil-sans-prenom",
@@ -26,6 +27,7 @@ const ECRANS = [
   "/apercu-membre/progres",
   "/apercu-membre/abonnement-termine",
   "/apercu-membre/profil-annuel",
+  "/apercu-membre/acces-coupe",
   "/bienvenue",
 ];
 

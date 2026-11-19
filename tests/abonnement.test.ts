@@ -68,6 +68,19 @@ describe("accès à l'espace membre", () => {
     expect(aAcces({ role: "membre", abonnement_fin: avant }, maintenant)).toBe(false);
     expect(aAcces({ role: "membre", abonnement_fin: null }, maintenant)).toBe(false);
   });
+  it("accès offert par l'admin : ouvert jusqu'à sa date, même sans abonnement", () => {
+    expect(aAcces({ role: "membre", abonnement_fin: null, acces_offert_jusqua: apres }, maintenant)).toBe(true);
+    expect(aAcces({ role: "membre", abonnement_fin: null, acces_offert_jusqua: avant }, maintenant)).toBe(false);
+    // L'accès va jusqu'à la plus tardive des deux dates.
+    expect(aAcces({ role: "membre", abonnement_fin: avant, acces_offert_jusqua: apres }, maintenant)).toBe(true);
+    expect(aAcces({ role: "membre", abonnement_fin: apres, acces_offert_jusqua: avant }, maintenant)).toBe(true);
+  });
+  it("accès coupé par l'admin : fermé, même avec un abonnement payé ou un accès offert", () => {
+    expect(aAcces({ role: "membre", abonnement_fin: apres, acces_coupe: true }, maintenant)).toBe(false);
+    expect(aAcces({ role: "membre", abonnement_fin: apres, acces_offert_jusqua: apres, acces_coupe: true }, maintenant)).toBe(
+      false,
+    );
+  });
   it("toujours ouvert pour le coach et l'admin", () => {
     expect(aAcces({ role: "coach", abonnement_fin: null }, maintenant)).toBe(true);
     expect(aAcces({ role: "admin", abonnement_fin: avant }, maintenant)).toBe(true);

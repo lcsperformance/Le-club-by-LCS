@@ -2,6 +2,11 @@ import { EnTeteEspace } from "@/components/EnTeteEspace";
 import { Carte } from "@/components/ui";
 
 const LIENS = [
+  {
+    href: "/admin/membres",
+    titre: "Membres",
+    texte: "Abonnements, niveaux et ancienneté ; ouvrir ou couper un accès, renvoyer l'e-mail d'accès.",
+  },
   { href: "/accueil", titre: "Voir l'espace membre", texte: "Parcourir l'app comme un athlète, avec la barre d'onglets." },
   { href: "/coach", titre: "Voir l'espace coach", texte: "L'historique des athlètes, en lecture seule." },
   { href: "/admin/composants", titre: "Vitrine des composants", texte: "Cartes, boutons, champs et pastilles de zone." },
@@ -12,9 +17,6 @@ export function AccueilAdmin({ email }: { email: string }) {
   return (
     <>
       <EnTeteEspace titre="Administration" email={email} />
-      <Carte as="section">
-        <p className="message-info">Ici, tu géreras les membres, leurs rôles et leurs abonnements.</p>
-      </Carte>
       <div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(min(240px, 100%), 1fr))" }}>
         {LIENS.map((l) => (
           <Carte key={l.href} href={l.href}>

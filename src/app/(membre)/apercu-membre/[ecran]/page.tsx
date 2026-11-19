@@ -50,8 +50,16 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
         <EcranAbonnement
           utilisateur={{
             ...UTILISATEUR_FICTIF,
-            abonnement: { statut: "resilie", fin: "2027-01-01T10:00:00.000Z", annulationPrevue: false, formule: "mensuelle", clientStripe: true },
+            abonnement: { statut: "resilie", fin: "2027-01-01T10:00:00.000Z", annulationPrevue: false, formule: "mensuelle", clientStripe: true, offertJusqua: null, coupe: false },
           }}
+          liensPaiement={{ mensuelle: "https://buy.stripe.com/test_exemple", annuelle: "https://buy.stripe.com/test_annuel" }}
+          maintenant={new Date("2027-01-10T10:00:00Z")}
+        />
+      );
+    case "acces-coupe":
+      return (
+        <EcranAbonnement
+          utilisateur={{ ...UTILISATEUR_FICTIF, abonnement: { ...UTILISATEUR_FICTIF.abonnement, coupe: true } }}
           liensPaiement={{ mensuelle: "https://buy.stripe.com/test_exemple", annuelle: "https://buy.stripe.com/test_annuel" }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
         />
