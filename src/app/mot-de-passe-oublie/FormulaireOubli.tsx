@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
+import { BoutonPrincipal, Carte, Champ } from "@/components/ui";
 import type { EtatFormulaire } from "@/app/connexion/actions";
 import { demanderReinitialisation } from "./actions";
 
@@ -11,9 +12,11 @@ export function FormulaireOubli() {
   if (etat.info) {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-        <p className="verre message-info" role="status">
-          {etat.info}
-        </p>
+        <Carte>
+          <p className="message-info" role="status">
+            {etat.info}
+          </p>
+        </Carte>
         <Link href="/connexion" className="lien" style={{ textAlign: "center" }}>
           Retour à la connexion
         </Link>
@@ -26,26 +29,24 @@ export function FormulaireOubli() {
       <p className="message-info" style={{ color: "var(--texte-doux)" }}>
         Indique l&apos;adresse e-mail de ton compte : on t&apos;envoie un lien pour choisir un nouveau mot de passe.
       </p>
-      <label className="champ">
-        E-mail
-        <input
-          type="email"
-          name="email"
-          autoComplete="email"
-          inputMode="email"
-          placeholder="ton.adresse@exemple.fr"
-          defaultValue={etat.email}
-          required
-        />
-      </label>
+      <Champ
+        libelle="E-mail"
+        name="email"
+        type="email"
+        autoComplete="email"
+        inputMode="email"
+        placeholder="ton.adresse@exemple.fr"
+        defaultValue={etat.email}
+        required
+      />
       {etat.erreur && (
         <p className="message-erreur" role="alert">
           {etat.erreur}
         </p>
       )}
-      <button type="submit" className="bouton-principal" disabled={enCours} style={{ marginTop: 6 }}>
-        {enCours ? "Envoi…" : "Recevoir le lien"}
-      </button>
+      <BoutonPrincipal type="submit" enCours={enCours} texteEnCours="Envoi…" style={{ marginTop: 6 }}>
+        Recevoir le lien
+      </BoutonPrincipal>
       <p style={{ textAlign: "center", fontSize: 14 }}>
         <Link href="/connexion" className="lien">
           Retour à la connexion

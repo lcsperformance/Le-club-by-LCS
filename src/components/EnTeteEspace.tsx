@@ -1,6 +1,7 @@
 import { seDeconnecter } from "@/app/auth/actions";
+import { BoutonSecondaire } from "@/components/ui";
 
-/** En-tête provisoire des espaces connectés, avec déconnexion. */
+/** En-tête des espaces coach et admin, avec déconnexion. */
 export function EnTeteEspace({ titre, email }: { titre: string; email: string }) {
   return (
     <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
@@ -11,9 +12,9 @@ export function EnTeteEspace({ titre, email }: { titre: string; email: string })
         <p style={{ fontSize: 13, color: "var(--texte-doux)", marginTop: 4 }}>{email}</p>
       </div>
       <form action={seDeconnecter}>
-        <button type="submit" className="bouton-secondaire" style={{ padding: "0 16px" }}>
+        <BoutonSecondaire type="submit" compact>
           Se déconnecter
-        </button>
+        </BoutonSecondaire>
       </form>
     </header>
   );

@@ -22,3 +22,14 @@ export function formatHeureFr(date: Date): string {
   const m = parts.find((p) => p.type === "minute")?.value ?? "";
   return `${h} h ${m}`;
 }
+
+/** Jour au format français, ex. « Lundi 16 novembre ». */
+export function formatJourFr(date: Date): string {
+  const texte = new Intl.DateTimeFormat("fr-FR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: FUSEAU,
+  }).format(date);
+  return texte.charAt(0).toUpperCase() + texte.slice(1);
+}

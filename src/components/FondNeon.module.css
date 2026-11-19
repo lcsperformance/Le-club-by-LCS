@@ -1,0 +1,11 @@
+/* Fond sombre et halos flous, fixés derrière le contenu. */
+.fond {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--fond);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='none'><defs><filter id='b' x='-50%25' y='-50%25' width='200%25' height='200%25'><feGaussianBlur stdDeviation='42'/></filter></defs><rect width='390' height='844' fill='%23090A0F'/><g filter='url(%23b)'><ellipse cx='340' cy='90' rx='140' ry='120' fill='%23FA94FF' opacity='.42'/><ellipse cx='20' cy='330' rx='120' ry='150' fill='%23C980B1' opacity='.38'/><ellipse cx='360' cy='600' rx='120' ry='150' fill='%232A2F7A' opacity='.7'/><ellipse cx='60' cy='800' rx='150' ry='90' fill='%23DEFD62' opacity='.22'/></g></svg>");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}

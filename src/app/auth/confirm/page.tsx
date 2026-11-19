@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { EcranAuth } from "@/components/EcranAuth";
+import { BoutonPrincipal } from "@/components/ui";
 import { confirmerLien } from "./actions";
 
 export const metadata: Metadata = { title: "Nouveau mot de passe · Le Club by LCS" };
@@ -48,9 +49,7 @@ async function Formulaire({ searchParams }: Pick<PageProps<"/auth/confirm">, "se
       <p className="message-info" style={{ color: "var(--texte-doux)" }}>
         Clique sur le bouton pour choisir ton mot de passe.
       </p>
-      <button type="submit" className="bouton-principal">
-        Choisir mon mot de passe
-      </button>
+      <BoutonPrincipal type="submit">Choisir mon mot de passe</BoutonPrincipal>
     </form>
   );
 }
