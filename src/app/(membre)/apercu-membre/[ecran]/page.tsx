@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
+import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EnTeteTests } from "@/app/(membre)/tests/EnTeteTests";
 import { FormulaireTests } from "@/app/(membre)/tests/FormulaireTests";
 import { AffichageZones } from "@/app/(membre)/zones/AffichageZones";
@@ -33,6 +34,8 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
         </>
       );
+    case "profil":
+      return <EcranProfil utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }} />;
     case "zones-personnalisation":
       return (
         <>

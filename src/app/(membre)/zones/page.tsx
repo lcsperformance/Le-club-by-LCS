@@ -57,6 +57,8 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
       sport={sport}
       test={test}
       bornesEnregistrees={bornesPersoApplicables(perso?.bornes, CONFIG_ZONES[sport])}
+      niveau={utilisateur.niveau}
+      profil={utilisateur.profil}
     />
   );
 }

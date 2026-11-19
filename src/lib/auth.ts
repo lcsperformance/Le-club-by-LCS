@@ -3,9 +3,17 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { estSessionDeReinitialisation } from "@/lib/reinitialisation";
+import type { Niveau, Profil } from "@/lib/profils";
 import { cheminAccueil, type Role } from "@/lib/roles";
 
-export type Utilisateur = { id: string; email: string; role: Role };
+export type Utilisateur = {
+  id: string;
+  email: string;
+  role: Role;
+  /** Choisis par le membre ; null tant qu'il ne l'a pas fait. */
+  niveau: Niveau | null;
+  profil: Profil | null;
+};
 
 /**
  * Personne connectée, ou null.
@@ -19,12 +27,18 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, role")
+    .select("email, role, niveau, profil")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
 
-  return { id, email: membre.email as string, role: membre.role as Role };
+  return {
+    id,
+    email: membre.email as string,
+    role: membre.role as Role,
+    niveau: (membre.niveau as Niveau | null) ?? null,
+    profil: (membre.profil as Profil | null) ?? null,
+  };
 });
 
 /** Vrai si la session vient d'un lien « mot de passe oublié » utilisé il y a moins de 15 minutes. */

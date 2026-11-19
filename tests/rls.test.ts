@@ -54,10 +54,19 @@ describe("fiche membre", () => {
     await expect(enTantQue(A, "update membres set statut_abonnement = 'actif'")).rejects.toThrow(/permission/);
   });
 
-  it("le membre ne peut pas modifier la fiche d'un autre", async () => {
-    await enTantQue(A, "update membres set niveau = 'performer' where id = $1", [B]);
-    const [b] = await enTantQue<{ niveau: string | null }>(B, "select niveau from membres");
-    expect(b.niveau).toBeNull();
+  it("le membre ne peut pas modifier le niveau ni le profil d'un autre", async () => {
+    const touchees = await enTantQue(
+      A,
+      "update membres set niveau = 'performer', profil = 'intensif' where id = $1 returning id",
+      [B],
+    );
+    expect(touchees).toEqual([]);
+    const [b] = await enTantQue<{ niveau: string | null; profil: string | null }>(B, "select niveau, profil from membres");
+    expect(b).toEqual({ niveau: null, profil: null });
+  });
+
+  it("le membre ne peut pas lire le niveau ni le profil d'un autre", async () => {
+    expect(await enTantQue(A, "select niveau, profil from membres where id = $1", [B])).toEqual([]);
   });
 });
 

@@ -1,0 +1,18 @@
+{
+  "_explication": "Textes des niveaux et des profils proposés au membre (écrans « Mes zones » et « Profil »). Ne changer que les textes entre guillemets après « libelle » et « description » ; ne pas renommer les clés (finisher, challenger, performer, extensif, intensif).",
+  "niveaux": {
+    "finisher": { "libelle": "Finisher" },
+    "challenger": { "libelle": "Challenger" },
+    "performer": { "libelle": "Performer" }
+  },
+  "profils": {
+    "extensif": {
+      "libelle": "Extensif",
+      "description": "Tu encaisses bien le volume : le plan insiste sur l'endurance."
+    },
+    "intensif": {
+      "libelle": "Intensif",
+      "description": "Tu réponds bien aux séances dures : le plan insiste sur l'intensité."
+    }
+  }
+}

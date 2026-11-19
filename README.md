@@ -67,7 +67,15 @@ On peut les changer sans toucher au code :
 Si le fichier est mal rempli (virgule en trop ou oubliée, nombres qui ne montent pas, nombre manquant),
 la mise à jour est refusée et le site en ligne reste comme avant. Pour voir le message qui explique
 quoi corriger (avec le numéro de ligne) : sur GitHub, onglet **Actions**, ou sur Vercel, journal du
-déploiement en échec. En local : `npm run verifier-zones`.
+déploiement en échec. En local : `npm run verifier-config`.
+
+## Modifier les textes des niveaux et des profils
+
+Les textes proposés au membre (écrans « Mes zones » et « Profil ») sont dans
+[`config/profils.json`](config/profils.json) : même méthode que pour les zones (crayon sur GitHub,
+puis **Commit changes**). Ne changer que les textes entre guillemets après `libelle` et
+`description`, jamais les clés (`finisher`, `challenger`, `performer`, `extensif`, `intensif`).
+Un fichier mal rempli bloque la mise à jour avec un message clair, le site reste comme avant.
 
 ## Rôles
 

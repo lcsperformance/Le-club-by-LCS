@@ -10,10 +10,10 @@
     "test": "vitest run",
     "typecheck": "next typegen && tsc --noEmit",
     "test:e2e": "vitest run --config vitest.e2e.config.mts",
-    "verifier-zones": "node --experimental-strip-types --no-warnings scripts/verifier-zones.mjs",
-    "prebuild": "npm run verifier-zones",
+    "prebuild": "npm run verifier-config",
     "migrations": "node scripts/migrations.mjs",
-    "emails": "node scripts/emails.mjs"
+    "emails": "node scripts/emails.mjs",
+    "verifier-config": "node --experimental-strip-types --no-warnings scripts/verifier-config.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
