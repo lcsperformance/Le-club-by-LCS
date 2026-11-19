@@ -73,3 +73,20 @@ describe("écrans « bientôt »", () => {
     await p.close();
   });
 });
+
+describe("abonnement", () => {
+  it("le Profil affiche la carte « Mon abonnement » et le bouton du portail Stripe", async () => {
+    expect(await page.getByText("Le Club · 49 €/mois").isVisible()).toBe(true);
+    expect(await page.getByText("Abonnement actif. Prochain prélèvement le 10 février 2027.").isVisible()).toBe(true);
+    expect(await page.getByRole("button", { name: "Gérer mon abonnement" }).isVisible()).toBe(true);
+  });
+
+  it("abonnement terminé : page dédiée avec « Me réabonner » vers le lien de paiement (e-mail prérempli)", async () => {
+    const p = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
+    await p.goto(`${BASE}/apercu-membre/abonnement-termine`, { waitUntil: "networkidle" });
+    expect(await p.getByText("Ton abonnement est terminé depuis le 1 janvier 2027.").isVisible()).toBe(true);
+    const lien = await p.getByRole("link", { name: /Me réabonner/ }).getAttribute("href");
+    expect(lien).toBe("https://buy.stripe.com/test_exemple?prefilled_email=prenom.nom-tres-long%40exemple-de-domaine.fr");
+    await p.close();
+  });
+});

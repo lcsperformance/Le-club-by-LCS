@@ -23,6 +23,8 @@ const ECRANS = [
   "/apercu-membre/profil",
   "/apercu-membre/records",
   "/apercu-membre/progres",
+  "/apercu-membre/abonnement-termine",
+  "/bienvenue",
 ];
 
 const LARGEURS = [320, 360, 390];

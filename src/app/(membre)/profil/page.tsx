@@ -16,5 +16,5 @@ export default function PageProfil() {
 
 async function Contenu() {
   const utilisateur = await exigerRole("membre", "admin");
-  return <EcranProfil utilisateur={utilisateur} />;
+  return <EcranProfil utilisateur={utilisateur} maintenant={new Date()} />;
 }

@@ -50,6 +50,38 @@ Marche suivie (pour mémoire ou pour un autre projet) :
 
 Les e-mails pointent alors directement vers `/auth/confirm` (lien utilisable sur n'importe quel appareil).
 
+## Abonnement Stripe (mode test)
+
+**Parcours** : lien de paiement Stripe (49 €/mois, sans engagement) → page `/bienvenue` → Stripe appelle le
+webhook `/api/stripe/webhook` → compte créé dans Supabase et e-mail « Bienvenue au Club » (lien pour choisir
+son mot de passe) → le membre se connecte. Le Profil affiche « Mon abonnement » et ouvre le portail client
+Stripe (résiliation en fin de période, carte, factures).
+
+**Règles** :
+- accès à l'espace membre jusqu'à la fin de la période payée (`membres.abonnement_fin`), même après une
+  résiliation ou un paiement en échec ; ensuite, page `/abonnement` avec « Me réabonner » ;
+- webhook reçu deux fois : ignoré la deuxième fois (table `stripe_evenements`) ; l'état est toujours relu
+  chez Stripe, donc l'ordre des événements n'a pas d'importance ;
+- e-mail déjà connu (ancien membre) : pas de nouveau compte, abonnement rattaché, e-mail « Bon retour » ;
+- les comptes coach et admin ne sont jamais modifiés par un paiement et gardent toujours l'accès.
+
+**Déjà configuré dans Stripe (mode test)** : lien de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`,
+retour vers `/bienvenue`), portail client (résiliation en fin de période), webhook
+`we_1UdWaCB1uelR3FW9GFPiJTvJ` (5 événements). Variable Vercel `STRIPE_LIEN_PAIEMENT` en place.
+
+**Secrets à saisir dans Vercel** (Settings > Environment Variables, cocher **Sensitive**, environnements
+Production et Preview), puis redéployer :
+
+| Variable | Où la trouver |
+|---|---|
+| `STRIPE_SECRET_KEY` | Stripe, mode Test > Développeurs > Clés API > Clé secrète (`sk_test_…`) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe, mode Test > Développeurs > Webhooks > le webhook du Club > Clé de signature > Afficher (`whsec_…`) |
+| `SUPABASE_SECRET_KEY` | Supabase > Project Settings > API Keys > Secret key (`sb_secret_…`) |
+| `RESEND_API_KEY` | Resend > API Keys (facultative : e-mail « Bon retour » des anciens membres) |
+
+**Passage en mode réel** (avant le lancement) : refaire produit, lien, portail et webhook en mode Live,
+puis remplacer ces variables par les valeurs Live.
+
 ## Modifier les pourcentages des zones (pour Martin)
 
 Les pourcentages des zones d'entraînement sont dans le fichier [`config/zones.json`](config/zones.json).

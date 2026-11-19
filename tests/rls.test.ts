@@ -252,3 +252,33 @@ describe("historique des tests", () => {
     expect(parCoach).toHaveLength(3);
   });
 });
+
+describe("abonnement Stripe", () => {
+  it("le membre lit l'état de son abonnement", async () => {
+    const [m] = await enTantQue<{ statut_abonnement: string; abonnement_fin: string | null }>(
+      A,
+      "select statut_abonnement, abonnement_fin from membres where id = $1",
+      [A],
+    );
+    expect(m).toEqual({ statut_abonnement: "inactif", abonnement_fin: null });
+  });
+
+  it.each([
+    ["stripe_customer_id", "'cus_pirate'"],
+    ["stripe_subscription_id", "'sub_pirate'"],
+    ["abonnement_fin", "'2099-01-01'"],
+    ["annulation_prevue", "true"],
+  ])("le membre ne peut pas modifier %s (ni se prolonger lui-même)", async (colonne, valeur) => {
+    await expect(enTantQue(A, `update membres set ${colonne} = ${valeur} where id = $1`, [A])).rejects.toThrow(
+      /permission denied/,
+    );
+  });
+
+  it("les événements Stripe traités sont invisibles et inaccessibles aux membres", async () => {
+    await expect(enTantQue(A, "select * from stripe_evenements")).rejects.toThrow(/permission denied/);
+    await expect(
+      enTantQue(A, "insert into stripe_evenements (id, type) values ('evt_faux', 'invoice.paid')"),
+    ).rejects.toThrow(/permission denied/);
+    await expect(enTantQue(null, "select * from stripe_evenements")).rejects.toThrow(/permission denied/);
+  });
+});
