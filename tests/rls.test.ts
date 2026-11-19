@@ -12,6 +12,8 @@ const ADMIN_URL =
 const DB = `club_test_${process.pid}`;
 const A = "00000000-0000-0000-0000-00000000000a";
 const B = "00000000-0000-0000-0000-00000000000b";
+const COACH = "00000000-0000-0000-0000-0000000000c0";
+const ADMIN = "00000000-0000-0000-0000-0000000000ad";
 
 let admin: Client;
 let db: Client;
@@ -46,7 +48,12 @@ beforeAll(async () => {
     await db.query(readFileSync(join(dir, f), "utf8"));
   }
 
-  await db.query("insert into auth.users (id, email) values ($1, 'a@club.fr'), ($2, 'b@club.fr')", [A, B]);
+  await db.query(
+    "insert into auth.users (id, email) values ($1, 'a@club.fr'), ($2, 'b@club.fr'), ($3, 'coach@club.fr'), ($4, 'admin@club.fr')",
+    [A, B, COACH, ADMIN],
+  );
+  await db.query("update membres set role = 'coach' where id = $1", [COACH]);
+  await db.query("update membres set role = 'admin' where id = $1", [ADMIN]);
   await db.query(
     `insert into public.tests (membre_id, date_test, ftp) values ($1, '2026-11-01', 250), ($2, '2026-11-02', 300);
      insert into public.zones (membre_id, sport, bornes) values ($1, 'velo', '[{"nom":"Z1","min":0,"max":140}]'),
@@ -122,5 +129,59 @@ describe("écriture", () => {
     await expect(enTantQue(A, "insert into tests (date_test) values ('2026-11-11')")).rejects.toThrow(
       /au_moins_une_mesure/,
     );
+  });
+});
+
+describe("rôles", () => {
+  it("un nouveau compte a le rôle membre", async () => {
+    const [m] = await enTantQue<{ role: string }>(A, "select role from membres");
+    expect(m.role).toBe("membre");
+  });
+
+  it("un membre ne peut pas se donner un autre rôle", async () => {
+    await expect(enTantQue(A, "update membres set role = 'admin'")).rejects.toThrow(/permission/);
+    await expect(enTantQue(A, "select admin_changer_role($1, 'admin')", [A])).rejects.toThrow(/administrateur/);
+  });
+
+  it("un membre ne voit toujours que sa fiche", async () => {
+    expect(await enTantQue(A, "select id from membres")).toEqual([{ id: A }]);
+  });
+
+  it.each(["tests", "zones", "objectifs", "membres"])("le coach lit %s de tous les athlètes", async (table) => {
+    const col = table === "membres" ? "id" : "membre_id";
+    const rows = await enTantQue<{ m: string }>(COACH, `select ${col} as m from ${table}`);
+    expect(rows.map((r) => r.m)).toEqual(expect.arrayContaining([A, B]));
+  });
+
+  it.each(["tests", "zones", "objectifs"])("le coach ne peut rien modifier dans %s", async (table) => {
+    await enTantQue(COACH, `delete from ${table}`);
+    await enTantQue(COACH, `update ${table} set membre_id = membre_id`);
+    expect(await enTantQue(B, `select 1 from ${table}`)).toHaveLength(1);
+    await expect(
+      enTantQue(COACH, "insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'S', '2027-05-01')", [A]),
+    ).rejects.toThrow(/row-level security/);
+  });
+
+  it("le coach ne peut pas modifier la fiche d'un athlète", async () => {
+    await enTantQue(COACH, "update membres set niveau = 'performer' where id = $1", [B]);
+    const [b] = await enTantQue<{ niveau: string | null }>(B, "select niveau from membres");
+    expect(b.niveau).toBeNull();
+    await expect(enTantQue(COACH, "select admin_changer_statut($1, 'actif')", [B])).rejects.toThrow(/administrateur/);
+  });
+
+  it("l'admin change le statut d'abonnement et le rôle", async () => {
+    await enTantQue(ADMIN, "select admin_changer_statut($1, 'actif')", [B]);
+    await enTantQue(ADMIN, "select admin_changer_role($1, 'coach')", [B]);
+    const [b] = await enTantQue<{ statut_abonnement: string; role: string }>(B, "select statut_abonnement, role from membres where id = $1", [B]);
+    expect(b).toEqual({ statut_abonnement: "actif", role: "coach" });
+    await enTantQue(ADMIN, "select admin_changer_role($1, 'membre')", [B]);
+  });
+
+  it("l'admin ne peut pas retirer son propre rôle admin", async () => {
+    await expect(enTantQue(ADMIN, "select admin_changer_role($1, 'membre')", [ADMIN])).rejects.toThrow(/propre rôle/);
+  });
+
+  it("un visiteur non connecté ne peut pas appeler les fonctions admin", async () => {
+    await expect(enTantQue(null, "select admin_changer_statut($1, 'actif')", [B])).rejects.toThrow(/permission/);
   });
 });

@@ -1,0 +1,76 @@
+.ecran {
+  position: relative;
+  overflow: hidden;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 56px 28px 32px;
+  background-color: var(--fond);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844' preserveAspectRatio='none'><defs><filter id='b' x='-50%25' y='-50%25' width='200%25' height='200%25'><feGaussianBlur stdDeviation='42'/></filter></defs><rect width='390' height='844' fill='%23090A0F'/><g filter='url(%23b)'><ellipse cx='20' cy='330' rx='120' ry='150' fill='%23C980B1' opacity='.38'/><ellipse cx='360' cy='600' rx='120' ry='150' fill='%232A2F7A' opacity='.7'/><ellipse cx='60' cy='800' rx='150' ry='90' fill='%23DEFD62' opacity='.22'/></g></svg>");
+  background-size: 100% 100%;
+}
+
+.halo {
+  position: absolute;
+  right: -90px;
+  top: -90px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: var(--aurore);
+  opacity: 0.35;
+  filter: blur(2px);
+}
+
+.point {
+  position: absolute;
+  right: 46px;
+  top: 112px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 24px rgba(222, 253, 98, 0.6);
+}
+
+.logo {
+  position: relative;
+  margin-top: 96px;
+}
+
+.club {
+  font-family: var(--police-titre);
+  font-stretch: 125%;
+  font-weight: 800;
+  font-size: 76px;
+  line-height: 0.95;
+  color: var(--accent);
+}
+
+.signature {
+  margin-top: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--texte-doux);
+  letter-spacing: 0.02em;
+}
+
+.espace {
+  flex: 1;
+  min-height: 32px;
+}
+
+.contenu {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.titre {
+  font-size: 26px;
+  line-height: 1.15;
+  color: #fff;
+}

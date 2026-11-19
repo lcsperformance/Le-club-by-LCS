@@ -80,3 +80,6 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Connexions Supabase : `src/lib/supabase/client.ts` (navigateur) et `server.ts` (serveur).
 - Toute modification de la base passe par un nouveau fichier dans `supabase/migrations/`, avec la sécurité par ligne activée et testée dans `tests/rls.test.ts`.
 - Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris).
+- Rôles `membre`, `coach`, `admin` (colonne `membres.role`). Une page protégée appelle `exigerRole(...)` de `src/lib/auth.ts` dans un composant placé sous `<Suspense>` (Cache Components activé).
+- Pas d'inscription libre : jamais de `signUp` dans l'app.
+- Styles Neon réutilisables dans `src/app/globals.css` : `.verre`, `.champ`, `.bouton-principal`, `.bouton-secondaire`, `.lien`, `.titre`.
