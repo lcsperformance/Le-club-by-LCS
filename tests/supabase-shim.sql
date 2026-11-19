@@ -1,9 +1,11 @@
 -- Reproduit le minimum de l'environnement Supabase pour tester la sécurité
 -- en local : rôles, schéma auth, fonction auth.uid() et droits par défaut.
+-- Les rôles sont communs à tout le serveur PostgreSQL : plusieurs fichiers de tests peuvent
+-- essayer de les créer au même instant. On ignore donc l'erreur « existe déjà ».
 do $$ begin
-  if not exists (select from pg_roles where rolname = 'anon') then create role anon nologin; end if;
-  if not exists (select from pg_roles where rolname = 'authenticated') then create role authenticated nologin; end if;
-  if not exists (select from pg_roles where rolname = 'service_role') then create role service_role nologin bypassrls; end if;
+  begin create role anon nologin; exception when duplicate_object or unique_violation then null; end;
+  begin create role authenticated nologin; exception when duplicate_object or unique_violation then null; end;
+  begin create role service_role nologin bypassrls; exception when duplicate_object or unique_violation then null; end;
 end $$;
 
 create schema auth;
