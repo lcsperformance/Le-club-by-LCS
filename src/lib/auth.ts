@@ -1,12 +1,17 @@
 import "server-only";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { estSessionDeReinitialisation } from "@/lib/reinitialisation";
 import { cheminAccueil, type Role } from "@/lib/roles";
 
 export type Utilisateur = { id: string; email: string; role: Role };
 
-/** Personne connectée, ou null. */
-export async function utilisateurConnecte(): Promise<Utilisateur | null> {
+/**
+ * Personne connectée, ou null.
+ * `cache` : lue une seule fois par requête, même si plusieurs composants la demandent.
+ */
+export const utilisateurConnecte = cache(async function utilisateurConnecte(): Promise<Utilisateur | null> {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const id = data?.claims?.sub;
@@ -20,6 +25,13 @@ export async function utilisateurConnecte(): Promise<Utilisateur | null> {
   if (!membre) return null;
 
   return { id, email: membre.email as string, role: membre.role as Role };
+});
+
+/** Vrai si la session vient d'un lien « mot de passe oublié » utilisé il y a moins de 15 minutes. */
+export async function peutChoisirNouveauMotDePasse(): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getClaims();
+  return estSessionDeReinitialisation(data?.claims?.amr);
 }
 
 /** À appeler en tête d'une page protégée : renvoie vers la bonne page sinon. */

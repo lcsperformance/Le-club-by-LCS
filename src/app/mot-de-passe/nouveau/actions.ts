@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { peutChoisirNouveauMotDePasse } from "@/lib/auth";
 import { validerNouveauMotDePasse } from "@/lib/mot-de-passe";
 import { cheminAccueil, type Role } from "@/lib/roles";
 import type { EtatFormulaire } from "@/app/connexion/actions";
@@ -9,6 +10,11 @@ import type { EtatFormulaire } from "@/app/connexion/actions";
 export async function changerMotDePasse(_: EtatFormulaire, formData: FormData): Promise<EtatFormulaire> {
   const motDePasse = String(formData.get("mot_de_passe") ?? "");
   const confirmation = String(formData.get("confirmation") ?? "");
+
+  // Vérifié aussi ici : l'action peut être appelée sans passer par la page.
+  if (!(await peutChoisirNouveauMotDePasse())) {
+    return { erreur: "Ce lien a expiré. Redemande un e-mail depuis « Mot de passe oublié »." };
+  }
 
   const erreur = validerNouveauMotDePasse(motDePasse, confirmation);
   if (erreur) return { erreur };
