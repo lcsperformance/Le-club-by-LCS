@@ -14,7 +14,7 @@ export function cheminAccueil(role: Role): string {
 }
 
 /** Pages accessibles sans être connecté. */
-const CHEMINS_PUBLICS = ["/connexion", "/mot-de-passe-oublie", "/auth/confirm"];
+const CHEMINS_PUBLICS = ["/connexion", "/mot-de-passe-oublie", "/auth/confirm", "/bienvenue", "/api/stripe/webhook"];
 
 /**
  * Pages d'aperçu avec des données fictives, pour les tests automatiques d'affichage.

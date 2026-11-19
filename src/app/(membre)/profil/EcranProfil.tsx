@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { seDeconnecter } from "@/app/auth/actions";
+import { CarteAbonnement } from "@/components/CarteAbonnement";
 import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
 import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
@@ -26,7 +27,7 @@ function Fleche() {
 }
 
 /** Écran Profil (maquette) : identité, niveau, profil, raccourcis et déconnexion. */
-export function EcranProfil({ utilisateur }: { utilisateur: Utilisateur }) {
+export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisateur; maintenant: Date }) {
   return (
     <>
       <Link href="/accueil" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, fontWeight: 700, minHeight: 44 }}>
@@ -63,6 +64,9 @@ export function EcranProfil({ utilisateur }: { utilisateur: Utilisateur }) {
           <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{STATUT[utilisateur.role]}</p>
         </div>
       </header>
+
+      {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
+      {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
 
       <ChoixNiveauProfil niveau={utilisateur.niveau} profil={utilisateur.profil} ecran="profil" />
 

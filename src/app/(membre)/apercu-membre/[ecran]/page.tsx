@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
+import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranBientot } from "@/components/EcranBientot";
 import { EnTeteTests } from "@/app/(membre)/tests/EnTeteTests";
@@ -36,7 +37,23 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
         </>
       );
     case "profil":
-      return <EcranProfil utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }} />;
+      return (
+        <EcranProfil
+          utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
+          maintenant={new Date("2027-01-10T10:00:00Z")}
+        />
+      );
+    case "abonnement-termine":
+      return (
+        <EcranAbonnement
+          utilisateur={{
+            ...UTILISATEUR_FICTIF,
+            abonnement: { statut: "resilie", fin: "2027-01-01T10:00:00.000Z", annulationPrevue: false, clientStripe: true },
+          }}
+          lienPaiement="https://buy.stripe.com/test_exemple"
+          maintenant={new Date("2027-01-10T10:00:00Z")}
+        />
+      );
     case "records":
       return <EcranBientot titre="Mes records" description="Tes meilleures performances, au fil de tes séances." />;
     case "progres":

@@ -17,6 +17,7 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   role: "membre",
   niveau: null,
   profil: null,
+  abonnement: { statut: "actif", fin: "2027-02-10T10:00:00.000Z", annulationPrevue: false, clientStripe: true },
 };
 
 export const TEST_FICTIF = {
