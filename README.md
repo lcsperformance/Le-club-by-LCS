@@ -37,8 +37,10 @@ On peut les changer sans toucher au code :
    - `noms` : les noms des 5 zones.
 3. Cliquer sur **Commit changes**. Le site est mis à jour en une minute environ.
 
-Si le fichier est mal rempli (nombres qui ne montent pas, nombre manquant), la mise à jour est refusée
-avec un message qui explique quoi corriger, et le site en ligne reste comme avant.
+Si le fichier est mal rempli (virgule en trop ou oubliée, nombres qui ne montent pas, nombre manquant),
+la mise à jour est refusée et le site en ligne reste comme avant. Pour voir le message qui explique
+quoi corriger (avec le numéro de ligne) : sur GitHub, onglet **Actions**, ou sur Vercel, journal du
+déploiement en échec. En local : `npm run verifier-zones`.
 
 ## Rôles
 
