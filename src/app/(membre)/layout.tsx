@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { FondNeon } from "@/components/FondNeon";
 
@@ -9,7 +10,10 @@ export default function LayoutMembre({ children }: LayoutProps<"/">) {
       <main style={{ maxWidth: 480, margin: "0 auto", padding: "22px 20px 0", display: "grid", gap: 16 }}>
         {children}
       </main>
-      <BarreOnglets />
+      {/* La barre lit l'adresse de la page : elle doit être sous Suspense. */}
+      <Suspense fallback={null}>
+        <BarreOnglets />
+      </Suspense>
     </>
   );
 }

@@ -73,6 +73,7 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - `npm run dev` : lancer l'app en local
 - `npm test` : tests (Vitest ; les tests de sécurité RLS utilisent une base PostgreSQL locale via `TEST_DATABASE_URL`)
 - `npm run typecheck` / `npm run lint` / `npm run build`
+- `npm run test:e2e` (après `npm run build`) : vérifie dans un navigateur que chaque écran tient sur un téléphone (320, 360, 390 px). Les écrans connectés sont testés via les pages d'aperçu `/apercu-espace/…` et `/apercu-membre/…` (données fictives, actives seulement avec `APERCU=1`, jamais en production). Tout nouvel écran doit y être ajouté.
 
 ## Repères techniques
 
@@ -84,6 +85,7 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Zones : pourcentages dans `config/zones.json` (modifiable par Martin, validé à la compilation), calculs dans `src/lib/zones.ts`, écran `/zones?sport=course|velo|natation`. Ne jamais écrire ces pourcentages en dur dans le code.
 - Rôles `membre`, `coach`, `admin` (colonne `membres.role`). Une page protégée appelle `exigerRole(...)` de `src/lib/auth.ts` dans un composant placé sous `<Suspense>` (Cache Components activé).
 - Pas d'inscription libre : jamais de `signUp` dans l'app.
+- Écrans : séparer l'affichage (composant qui reçoit les données) de la lecture en base (page), pour pouvoir l'afficher dans les aperçus.
 - Composants Neon dans `src/components/ui` (import depuis `@/components/ui`) : `Carte`, `BoutonPrincipal`, `BoutonSecondaire`, `Champ`, `Compteur` (− valeur +), `PastilleZone`. Les utiliser plutôt que de recopier des styles ; vitrine sur `/admin/composants`.
 - Fond : `FondNeon`. Espace membre dans `src/app/(membre)` avec la `BarreOnglets` (affichée seulement sur les 5 pages d'onglets) (onglets définis dans `src/lib/onglets.ts`) ; espaces coach et admin dans `src/app/(espace)`.
 - Classes globales restantes : `.titre` (capitales), `.titre-carte` (titre de carte dans la police du texte), `.logo` (« le club »), `.lien`, `.message-info`, `.message-erreur`.

@@ -28,9 +28,19 @@
 
 .zone {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
+  gap: 8px 12px;
   padding: 14px;
+}
+.infos {
+  flex: 1 1 110px;
+  min-width: 0;
+}
+/* Sur un écran très étroit, la cible passe sous le nom de la zone, alignée à droite. */
+.valeurs {
+  flex: 0 1 auto;
+  margin-left: auto;
 }
 .nom {
   font-size: 16px;

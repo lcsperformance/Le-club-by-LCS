@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { cheminAccueil, estCheminPublic } from "@/lib/roles";
 import { validerNouveauMotDePasse } from "@/lib/mot-de-passe";
 
@@ -39,5 +39,25 @@ describe("nouveau mot de passe", () => {
   });
   it("accepte un mot de passe correct", () => {
     expect(validerNouveauMotDePasse("triathlon2027", "triathlon2027")).toBeNull();
+  });
+});
+
+describe("pages d'aperçu (tests d'affichage)", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("sont fermées par défaut", () => {
+    expect(estCheminPublic("/apercu-espace/admin")).toBe(false);
+  });
+
+  it("s'ouvrent seulement avec APERCU=1", () => {
+    vi.stubEnv("APERCU", "1");
+    expect(estCheminPublic("/apercu-espace/admin")).toBe(true);
+    expect(estCheminPublic("/apercu-membre/zones-velo")).toBe(true);
+  });
+
+  it("restent fermées en production, même avec APERCU=1", () => {
+    vi.stubEnv("APERCU", "1");
+    vi.stubEnv("VERCEL_ENV", "production");
+    expect(estCheminPublic("/apercu-espace/admin")).toBe(false);
   });
 });

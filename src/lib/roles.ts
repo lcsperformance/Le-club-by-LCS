@@ -16,7 +16,18 @@ export function cheminAccueil(role: Role): string {
 /** Pages accessibles sans être connecté. */
 const CHEMINS_PUBLICS = ["/connexion", "/mot-de-passe-oublie", "/auth/confirm"];
 
+/**
+ * Pages d'aperçu avec des données fictives, pour les tests automatiques d'affichage.
+ * Elles n'existent que si la variable APERCU vaut « 1 » (jamais en production).
+ */
+export const PREFIXES_APERCU = ["/apercu-espace", "/apercu-membre"];
+
+export function apercuActif(): boolean {
+  return process.env.APERCU === "1" && process.env.VERCEL_ENV !== "production";
+}
+
 export function estCheminPublic(chemin: string): boolean {
-  return CHEMINS_PUBLICS.some((p) => chemin === p || chemin.startsWith(`${p}/`));
+  const publics = apercuActif() ? [...CHEMINS_PUBLICS, ...PREFIXES_APERCU] : CHEMINS_PUBLICS;
+  return publics.some((p) => chemin === p || chemin.startsWith(`${p}/`));
 }
 
