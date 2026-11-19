@@ -23,6 +23,23 @@ Réglages d'authentification appliqués sur le projet :
 À faire une fois Resend branché (SMTP personnalisé) : passer les e-mails en français, avec un lien direct
 `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery` (le modèle ne peut pas être modifié avec l'envoi gratuit de Supabase).
 
+## Modifier les pourcentages des zones (pour Martin)
+
+Les pourcentages des zones d'entraînement sont dans le fichier [`config/zones.json`](config/zones.json).
+On peut les changer sans toucher au code :
+
+1. Sur GitHub, ouvrir `config/zones.json`, puis cliquer sur le **crayon** (« Edit this file »).
+2. Changer les nombres voulus. Chaque ligne contient **6 nombres qui montent** : les bornes de Z1 à Z5
+   (Z1 va du 1er au 2e nombre, Z2 du 2e au 3e…).
+   - `course` et `natation` : % de la vitesse au seuil ;
+   - `velo` : % de la FTP ;
+   - `frequence_cardiaque` : % de la FC au seuil (affichée pour la course et le vélo) ;
+   - `noms` : les noms des 5 zones.
+3. Cliquer sur **Commit changes**. Le site est mis à jour en une minute environ.
+
+Si le fichier est mal rempli (nombres qui ne montent pas, nombre manquant), la mise à jour est refusée
+avec un message qui explique quoi corriger, et le site en ligne reste comme avant.
+
 ## Rôles
 
 | Rôle | Peut faire |

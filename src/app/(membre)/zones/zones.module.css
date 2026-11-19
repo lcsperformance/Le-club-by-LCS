@@ -1,0 +1,59 @@
+/* Sélecteur Course / Vélo / Natation, comme sur la maquette. */
+.selecteur {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+.onglet {
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--texte);
+}
+.onglet[aria-current="page"] {
+  background: var(--accent);
+  color: var(--fond);
+  box-shadow: 0 6px 18px rgba(222, 253, 98, 0.35);
+}
+
+.zone {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+.nom {
+  font-size: 16px;
+}
+.detail {
+  font-size: 12px;
+  font-weight: 700;
+  color: #a9a4c9;
+  margin-top: 2px;
+}
+.cible {
+  text-align: right;
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fc {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a9a4c9;
+  margin-top: 2px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
