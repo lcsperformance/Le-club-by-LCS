@@ -51,6 +51,7 @@ describe("1. inscription", () => {
   const adresse = email("inscription");
   let h: string;
   let abonnement: Record<string, unknown> & { id: string };
+  let second: Record<string, unknown> & { id: string };
   let fiche: Fiche;
 
   it("un paiement réussi crée le compte, actif jusqu'à la fin du mois payé, et envoie l'e-mail de bienvenue", async () => {
@@ -84,25 +85,32 @@ describe("1. inscription", () => {
     expect(traces).toHaveLength(1);
   });
 
-  it("doublon : la même adresse paie une seconde fois → toujours un seul compte", async () => {
+  it("doublon : la même adresse paie une seconde fois → toujours un seul compte, le premier abonnement gardé", async () => {
     const c2 = await client(h, adresse, CARTES.acceptee);
-    const second = await abonner(c2.client);
+    second = await abonner(c2.client);
     expect(second.status).toBe("active");
-    await patienter(15_000);
+    // Le webhook repère le doublon et l'annule.
+    const annule = await attendre(
+      () => stripe("GET", `subscriptions/${second.id}`),
+      (a) => a.status === "canceled",
+    );
+    expect(annule.status, "second abonnement annulé").toBe("canceled");
     const liste = await fiches(adresse);
     expect(liste).toHaveLength(1);
-    expect(liste[0].id).toBe(fiche.id);
+    expect(liste[0]).toMatchObject({ id: fiche.id, statut_abonnement: "actif", stripe_subscription_id: abonnement.id });
     expect(liste[0].invited_at).toBe(fiche.invited_at); // pas de nouvel e-mail de bienvenue
   });
 
-  it("doublon : la même personne n'est pas prélevée deux fois (un seul abonnement actif)", async () => {
+  it("doublon : la même personne n'est pas prélevée deux fois (second paiement remboursé)", async () => {
     const actifs = await stripe("GET", "subscriptions", { status: "active", test_clock: h, limit: 10 });
-    const deCetteAdresse = [];
-    for (const a of actifs.data as { id: string; customer: string }[]) {
-      const c = await stripe("GET", `customers/${a.customer}`);
-      if (c.email === adresse) deCetteAdresse.push(a.id);
-    }
-    expect(deCetteAdresse, "abonnements actifs pour la même adresse").toHaveLength(1);
+    expect((actifs.data as { id: string }[]).map((a) => a.id), "un seul abonnement actif").toEqual([abonnement.id]);
+    const rembourse = await attendre(
+      () => stripe("GET", "charges", { customer: second.customer as string, limit: 5 }),
+      (l) => (l.data as { refunded: boolean }[]).every((c) => c.refunded),
+    );
+    const paiements = rembourse.data as { amount: number; amount_refunded: number; refunded: boolean }[];
+    expect(paiements).toHaveLength(1);
+    expect(paiements[0]).toMatchObject({ refunded: true, amount_refunded: paiements[0].amount });
   });
 });
 

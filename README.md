@@ -67,7 +67,11 @@ Stripe (résiliation en fin de période, carte, factures).
   résiliation ou un paiement en échec ; ensuite, page `/abonnement` avec « Me réabonner » ;
 - webhook reçu deux fois : ignoré la deuxième fois (table `stripe_evenements`) ; l'état est toujours relu
   chez Stripe, donc l'ordre des événements n'a pas d'importance ;
+- paiement en échec : statut « impayé », accès jusqu'à la fin de la dernière période **payée** (Stripe fait
+  pourtant commencer la période suivante) ; s'il est arrêté après les relances, cette période n'est jamais ouverte ;
 - e-mail déjà connu (ancien membre) : pas de nouveau compte, abonnement rattaché, e-mail « Bon retour » ;
+- doublon (déjà abonné, sans résiliation prévue, qui repaie) : le second abonnement est annulé et remboursé
+  aussitôt par le webhook ; le premier est gardé ;
 - les comptes coach et admin ne sont jamais modifiés par un paiement et gardent toujours l'accès.
 
 **Déjà configuré dans Stripe (mode test)** : liens de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`)
