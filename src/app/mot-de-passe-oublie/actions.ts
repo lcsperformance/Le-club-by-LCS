@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { urlDuSite } from "@/lib/site";
 import { createClient } from "@/lib/supabase/server";
 import type { EtatFormulaire } from "@/app/connexion/actions";
 
@@ -13,12 +13,9 @@ export async function demanderReinitialisation(_: EtatFormulaire, formData: Form
     return { erreur: "Renseigne une adresse e-mail valide.", email };
   }
 
-  const h = await headers();
-  const origine = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origine}/auth/confirm`,
+    redirectTo: `${urlDuSite()}/auth/confirm`,
   });
 
   if (error?.status === 429) {

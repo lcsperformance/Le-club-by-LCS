@@ -30,5 +30,12 @@ export async function seConnecter(_: EtatFormulaire, formData: FormData): Promis
     .eq("id", data.user.id)
     .maybeSingle();
 
-  redirect(cheminAccueil((membre?.role as Role | undefined) ?? "membre"));
+  // Compte d'authentification sans fiche membre : ne pas laisser la personne coincée
+  // entre la connexion et son espace.
+  if (!membre) {
+    await supabase.auth.signOut({ scope: "local" });
+    return { erreur: "Ton compte n'est pas encore activé. Écris-nous pour qu'on le règle.", email };
+  }
+
+  redirect(cheminAccueil(membre.role as Role));
 }

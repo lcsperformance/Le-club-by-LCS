@@ -29,11 +29,11 @@ export function AffichageZones({ sport, test }: { sport: Sport; test: Tests & { 
         {zones.map((z) => (
           <Carte key={z.zone} className={styles.zone}>
             <PastilleZone zone={z.zone} />
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className={styles.infos}>
               <h2 className={`titre-carte ${styles.nom}`}>{z.nom}</h2>
               <p className={styles.detail}>{z.pourcentages}</p>
             </div>
-            <div>
+            <div className={styles.valeurs}>
               <p className={styles.cible}>{z.cible ?? "—"}</p>
               {z.frequenceCardiaque && <p className={styles.fc}>{z.frequenceCardiaque}</p>}
             </div>
