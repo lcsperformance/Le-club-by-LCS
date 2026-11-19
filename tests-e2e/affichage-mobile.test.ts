@@ -21,6 +21,8 @@ const ECRANS = [
   "/apercu-membre/zones-natation",
   "/apercu-membre/zones-personnalisation",
   "/apercu-membre/profil",
+  "/apercu-membre/records",
+  "/apercu-membre/progres",
 ];
 
 const LARGEURS = [320, 360, 390];
