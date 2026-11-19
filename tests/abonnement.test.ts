@@ -16,6 +16,8 @@ import { traiterEvenement, type Dependances, type EvenementStripe, type MembreCo
 const JOUR = 24 * 3600;
 const MAINTENANT = Math.floor(new Date("2027-01-10T10:00:00Z").getTime() / 1000);
 const FIN = MAINTENANT + 20 * JOUR;
+/** Impayé réaliste : Stripe a déjà fait commencer la période suivante (non payée), de FIN à FIN + 30 jours. */
+const periodeImpayee = { items: { data: [{ current_period_start: FIN, current_period_end: FIN + 30 * JOUR }] } };
 
 function abonnement(status: string, opts: Partial<AbonnementStripe> = {}): AbonnementStripe {
   return { id: "sub_1", status, cancel_at_period_end: false, ended_at: null, items: { data: [{ current_period_end: FIN }] }, ...opts };
@@ -33,8 +35,19 @@ describe("état de l'abonnement", () => {
     expect(etatDepuisAbonnement(abonnement("active", { cancel_at_period_end: true })).annulationPrevue).toBe(true);
   });
   it("paiement en échec : impayé, mais la période déjà payée reste acquise", () => {
-    const e = etatDepuisAbonnement(abonnement("past_due"));
+    const e = etatDepuisAbonnement(abonnement("past_due", periodeImpayee));
     expect(e.statut).toBe("impaye");
+    // Fin de la dernière période PAYÉE, pas fin de la période en cours (impayée).
+    expect(e.fin).toBe(new Date(FIN * 1000).toISOString());
+  });
+  it("arrêté après des impayés : pas d'accès pour la période jamais payée", () => {
+    const e = etatDepuisAbonnement(
+      abonnement("canceled", { ...periodeImpayee, ended_at: FIN + 15 * JOUR, latest_invoice: { status: "open" } }),
+    );
+    expect(e).toEqual({ statut: "resilie", fin: new Date(FIN * 1000).toISOString(), annulationPrevue: false });
+  });
+  it("résilié normalement (dernière facture payée) : accès jusqu'à la fin de la période payée", () => {
+    const e = etatDepuisAbonnement(abonnement("canceled", { ended_at: FIN, latest_invoice: { status: "paid" } }));
     expect(e.fin).toBe(new Date(FIN * 1000).toISOString());
   });
   it("terminé : résilié, accès jusqu'à la date de fin", () => {
@@ -79,12 +92,17 @@ let emailsBienvenue: string[];
 let emailsReabonnement: string[];
 let creationConcurrente: boolean;
 let nomClientStripe: string | null;
+let rembourses: string[];
 
 function deps(): Dependances {
   return {
     stripe: {
       abonnement: async (id) => abonnementsStripe[id],
       infoClient: async () => ({ email: "client@exemple.fr", nom: nomClientStripe }),
+      annulerEtRembourser: async (id) => {
+        rembourses.push(id);
+        abonnementsStripe[id] = abonnement("canceled", { id, ended_at: MAINTENANT, latest_invoice: { status: "paid" } });
+      },
     },
     base: {
       dejaTraite: async (id) => traites.has(id),
@@ -149,7 +167,11 @@ const majAbonnement = (type: string, n: number): EvenementStripe => ({
 beforeEach(() => {
   fiches = [];
   traites = new Set();
-  abonnementsStripe = { sub_1: abonnement("active") };
+  abonnementsStripe = {
+    sub_1: abonnement("active"),
+    sub_ancien: abonnement("canceled", { id: "sub_ancien", ended_at: MAINTENANT - 60 * JOUR }),
+  };
+  rembourses = [];
   emailsBienvenue = [];
   emailsReabonnement = [];
   creationConcurrente = false;
@@ -206,16 +228,17 @@ describe("webhook : cas de bord", () => {
 
   it("paiement en échec : impayé, l'accès reste jusqu'à la fin de la période payée", async () => {
     await traiterEvenement(paiementInitial(), deps());
-    abonnementsStripe.sub_1 = abonnement("past_due");
+    abonnementsStripe.sub_1 = abonnement("past_due", periodeImpayee);
     await traiterEvenement(facture("invoice.payment_failed", 2), deps());
     expect(fiches[0].statut_abonnement).toBe("impaye");
+    expect(fiches[0].abonnement_fin).toBe(new Date(FIN * 1000).toISOString());
     expect(aAcces(fiches[0], new Date(MAINTENANT * 1000))).toBe(true);
     expect(aAcces(fiches[0], new Date((FIN + 60) * 1000))).toBe(false);
   });
 
   it("paiement relancé avec succès : de nouveau actif, accès prolongé", async () => {
     await traiterEvenement(paiementInitial(), deps());
-    abonnementsStripe.sub_1 = abonnement("past_due");
+    abonnementsStripe.sub_1 = abonnement("past_due", periodeImpayee);
     await traiterEvenement(facture("invoice.payment_failed", 2), deps());
     const nouvelleFin = FIN + 30 * JOUR;
     abonnementsStripe.sub_1 = abonnement("active", { items: { data: [{ current_period_end: nouvelleFin }] } });
@@ -283,6 +306,34 @@ describe("webhook : cas de bord", () => {
     expect(r.action).toBe("ignore");
     expect(fiches[0]).toEqual(avant);
     expect(fiches[0]).toMatchObject({ statut_abonnement: "actif", stripe_subscription_id: "sub_1" });
+  });
+
+  it("doublon : déjà abonné, la même adresse paie un second abonnement → annulé et remboursé, le premier est gardé", async () => {
+    await traiterEvenement(paiementInitial(), deps());
+    const avant = { ...fiches[0] };
+    abonnementsStripe.sub_2 = abonnement("active", { id: "sub_2" });
+    const r = await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_2"), deps());
+    expect(r).toMatchObject({ action: "doublon-rembourse", abonnementId: "sub_2" });
+    expect(rembourses).toEqual(["sub_2"]);
+    expect(fiches).toHaveLength(1);
+    expect(fiches[0]).toEqual(avant);
+    expect(emailsBienvenue).toHaveLength(1);
+    expect(emailsReabonnement).toEqual([]);
+    // Les autres messages du même doublon (facture payée, annulation) ne remboursent pas deux fois.
+    await traiterEvenement(facture("invoice.paid", 5, "sub_2"), deps());
+    await traiterEvenement({ id: "evt_suppr_2", type: "customer.subscription.deleted", data: { object: { id: "sub_2", customer: "cus_1" } } }, deps());
+    expect(rembourses).toEqual(["sub_2"]);
+    expect(fiches[0]).toEqual(avant);
+  });
+
+  it("résiliation prévue puis nouveau paiement : le nouvel abonnement prend le relais (pas un doublon)", async () => {
+    await traiterEvenement(paiementInitial(), deps());
+    abonnementsStripe.sub_1 = abonnement("active", { cancel_at_period_end: true });
+    abonnementsStripe.sub_2 = abonnement("active", { id: "sub_2" });
+    const r = await traiterEvenement(paiementInitial("nouvelle@exemple.fr", "sub_2"), deps());
+    expect(r.action).toBe("reabonnement");
+    expect(rembourses).toEqual([]);
+    expect(fiches[0]).toMatchObject({ statut_abonnement: "actif", stripe_subscription_id: "sub_2" });
   });
 
   it.each(["coach", "admin"])("l'e-mail d'un compte %s : jamais modifié", async (role) => {

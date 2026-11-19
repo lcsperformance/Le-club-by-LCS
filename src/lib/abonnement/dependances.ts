@@ -20,7 +20,29 @@ export function dependancesReelles(): Dependances {
 
   return {
     stripe: {
-      abonnement: async (id) => (await stripe().subscriptions.retrieve(id)) as unknown as AbonnementStripe,
+      abonnement: async (id) =>
+        (await stripe().subscriptions.retrieve(id, { expand: ["latest_invoice"] })) as unknown as AbonnementStripe,
+      annulerEtRembourser: async (id) => {
+        const s = stripe();
+        const abonnement = await s.subscriptions.retrieve(id);
+        if (abonnement.status !== "canceled") {
+          await s.subscriptions.cancel(id, {}, { idempotencyKey: `doublon-annulation-${id}` });
+        }
+        const factures = await s.invoices.list({ subscription: id, status: "paid", limit: 20 });
+        for (const facture of factures.data) {
+          const paiements = await s.invoicePayments.list({ invoice: facture.id!, status: "paid" });
+          for (const p of paiements.data) {
+            const pi = p.payment.payment_intent;
+            const intention = typeof pi === "string" ? pi : pi?.id;
+            if (!intention) continue;
+            await s.refunds
+              .create({ payment_intent: intention, reason: "duplicate" }, { idempotencyKey: `doublon-remboursement-${intention}` })
+              .catch((e: { code?: string }) => {
+                if (e.code !== "charge_already_refunded") throw e;
+              });
+          }
+        }
+      },
       infoClient: async (id) => {
         const c = await stripe().customers.retrieve(id);
         if ("deleted" in c && c.deleted) return { email: null, nom: null };

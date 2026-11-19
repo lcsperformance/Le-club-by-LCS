@@ -34,6 +34,8 @@ export type Dependances = {
     abonnement(id: string): Promise<AbonnementStripe>;
     /** E-mail et nom du client Stripe (nom du titulaire, pour le prénom). */
     infoClient(id: string): Promise<{ email: string | null; nom: string | null }>;
+    /** Doublon : annule l'abonnement tout de suite et rembourse ce qu'il a prélevé (sans effet s'il est rejoué). */
+    annulerEtRembourser(abonnementId: string): Promise<void>;
   };
   base: {
     dejaTraite(evenementId: string): Promise<boolean>;
@@ -67,7 +69,8 @@ export type Resultat =
   | { action: "deja-traite" }
   | { action: "compte-cree"; membreId: string; etat: EtatAbonnement }
   | { action: "reabonnement"; membreId: string; etat: EtatAbonnement }
-  | { action: "mis-a-jour"; membreId: string; etat: EtatAbonnement };
+  | { action: "mis-a-jour"; membreId: string; etat: EtatAbonnement }
+  | { action: "doublon-rembourse"; membreId: string; abonnementId: string };
 
 const texte = (v: unknown) => (typeof v === "string" && v ? v : null);
 const id = (v: unknown) => texte(v) ?? texte((v as { id?: unknown } | null)?.id);
@@ -161,6 +164,17 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
   // payé prend la place de l'ancien (réabonnement).
   if (membre.stripe_subscription_id && membre.stripe_subscription_id !== abonnementId && !estPaye(etat)) {
     return { action: "ignore", raison: "ancien abonnement, différent de l'abonnement en cours" };
+  }
+
+  // Doublon : la personne a déjà un abonnement en cours (actif, sans résiliation prévue) et en paie
+  // un second (même adresse, nouveau passage sur le lien de paiement). On garde le premier, on annule
+  // et rembourse le second : jamais deux prélèvements. Rejoué, l'abonnement annulé est ignoré plus haut.
+  if (membre.stripe_subscription_id && membre.stripe_subscription_id !== abonnementId) {
+    const actuel = etatDepuisAbonnement(await d.stripe.abonnement(membre.stripe_subscription_id));
+    if (actuel.statut === "actif" && !actuel.annulationPrevue) {
+      await d.stripe.annulerEtRembourser(abonnementId);
+      return { action: "doublon-rembourse", membreId: membre.id, abonnementId };
+    }
   }
 
   // Compte déjà existant qui prend un NOUVEL abonnement (ancien membre, compte créé à la main…) :

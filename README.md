@@ -67,7 +67,11 @@ Stripe (résiliation en fin de période, carte, factures).
   résiliation ou un paiement en échec ; ensuite, page `/abonnement` avec « Me réabonner » ;
 - webhook reçu deux fois : ignoré la deuxième fois (table `stripe_evenements`) ; l'état est toujours relu
   chez Stripe, donc l'ordre des événements n'a pas d'importance ;
+- paiement en échec : statut « impayé », accès jusqu'à la fin de la dernière période **payée** (Stripe fait
+  pourtant commencer la période suivante) ; s'il est arrêté après les relances, cette période n'est jamais ouverte ;
 - e-mail déjà connu (ancien membre) : pas de nouveau compte, abonnement rattaché, e-mail « Bon retour » ;
+- doublon (déjà abonné, sans résiliation prévue, qui repaie) : le second abonnement est annulé et remboursé
+  aussitôt par le webhook ; le premier est gardé ;
 - les comptes coach et admin ne sont jamais modifiés par un paiement et gardent toujours l'accès.
 
 **Déjà configuré dans Stripe (mode test)** : liens de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`)
@@ -75,6 +79,10 @@ et annuel (`plink_1UdWK7B1uelR3FW9mVlRi0vU`), tous deux avec retour vers `/bienv
 (résiliation en fin de période, changement de formule mois ↔ année) ; webhook
 `we_1UdWaCB1uelR3FW9GFPiJTvJ` (5 événements). Variables Vercel publiques `STRIPE_LIEN_PAIEMENT` et
 `STRIPE_LIEN_PAIEMENT_ANNUEL` en place (sans la seconde, seul le mensuel est proposé).
+
+**Test de bout en bout** : `npm run test:paiement` (`tests-paiement/`) joue tout le parcours avec les faux
+paiements Stripe et une horloge de test (inscription, doublon, carte refusée, résiliation, réactivation,
+webhook reçu deux fois), sur le site en ligne, puis supprime tout ce qu'il a créé.
 
 **Secrets à saisir dans Vercel** (Settings > Environment Variables, cocher **Sensitive**, environnements
 Production et Preview), puis redéployer :
