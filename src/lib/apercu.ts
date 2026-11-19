@@ -15,6 +15,8 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   id: "00000000-0000-0000-0000-000000000000",
   email: "prenom.nom-tres-long@exemple-de-domaine.fr",
   role: "membre",
+  niveau: null,
+  profil: null,
 };
 
 export const TEST_FICTIF = {

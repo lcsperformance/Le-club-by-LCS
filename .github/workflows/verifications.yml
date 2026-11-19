@@ -48,8 +48,8 @@ jobs:
       - name: Installation
         run: npm ci
 
-      - name: Fichier des zones (config/zones.json)
-        run: npm run verifier-zones
+      - name: Fichiers de configuration (config/*.json)
+        run: npm run verifier-config
 
       - name: Lint
         run: npm run lint

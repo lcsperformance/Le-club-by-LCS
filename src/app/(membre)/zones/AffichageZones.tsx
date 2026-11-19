@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
 import type { Bornes } from "@/lib/config-zones";
+import type { Niveau, Profil } from "@/lib/profils";
 import { formatDateFr } from "@/lib/dates";
 import { SPORTS, type Sport, type Tests } from "@/lib/zones";
 import { ListeZones } from "./ListeZones";
@@ -11,11 +13,16 @@ export function AffichageZones({
   test,
   bornesEnregistrees = null,
   personnalisationOuverte = false,
+  niveau = null,
+  profil = null,
 }: {
   sport: Sport;
   test: Tests & { date_test: string };
   bornesEnregistrees?: Bornes | null;
   personnalisationOuverte?: boolean;
+  /** Choix du membre, proposés juste après le calcul des zones. */
+  niveau?: Niveau | null;
+  profil?: Profil | null;
 }) {
   return (
     <>
@@ -40,6 +47,8 @@ export function AffichageZones({
         bornesEnregistrees={bornesEnregistrees}
         personnalisationOuverte={personnalisationOuverte}
       />
+
+      <ChoixNiveauProfil niveau={niveau} profil={profil} ecran="zones" />
 
       <p style={{ fontSize: 13, color: "#a9a4c9", textAlign: "center", lineHeight: 1.5 }}>
         D&apos;après tes tests du {formatDateFr(new Date(`${test.date_test}T12:00:00`))}.{" "}

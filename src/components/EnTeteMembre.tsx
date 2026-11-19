@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { seDeconnecter } from "@/app/auth/actions";
 import type { Utilisateur } from "@/lib/auth";
 
 /** En-tête des écrans membre : logo, titre, sous-titre ; bandeau si un admin visite. */
@@ -37,26 +36,25 @@ export function EnTeteMembre({
         <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
           le club
         </span>
-        <form action={seDeconnecter}>
-          <button
-            type="submit"
-            aria-label="Se déconnecter"
-            title="Se déconnecter"
-            style={{
-              width: 44,
-              height: 44,
-              borderRadius: "50%",
-              border: 0,
-              background: "var(--aurore)",
-              color: "var(--fond)",
-              fontWeight: 800,
-              fontSize: 17,
-              cursor: "pointer",
-            }}
-          >
-            {utilisateur.email.charAt(0).toUpperCase()}
-          </button>
-        </form>
+        <Link
+          href="/profil"
+          aria-label="Mon profil"
+          title="Mon profil"
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: "50%",
+            background: "var(--aurore)",
+            color: "var(--fond)",
+            fontWeight: 800,
+            fontSize: 17,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {utilisateur.email.charAt(0).toUpperCase()}
+        </Link>
       </div>
       <div>
         <h1 className="titre" style={{ fontSize: 32, lineHeight: 1.1, color: "#fff" }}>

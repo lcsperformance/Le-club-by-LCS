@@ -1,6 +1,6 @@
 /**
  * Vérification du fichier config/zones.json.
- * Ce module n'importe rien : il est aussi utilisé par scripts/verifier-zones.mjs (avant chaque compilation).
+ * Ce module n'importe rien : il est aussi utilisé par scripts/verifier-config.mjs (avant chaque compilation).
  */
 
 /** 6 bornes en pourcentage : Z1 = [b0, b1], Z2 = [b1, b2]… Z5 = [b4, b5]. */
