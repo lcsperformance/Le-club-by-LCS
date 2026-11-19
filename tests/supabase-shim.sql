@@ -18,5 +18,7 @@ $$;
 grant usage on schema public, auth to anon, authenticated, service_role;
 grant execute on function auth.uid() to anon, authenticated;
 
--- Comme Supabase : par défaut, tout est accordé sur les nouvelles tables.
-alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+-- Comme le projet Supabase réel : les nouvelles tables ne donnent AUCUN droit de lecture ou
+-- d'écriture par défaut (seulement truncate, references, trigger, maintain). Chaque migration
+-- doit accorder explicitement les droits nécessaires, y compris au serveur (service_role).
+alter default privileges in schema public grant truncate, references, trigger on tables to anon, authenticated, service_role;
