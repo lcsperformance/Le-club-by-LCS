@@ -21,9 +21,10 @@ export function dependancesReelles(): Dependances {
   return {
     stripe: {
       abonnement: async (id) => (await stripe().subscriptions.retrieve(id)) as unknown as AbonnementStripe,
-      emailClient: async (id) => {
+      infoClient: async (id) => {
         const c = await stripe().customers.retrieve(id);
-        return "deleted" in c && c.deleted ? null : (c.email ?? null);
+        if ("deleted" in c && c.deleted) return { email: null, nom: null };
+        return { email: c.email ?? null, nom: c.name ?? null };
       },
     },
     base: {
@@ -51,6 +52,10 @@ export function dependancesReelles(): Dependances {
           throw new Error(`Création du compte impossible : ${error.message}`);
         }
         return { id: data.user.id };
+      },
+      definirPrenomSiVide: async (id, prenom) => {
+        const { error } = await base.from("membres").update({ prenom }).eq("id", id).is("prenom", null);
+        if (error) throw new Error(`Enregistrement du prénom impossible : ${error.message}`);
       },
       mettreAJour: async (id, champs) => {
         const { error } = await base.from("membres").update(champs).eq("id", id);

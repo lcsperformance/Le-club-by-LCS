@@ -27,6 +27,8 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
   switch (ecran) {
     case "accueil":
       return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits={false} aujourdhui={new Date()} />;
+    case "accueil-sans-prenom":
+      return <AccueilMembre utilisateur={{ ...UTILISATEUR_FICTIF, prenom: null }} testsFaits aujourdhui={new Date()} />;
     case "accueil-tests-faits":
       return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits aujourdhui={new Date()} />;
     case "tests":

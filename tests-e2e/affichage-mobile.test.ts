@@ -15,6 +15,7 @@ const ECRANS = [
   "/apercu-espace/coach",
   "/apercu-membre/accueil",
   "/apercu-membre/accueil-tests-faits",
+  "/apercu-membre/accueil-sans-prenom",
   "/apercu-membre/tests",
   "/apercu-membre/zones-course",
   "/apercu-membre/zones-velo",

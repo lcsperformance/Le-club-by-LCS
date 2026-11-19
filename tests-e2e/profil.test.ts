@@ -90,3 +90,28 @@ describe("abonnement", () => {
     await p.close();
   });
 });
+
+describe("prénom", () => {
+  it("l'accueil dit « Salut Caroline », ou « Salut ! » sans prénom", async () => {
+    const p = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
+    await p.goto(`${BASE}/apercu-membre/accueil`, { waitUntil: "networkidle" });
+    expect(await p.getByRole("heading", { level: 1 }).textContent()).toBe("Salut Caroline");
+    expect(await p.getByRole("link", { name: "Mon profil" }).textContent()).toBe("C");
+    await p.goto(`${BASE}/apercu-membre/accueil-sans-prenom`, { waitUntil: "networkidle" });
+    expect(await p.getByRole("heading", { level: 1 }).textContent()).toBe("Salut !");
+    expect(await p.getByRole("link", { name: "Mon profil" }).textContent()).toBe("P");
+    await p.close();
+  });
+
+  it("le Profil affiche le prénom et un champ pour le modifier", async () => {
+    expect(await page.getByRole("heading", { level: 1 }).textContent()).toBe("Caroline");
+    expect(await page.getByLabel("Prénom").inputValue()).toBe("Caroline");
+  });
+
+  it("une saisie invalide affiche un message, sans rien enregistrer", async () => {
+    const champ = page.getByLabel("Prénom");
+    await champ.fill("Caro123");
+    await champ.press("Enter");
+    await page.getByText("Seulement des lettres, espaces, tirets et apostrophes.").waitFor();
+  });
+});

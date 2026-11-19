@@ -1,13 +1,12 @@
-import { EnTeteMembre } from "@/components/EnTeteMembre";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
-import { formatJourFr } from "@/lib/dates";
+import { EnTeteAccueil } from "./EnTeteAccueil";
 
 /** Contenu de l'accueil membre. */
 export function AccueilMembre({ utilisateur, testsFaits, aujourdhui }: { utilisateur: Utilisateur; testsFaits: boolean; aujourdhui: Date }) {
   return (
     <>
-      <EnTeteMembre utilisateur={utilisateur} titre="Salut !" sousTitre={formatJourFr(aujourdhui)} />
+      <EnTeteAccueil utilisateur={utilisateur} aujourdhui={aujourdhui} />
 
       {testsFaits ? (
         <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>

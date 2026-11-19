@@ -14,6 +14,7 @@ export async function exigerApercu() {
 export const UTILISATEUR_FICTIF: Utilisateur = {
   id: "00000000-0000-0000-0000-000000000000",
   email: "prenom.nom-tres-long@exemple-de-domaine.fr",
+  prenom: "Caroline",
   role: "membre",
   niveau: null,
   profil: null,
