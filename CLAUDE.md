@@ -81,7 +81,7 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 
 - Next.js 16 : lire `AGENTS.md` et la doc dans `node_modules/next/dist/docs/` avant d'écrire du code (ex. `middleware` s'appelle désormais `proxy`, fichier `src/proxy.ts`).
 - Connexions Supabase : `src/lib/supabase/client.ts` (navigateur) et `server.ts` (serveur).
-- Toute modification de la base passe par un nouveau fichier dans `supabase/migrations/`, avec la sécurité par ligne activée et testée dans `tests/rls.test.ts`. Appliquer avec `npm run migrations -- appliquer` (jamais à la main), puis vérifier avec `npm run migrations -- etat`.
+- Toute modification de la base passe par un nouveau fichier dans `supabase/migrations/`, avec la sécurité par ligne activée et testée dans `tests/rls.test.ts` (base de test commune : `tests/aide/base-de-test.ts`). Toute nouvelle table de données personnelles doit être ajoutée à la preuve `tests/securite-tests-zones.test.ts` (lecture, modification, suppression, écriture au nom d'un autre). Appliquer avec `npm run migrations -- appliquer` (jamais à la main), puis vérifier avec `npm run migrations -- etat`.
 - Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris), dont `dateDuJourParis()` pour les colonnes `date`.
 - Tests de départ : mesures, pas et limites dans `src/lib/tests-depart.ts` ; écran `/tests` ; un test par membre et par jour (upsert).
 - Historique des tests : `historiqueSport(sport, membreId?)` dans `src/lib/historique-serveur.ts` (course, velo, natation, cardio), classé de la plus ancienne à la plus récente ; mise en forme testable dans `src/lib/historique.ts`.
