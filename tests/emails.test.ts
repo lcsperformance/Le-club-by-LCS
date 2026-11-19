@@ -14,3 +14,16 @@ describe("e-mail de bienvenue", () => {
     expect(invitation).not.toMatch(/\{\{ \.(Password|Token) \}\}/);
   });
 });
+
+describe("e-mails du webhook (Resend)", async () => {
+  const { emailDoublon, emailReprise } = await import("../src/lib/abonnement/emails");
+  it("doublon : dit que le second paiement est remboursé et que l'abonnement en cours ne change pas", () => {
+    const html = emailDoublon("https://club.exemple");
+    expect(html).toContain("remboursé en totalité");
+    expect(html).toContain("Ton abonnement en cours ne change pas");
+    expect(html).toContain('href="https://club.exemple/profil"');
+  });
+  it("reprise : renvoie vers la connexion", () => {
+    expect(emailReprise("https://club.exemple")).toContain('href="https://club.exemple/connexion"');
+  });
+});

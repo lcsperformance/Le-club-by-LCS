@@ -71,7 +71,7 @@ Stripe (résiliation en fin de période, carte, factures).
   pourtant commencer la période suivante) ; s'il est arrêté après les relances, cette période n'est jamais ouverte ;
 - e-mail déjà connu (ancien membre) : pas de nouveau compte, abonnement rattaché, e-mail « Bon retour » ;
 - doublon (déjà abonné, sans résiliation prévue, qui repaie) : le second abonnement est annulé et remboursé
-  aussitôt par le webhook ; le premier est gardé ;
+  aussitôt par le webhook ; le premier est gardé ; la personne reçoit un e-mail (Resend) qui le lui explique ;
 - les comptes coach et admin ne sont jamais modifiés par un paiement et gardent toujours l'accès.
 
 **Déjà configuré dans Stripe (mode test)** : liens de paiement mensuel (`plink_1UdWJAB1uelR3FW92RqAcEjz`)
