@@ -1,4 +1,5 @@
 <p style="font-size:16px;line-height:1.5">Bienvenue au Club !</p>
 <p style="font-size:16px;line-height:1.5">Ton abonnement est actif. Il te reste à choisir ton mot de passe pour accéder à ton programme.</p>
+<p style="font-size:16px;line-height:1.5">Ton identifiant : <strong>{{ .Email }}</strong><br>Ton mot de passe : celui que tu vas choisir avec le bouton ci-dessous.</p>
 <p style="margin:28px 0"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite" style="background:#DEFD62;color:#090A0F;padding:14px 22px;border-radius:14px;font-weight:800;text-decoration:none;display:inline-block">Choisir mon mot de passe</a></p>
 <p style="font-size:14px;line-height:1.5;color:#B8B4D6">Ce lien est valable 24 heures. Ensuite, tu pourras en demander un nouveau depuis « Mot de passe oublié ».</p>
