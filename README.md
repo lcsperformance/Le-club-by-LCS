@@ -31,10 +31,13 @@ Réglages d'authentification appliqués sur le projet :
 
 ## E-mails (Resend)
 
-Tant que Resend n'est pas branché, Supabase envoie les e-mails lui-même : en anglais, environ
-2 par heure, et le lien « mot de passe oublié » doit être ouvert sur l'appareil qui l'a demandé.
+**Branché le 19/11/2026** : domaine `lcsperformance.fr` vérifié chez Resend (DNS chez Hostinger :
+`resend._domainkey`, `rsend`, `send`, `_dmarc`), envoi depuis `Leclub@lcsperformance.fr`,
+e-mails en français installés, limite 60 e-mails par heure.
 
-Pour brancher Resend :
+Pour modifier un e-mail : éditer `supabase/emails/`, puis relancer `npm run emails`.
+
+Marche suivie (pour mémoire ou pour un autre projet) :
 
 1. **Resend** (resend.com) : créer le compte, ajouter le domaine d'envoi (ex. `lcs-performance.fr`)
    et ajouter chez l'hébergeur du domaine les enregistrements DNS indiqués, jusqu'à « Verified ».
