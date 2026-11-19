@@ -50,6 +50,18 @@ Marche suivie (pour mémoire ou pour un autre projet) :
 
 Les e-mails pointent alors directement vers `/auth/confirm` (lien utilisable sur n'importe quel appareil).
 
+## Espace admin : membres
+
+`/admin/membres` (rôle admin uniquement ; un membre ou un coach est renvoyé vers son accueil, et la base
+refuse leurs appels) : liste des membres avec statut d'abonnement, accès, niveau et ancienneté ; recherche
+par prénom ou e-mail. Pour chaque membre, « Gérer l'accès » :
+- **ouvrir l'accès** jusqu'à une date (ambassadeur, geste commercial) : indépendant de Stripe ;
+- **couper l'accès** : bloque l'app même si l'abonnement est payé, et programme la résiliation Stripe à la
+  fin de la période payée (plus de prélèvement) ; « Rétablir » lève le blocage sans toucher à Stripe ;
+- **renvoyer l'e-mail d'accès** : e-mail de bienvenue si la personne n'a jamais choisi son mot de passe,
+  sinon e-mail « choisir un nouveau mot de passe » ;
+- chaque action est notée dans un journal (qui, quoi, quand), affiché sous la fiche.
+
 ## Abonnement Stripe (mode test)
 
 **Formules** : 49 €/mois (sans engagement) ou 499 €/an, au choix sur `/abonnement` ; prix affichés dans

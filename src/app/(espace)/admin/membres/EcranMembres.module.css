@@ -1,0 +1,106 @@
+.liste {
+  display: grid;
+  gap: 12px;
+}
+
+.membre {
+  display: grid;
+  gap: 10px;
+}
+
+.haut {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.initiale {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--aurore);
+  color: var(--fond);
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.identite {
+  min-width: 0;
+}
+
+.prenom {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.email {
+  font-size: 13px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pastille {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(244, 238, 255, 0.18);
+  background: rgba(244, 238, 255, 0.06);
+}
+
+.ouvert {
+  color: var(--fond);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.alerte {
+  color: var(--fond);
+  background: var(--aurore);
+  border-color: var(--aurore);
+}
+
+.ferme {
+  color: var(--texte-doux);
+}
+
+.gestion {
+  display: grid;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(244, 238, 255, 0.12);
+}
+
+.ligneAction {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.ligneAction > :first-child {
+  flex: 1 1 160px;
+}
+
+.journal {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+
+.vide {
+  color: var(--texte-doux);
+  font-size: 15px;
+}

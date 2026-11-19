@@ -172,3 +172,34 @@ describe("contre-épreuve", () => {
     expect(touchees).toEqual([{ ftp: 255 }]);
   });
 });
+
+describe("journal de l'admin (journal_admin) : Alice face aux lignes de Bruno", () => {
+  beforeAll(async () => {
+    await base.db.query("insert into journal_admin (membre_id, action, detail) values ($1, 'acces_offert', '01/01/2027')", [
+      BRUNO,
+    ]);
+  });
+  const lignesBruno = async () =>
+    (await base.db.query("select action, detail from journal_admin where membre_id = $1", [BRUNO])).rows;
+
+  it("lecture : ne voit rien, ni de Bruno ni d'elle-même", async () => {
+    expect(await alice("select * from journal_admin")).toEqual([]);
+    expect(await alice("select * from journal_admin where membre_id = $1", [BRUNO])).toEqual([]);
+  });
+
+  it("modification et suppression : refusées", async () => {
+    await expect(alice("update journal_admin set detail = 'x' where membre_id = $1", [BRUNO])).rejects.toThrow(
+      /permission denied/,
+    );
+    await expect(alice("delete from journal_admin where membre_id = $1", [BRUNO])).rejects.toThrow(/permission denied/);
+    expect(await lignesBruno()).toEqual([{ action: "acces_offert", detail: "01/01/2027" }]);
+  });
+
+  it("écriture au nom de Bruno : refusée, directement comme par les fonctions de l'admin", async () => {
+    await expect(
+      alice("insert into journal_admin (membre_id, action) values ($1, 'acces_coupe')", [BRUNO]),
+    ).rejects.toThrow(/permission denied/);
+    await expect(alice("select admin_couper_acces($1, true)", [BRUNO])).rejects.toThrow(/administrateur/);
+    expect(await lignesBruno()).toHaveLength(1);
+  });
+});

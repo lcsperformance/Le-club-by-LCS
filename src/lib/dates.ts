@@ -39,3 +39,10 @@ export function dateDuJourParis(maintenant: Date = new Date()): string {
   // Le format suédois donne directement AAAA-MM-JJ.
   return new Intl.DateTimeFormat("sv-SE", { timeZone: FUSEAU }).format(maintenant);
 }
+
+/** Date courte au format français, ex. « 18/11/2026 ». */
+export function formatDateCourteFr(date: Date): string {
+  return new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: FUSEAU }).format(
+    date,
+  );
+}
