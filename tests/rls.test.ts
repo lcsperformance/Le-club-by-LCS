@@ -185,3 +185,40 @@ describe("rôles", () => {
     await expect(enTantQue(null, "select admin_changer_statut($1, 'actif')", [B])).rejects.toThrow(/permission/);
   });
 });
+
+describe("tests de départ : un par jour", () => {
+  const upsert = `insert into tests (date_test, allure_seuil_course, ftp, vitesse_critique_natation, fc_seuil)
+    values ('2026-12-01', $1, 220, 105, 168)
+    on conflict (membre_id, date_test) do update set
+      allure_seuil_course = excluded.allure_seuil_course, ftp = excluded.ftp,
+      vitesse_critique_natation = excluded.vitesse_critique_natation, fc_seuil = excluded.fc_seuil`;
+
+  it("refaire ses tests le même jour remplace la saisie du jour", async () => {
+    await enTantQue(A, upsert, [270]);
+    await enTantQue(A, upsert, [265]);
+    const rows = await enTantQue<{ allure_seuil_course: number }>(
+      A,
+      "select allure_seuil_course from tests where date_test = '2026-12-01'",
+    );
+    expect(rows).toEqual([{ allure_seuil_course: 265 }]);
+  });
+
+  it("deux membres peuvent faire leurs tests le même jour", async () => {
+    await enTantQue(B, upsert, [300]);
+    expect(await enTantQue(A, "select 1 from tests where date_test = '2026-12-01'")).toHaveLength(1);
+    expect(await enTantQue(B, "select 1 from tests where date_test = '2026-12-01'")).toHaveLength(1);
+  });
+
+  it("un membre ne peut pas écraser le test du jour d'un autre", async () => {
+    await expect(
+      enTantQue(
+        A,
+        `insert into tests (membre_id, date_test, ftp) values ($1, '2026-12-01', 999)
+         on conflict (membre_id, date_test) do update set ftp = excluded.ftp`,
+        [B],
+      ),
+    ).rejects.toThrow(/row-level security|check constraint/);
+    const [b] = await enTantQue<{ ftp: number }>(B, "select ftp from tests where date_test = '2026-12-01'");
+    expect(b.ftp).toBe(220);
+  });
+});

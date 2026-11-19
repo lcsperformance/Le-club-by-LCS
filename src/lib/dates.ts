@@ -33,3 +33,9 @@ export function formatJourFr(date: Date): string {
   }).format(date);
   return texte.charAt(0).toUpperCase() + texte.slice(1);
 }
+
+/** Date du jour à Paris au format AAAA-MM-JJ (pour les colonnes « date »). */
+export function dateDuJourParis(maintenant: Date = new Date()): string {
+  // Le format suédois donne directement AAAA-MM-JJ.
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: FUSEAU }).format(maintenant);
+}

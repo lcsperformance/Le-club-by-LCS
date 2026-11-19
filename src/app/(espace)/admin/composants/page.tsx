@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { ReactNode } from "react";
 import { Chargement } from "@/components/Chargement";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, NOMS_ZONES, PastilleZone, ZONES } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, Compteur, NOMS_ZONES, PastilleZone, ZONES } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Composants · Le Club by LCS" };
@@ -76,6 +76,19 @@ async function Contenu() {
           <Champ libelle="E-mail" name="demo_email" type="email" placeholder="ton.adresse@exemple.fr" />
           <Champ libelle="FTP (watts)" name="demo_ftp" inputMode="numeric" placeholder="250" aide="Ta puissance au seuil sur 1 heure." />
           <Champ libelle="FC seuil" name="demo_fc" defaultValue="320" erreur="Une fréquence cardiaque doit être entre 80 et 230." />
+        </Bloc>
+
+        <Bloc titre="Compteur">
+          <Compteur
+            name="demo_compteur"
+            valeurInitiale={220}
+            pas={5}
+            min={80}
+            max={450}
+            libelleMoins="Moins"
+            libellePlus="Plus"
+            intitule="Exemple en watts"
+          />
         </Bloc>
 
         <Bloc titre="Pastilles de zone">
