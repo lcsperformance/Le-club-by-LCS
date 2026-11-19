@@ -22,5 +22,11 @@ async function Contenu() {
   const maintenant = new Date();
   // Accès ouvert : rien à faire ici, direction l'espace habituel.
   if (aAccesEspace(utilisateur, maintenant)) redirect(cheminAccueil(utilisateur.role));
-  return <EcranAbonnement utilisateur={utilisateur} lienPaiement={configAbonnement.lienPaiement()} maintenant={maintenant} />;
+  return (
+    <EcranAbonnement
+      utilisateur={utilisateur}
+      liensPaiement={{ mensuelle: configAbonnement.lienPaiement(), annuelle: configAbonnement.lienPaiementAnnuel() }}
+      maintenant={maintenant}
+    />
+  );
 }

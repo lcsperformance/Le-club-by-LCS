@@ -13,6 +13,8 @@ export const configAbonnement = {
   cleSupabaseSecrete: () => exiger("SUPABASE_SECRET_KEY"),
   /** Lien de paiement Stripe (public) : abonnement à 49 € par mois. */
   lienPaiement: () => process.env.STRIPE_LIEN_PAIEMENT ?? null,
+  /** Lien de paiement Stripe (public) : abonnement à 499 € par an. Sans lui, seul le mensuel est proposé. */
+  lienPaiementAnnuel: () => process.env.STRIPE_LIEN_PAIEMENT_ANNUEL ?? null,
   /** Facultative : sans elle, l'e-mail de reprise d'un ancien membre n'est pas envoyé. */
   cleResend: () => process.env.RESEND_API_KEY ?? null,
   expediteur: "Le Club by LCS <Leclub@lcsperformance.fr>",

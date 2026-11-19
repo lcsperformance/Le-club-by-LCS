@@ -1,19 +1,18 @@
 import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
-import { BoutonPrincipal } from "@/components/ui";
+import { ChoixFormule, type LiensPaiement } from "@/components/ChoixFormule";
 import type { Utilisateur } from "@/lib/auth";
 
 /** Page d'un membre dont la période payée est terminée (ou pas encore commencée). */
 export function EcranAbonnement({
   utilisateur,
-  lienPaiement,
+  liensPaiement,
   maintenant,
 }: {
   utilisateur: Utilisateur;
-  lienPaiement: string | null;
+  liensPaiement: LiensPaiement;
   maintenant: Date;
 }) {
-  const lien = lienPaiement ? `${lienPaiement}?prefilled_email=${encodeURIComponent(utilisateur.email)}` : null;
   return (
     <>
       <span className="logo" style={{ fontSize: 30, lineHeight: 1, marginTop: 8 }}>
@@ -27,11 +26,11 @@ export function EcranAbonnement({
         dès que tu reprends.
       </p>
       <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />
-      {lien && (
-        <BoutonPrincipal href={lien}>
-          {utilisateur.abonnement.statut === "inactif" ? "M'abonner" : "Me réabonner"} · 49 €/mois
-        </BoutonPrincipal>
-      )}
+      <ChoixFormule
+        liens={liensPaiement}
+        email={utilisateur.email}
+        verbe={utilisateur.abonnement.statut === "inactif" ? "M'abonner" : "Me réabonner"}
+      />
       <form action={seDeconnecter}>
         <button
           type="submit"
