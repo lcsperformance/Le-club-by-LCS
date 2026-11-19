@@ -13,15 +13,28 @@ npm run dev                  # http://localhost:3000
 ## Base de données (Supabase)
 
 Projet Supabase : « Le Club by LCS » (réf. `twgbgqsfpseqsnuivlab`, région eu-west-1).
-Migrations déjà appliquées : `20261118000000_tables_membres.sql`, `20261119000000_roles.sql` et `20261119100000_tests_un_par_jour.sql` (le 19/11/2026).
-
 Réglages d'authentification appliqués sur le projet :
 - inscription libre **désactivée** (les comptes sont créés par le paiement ou par un admin) ;
 - adresse du site : `https://le-club-by-lcs.vercel.app` ; adresses de retour autorisées : localhost, production et aperçus Vercel ;
 - mot de passe : 8 caractères minimum.
 
-À faire une fois Resend branché (SMTP personnalisé) : passer les e-mails en français, avec un lien direct
-`{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery` (le modèle ne peut pas être modifié avec l'envoi gratuit de Supabase).
+## E-mails (Resend)
+
+Tant que Resend n'est pas branché, Supabase envoie les e-mails lui-même : en anglais, environ
+2 par heure, et le lien « mot de passe oublié » doit être ouvert sur l'appareil qui l'a demandé.
+
+Pour brancher Resend :
+
+1. **Resend** (resend.com) : créer le compte, ajouter le domaine d'envoi (ex. `lcs-performance.fr`)
+   et ajouter chez l'hébergeur du domaine les enregistrements DNS indiqués, jusqu'à « Verified ».
+2. **Resend** : créer une clé API (« Sending access », limitée à ce domaine).
+3. **Supabase** > Authentication > Emails > **SMTP Settings** : activer « Custom SMTP » et saisir :
+   - Host `smtp.resend.com`, Port `465`, Username `resend`, Password = la clé API Resend ;
+   - Sender email, par ex. `club@lcs-performance.fr`, Sender name `Le Club by LCS`.
+4. Installer les e-mails en français (`supabase/emails/`) et relever la limite d'envoi :
+   `SUPABASE_PROJECT_REF=… SUPABASE_ACCESS_TOKEN=… npm run emails`
+
+Les e-mails pointent alors directement vers `/auth/confirm` (lien utilisable sur n'importe quel appareil).
 
 ## Modifier les pourcentages des zones (pour Martin)
 
