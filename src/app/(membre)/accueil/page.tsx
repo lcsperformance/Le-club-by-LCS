@@ -9,22 +9,16 @@ import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Accueil · Le Club by LCS" };
 
-const MESSAGES: Record<string, string> = {
-  "tests-enregistres": "Tes tests sont enregistrés. Le calcul de tes zones arrive très bientôt.",
-};
-
-export default function PageAccueil({ searchParams }: PageProps<"/accueil">) {
+export default function PageAccueil() {
   return (
     <Suspense fallback={<Chargement />}>
-      <Contenu searchParams={searchParams} />
+      <Contenu />
     </Suspense>
   );
 }
 
-async function Contenu({ searchParams }: Pick<PageProps<"/accueil">, "searchParams">) {
+async function Contenu() {
   const utilisateur = await exigerRole("membre", "admin");
-  const { message } = await searchParams;
-  const texteMessage = typeof message === "string" ? MESSAGES[message] : undefined;
 
   const supabase = await createClient();
   const { count } = await supabase
@@ -37,19 +31,11 @@ async function Contenu({ searchParams }: Pick<PageProps<"/accueil">, "searchPara
     <>
       <EnTeteMembre utilisateur={utilisateur} titre="Salut !" sousTitre={formatJourFr(new Date())} />
 
-      {texteMessage && (
-        <Carte>
-          <p className="message-info" role="status">
-            {texteMessage}
-          </p>
-        </Carte>
-      )}
-
       {testsFaits ? (
-        <Carte href="/tests" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span aria-hidden style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--accent)", flex: "none" }} />
-          <span style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>Tes tests sont enregistrés</span>
-          <span style={{ fontSize: 14, fontWeight: 700 }}>Refaire</span>
+          <span style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>Tes zones sont à jour</span>
+          <span style={{ fontSize: 14, fontWeight: 700 }}>Voir</span>
         </Carte>
       ) : (
         <section

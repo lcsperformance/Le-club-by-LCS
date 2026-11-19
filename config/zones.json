@@ -1,0 +1,8 @@
+{
+  "_explication": "Pourcentages des zones d'entraînement. Chaque ligne contient 6 nombres : les bornes des zones Z1 à Z5 (Z1 va du 1er au 2e nombre, Z2 du 2e au 3e, etc.). Les nombres doivent monter du premier au dernier. Course et natation : pourcentage de la vitesse au seuil. Vélo : pourcentage de la FTP. Fréquence cardiaque : pourcentage de la FC au seuil, utilisée pour la course et le vélo.",
+  "noms": ["Récupération", "Endurance", "Tempo", "Seuil", "Haute intensité"],
+  "course": [65, 78, 88, 95, 102, 110],
+  "velo": [45, 56, 76, 91, 106, 120],
+  "natation": [80, 87, 93, 97, 102, 108],
+  "frequence_cardiaque": [65, 81, 89, 94, 100, 106]
+}

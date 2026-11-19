@@ -29,5 +29,5 @@ export async function enregistrerTests(_: EtatTests, formData: FormData): Promis
     return { erreur: "Impossible d'enregistrer tes tests pour le moment. Réessaie dans un instant." };
   }
 
-  redirect("/accueil?message=tests-enregistres");
+  redirect("/zones");
 }
