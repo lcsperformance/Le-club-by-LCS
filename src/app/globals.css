@@ -6,10 +6,12 @@
   --cendre: #0c1321;
   --accent: #defd62;
   --texte: #f4eeff;
+  --texte-doux: #b8b4d6;
+  --erreur: #ff8a9a;
 
-  /* Polices sous licence : à ajouter dans public/fonts lorsqu'elles seront fournies. */
-  --police-titre: "Tussilago", "Helvetica Neue", Arial, sans-serif;
-  --police-texte: "Helvetica Neue LT Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* Tussilago et Helvetica Neue LT Pro sont sous licence : à ajouter dans public/fonts. */
+  --police-titre: "Tussilago", var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  --police-texte: "Helvetica Neue LT Pro", var(--font-inter), "Helvetica Neue", Helvetica, Arial, sans-serif;
 
   color-scheme: dark;
 }
@@ -39,4 +41,127 @@ h3 {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Neon Glassmorphism ---------- */
+
+/* Titre large de la maquette (Archivo étiré, en majuscules). */
+.titre {
+  font-family: var(--police-titre);
+  font-stretch: 125%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+/* Carte en verre fumé : flou, bordure dégradée 1 px, lueur interne. */
+.verre {
+  position: relative;
+  border-radius: 20px;
+  padding: 20px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
+  -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  backdrop-filter: blur(26px) saturate(1.5);
+  box-shadow:
+    inset 0 0 26px rgba(250, 148, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 16px 40px rgba(0, 0, 0, 0.45);
+}
+.verre::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(250, 148, 255, 0.85), rgba(255, 255, 255, 0.07) 45%, rgba(222, 253, 98, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Champ de saisie en verre. */
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+.champ input {
+  height: 52px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(250, 148, 255, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 0 16px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.champ input::placeholder {
+  color: #8f8bb0;
+}
+.champ input:focus {
+  border-color: var(--aurore);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(250, 148, 255, 0.25);
+}
+
+/* Bouton principal : accent avec ombre colorée. */
+.bouton-principal {
+  height: 56px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--fond);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow:
+    0 8px 28px rgba(222, 253, 98, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.bouton-principal:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.bouton-secondaire {
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.lien {
+  color: var(--aurore);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.message-erreur {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--erreur);
+}
+.message-info {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texte);
 }

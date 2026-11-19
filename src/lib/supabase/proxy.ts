@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseEnv } from "./env";
+import { estCheminPublic } from "@/lib/roles";
 
 /** Rafraîchit la session Supabase à chaque requête et renvoie les cookies à jour. */
 export async function updateSession(request: NextRequest) {
@@ -24,7 +25,18 @@ export async function updateSession(request: NextRequest) {
   });
 
   // Ne rien placer entre la création du client et cet appel.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const connecte = Boolean(data?.claims?.sub);
+
+  // Visiteur non connecté sur une page protégée : direction la connexion.
+  if (!connecte && !estCheminPublic(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/connexion";
+    url.search = "";
+    const redirection = NextResponse.redirect(url);
+    response.cookies.getAll().forEach((c) => redirection.cookies.set(c));
+    return redirection;
+  }
 
   return response;
 }
