@@ -13,7 +13,7 @@ npm run dev                  # http://localhost:3000
 ## Base de données (Supabase)
 
 Projet Supabase : « Le Club by LCS » (réf. `twgbgqsfpseqsnuivlab`, région eu-west-1).
-Migrations déjà appliquées : `20261118000000_tables_membres.sql` et `20261119000000_roles.sql` (le 19/11/2026).
+Migrations déjà appliquées : `20261118000000_tables_membres.sql`, `20261119000000_roles.sql` et `20261119100000_tests_un_par_jour.sql` (le 19/11/2026).
 
 Réglages d'authentification appliqués sur le projet :
 - inscription libre **désactivée** (les comptes sont créés par le paiement ou par un admin) ;

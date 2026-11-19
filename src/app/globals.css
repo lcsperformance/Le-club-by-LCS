@@ -75,6 +75,13 @@ a {
   color: var(--accent);
 }
 
+/* Titre de carte : un vrai titre (h2, h3) mais dans la police du texte, comme sur la maquette. */
+.titre-carte {
+  font-family: var(--police-texte), "Helvetica Neue", Arial, sans-serif;
+  font-stretch: normal;
+  font-weight: 800;
+}
+
 .lien {
   color: var(--aurore);
   font-weight: 700;

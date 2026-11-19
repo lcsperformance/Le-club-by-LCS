@@ -30,6 +30,9 @@ const ICONES: Record<CleOnglet, ReactNode> = {
 export function BarreOnglets() {
   const actif = ongletActif(usePathname());
 
+  // Comme dans la maquette, pas de barre sur les écrans plein écran (tests, séance…).
+  if (!actif) return null;
+
   return (
     <>
       <div className={styles.reserve} aria-hidden />

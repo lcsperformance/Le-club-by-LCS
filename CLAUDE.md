@@ -79,10 +79,11 @@ La maquette est dans le dossier `maquette/`. Respecter le style **Neon Glassmorp
 - Next.js 16 : lire `AGENTS.md` et la doc dans `node_modules/next/dist/docs/` avant d'écrire du code (ex. `middleware` s'appelle désormais `proxy`, fichier `src/proxy.ts`).
 - Connexions Supabase : `src/lib/supabase/client.ts` (navigateur) et `server.ts` (serveur).
 - Toute modification de la base passe par un nouveau fichier dans `supabase/migrations/`, avec la sécurité par ligne activée et testée dans `tests/rls.test.ts`.
-- Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris).
+- Dates : utiliser `src/lib/dates.ts` (fuseau Europe/Paris), dont `dateDuJourParis()` pour les colonnes `date`.
+- Tests de départ : mesures, pas et limites dans `src/lib/tests-depart.ts` ; écran `/tests` ; un test par membre et par jour (upsert).
 - Rôles `membre`, `coach`, `admin` (colonne `membres.role`). Une page protégée appelle `exigerRole(...)` de `src/lib/auth.ts` dans un composant placé sous `<Suspense>` (Cache Components activé).
 - Pas d'inscription libre : jamais de `signUp` dans l'app.
-- Composants Neon dans `src/components/ui` (import depuis `@/components/ui`) : `Carte`, `BoutonPrincipal`, `BoutonSecondaire`, `Champ`, `PastilleZone`. Les utiliser plutôt que de recopier des styles ; vitrine sur `/admin/composants`.
-- Fond : `FondNeon`. Espace membre dans `src/app/(membre)` avec la `BarreOnglets` (onglets définis dans `src/lib/onglets.ts`) ; espaces coach et admin dans `src/app/(espace)`.
-- Classes globales restantes : `.titre` (capitales), `.logo` (« le club »), `.lien`, `.message-info`, `.message-erreur`.
+- Composants Neon dans `src/components/ui` (import depuis `@/components/ui`) : `Carte`, `BoutonPrincipal`, `BoutonSecondaire`, `Champ`, `Compteur` (− valeur +), `PastilleZone`. Les utiliser plutôt que de recopier des styles ; vitrine sur `/admin/composants`.
+- Fond : `FondNeon`. Espace membre dans `src/app/(membre)` avec la `BarreOnglets` (affichée seulement sur les 5 pages d'onglets) (onglets définis dans `src/lib/onglets.ts`) ; espaces coach et admin dans `src/app/(espace)`.
+- Classes globales restantes : `.titre` (capitales), `.titre-carte` (titre de carte dans la police du texte), `.logo` (« le club »), `.lien`, `.message-info`, `.message-erreur`.
 - Polices : déclarées **uniquement** dans `src/app/polices.ts` (next/font), exposées en `--police-titre` et `--police-texte`. Style des titres via `--titre-graisse`, `--titre-largeur`, `--titre-casse` dans `globals.css`. Ne jamais nommer une police ailleurs (vérifié par `tests/polices.test.ts`).
