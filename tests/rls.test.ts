@@ -1,52 +1,21 @@
 /**
- * Vérifie la sécurité par ligne sur une vraie base PostgreSQL locale.
- * Variable TEST_DATABASE_URL (défaut : postgres://postgres:postgres@localhost:5432/postgres).
+ * Vérifie la sécurité par ligne sur une vraie base PostgreSQL locale (voir aide/base-de-test.ts).
  */
-import { readFileSync, readdirSync } from "node:fs";
-import { join } from "node:path";
-import { Client } from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { creerBaseDeTest, type BaseDeTest } from "./aide/base-de-test";
 
-const ADMIN_URL =
-  process.env.TEST_DATABASE_URL ?? "postgres://postgres:postgres@localhost:5432/postgres";
-const DB = `club_test_${process.pid}`;
 const A = "00000000-0000-0000-0000-00000000000a";
 const B = "00000000-0000-0000-0000-00000000000b";
 const COACH = "00000000-0000-0000-0000-0000000000c0";
 const ADMIN = "00000000-0000-0000-0000-0000000000ad";
 
-let admin: Client;
-let db: Client;
-
-/** Exécute une requête en tant que membre connecté (rôle authenticated). */
-async function enTantQue<T>(uid: string | null, sql: string, params: unknown[] = []) {
-  await db.query("begin");
-  try {
-    await db.query(uid ? "set local role authenticated" : "set local role anon");
-    await db.query("select set_config('request.jwt.claim.sub', $1, true)", [uid ?? ""]);
-    const res = await db.query(sql, params);
-    await db.query("commit");
-    return res.rows as T[];
-  } catch (e) {
-    await db.query("rollback");
-    throw e;
-  }
-}
+let base: BaseDeTest;
+let db: BaseDeTest["db"];
+const enTantQue: BaseDeTest["enTantQue"] = (...args) => base.enTantQue(...args);
 
 beforeAll(async () => {
-  admin = new Client({ connectionString: ADMIN_URL });
-  await admin.connect();
-  await admin.query(`create database ${DB}`);
-  const url = new URL(ADMIN_URL);
-  url.pathname = `/${DB}`;
-  db = new Client({ connectionString: url.toString() });
-  await db.connect();
-
-  await db.query(readFileSync(join(__dirname, "supabase-shim.sql"), "utf8"));
-  const dir = join(__dirname, "..", "supabase", "migrations");
-  for (const f of readdirSync(dir).filter((f) => f.endsWith(".sql")).sort()) {
-    await db.query(readFileSync(join(dir, f), "utf8"));
-  }
+  base = await creerBaseDeTest("rls");
+  db = base.db;
 
   await db.query(
     "insert into auth.users (id, email) values ($1, 'a@club.fr'), ($2, 'b@club.fr'), ($3, 'coach@club.fr'), ($4, 'admin@club.fr')",
@@ -64,9 +33,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await db?.end();
-  await admin?.query(`drop database if exists ${DB}`);
-  await admin?.end();
+  await base?.fermer();
 });
 
 describe("fiche membre", () => {
