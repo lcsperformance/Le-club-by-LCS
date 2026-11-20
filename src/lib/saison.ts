@@ -185,3 +185,34 @@ export function phaseDuMoment(saison: Saison): string {
   if (!o || o.statut.type !== "en-cours") return "Fil rouge";
   return `Bloc ${o.bloc}, semaine ${o.statut.semaine}/${o.statut.semaines}`;
 }
+
+/** Phase courte pour la date de l'accueil : « semaine 2 du bloc S » ou « fil rouge ». */
+export function phaseCourte(saison: Saison): string {
+  const o = saison.enCours;
+  if (!o || o.statut.type !== "en-cours") return "fil rouge";
+  return `semaine ${o.statut.semaine} du bloc ${o.bloc}`;
+}
+
+/** Carte de l'accueil (maquette) : bloc en cours, ou fil rouge avec le prochain bloc. */
+export function carteAccueil(saison: Saison): { surtitre: string; titre: string; sous: string; progression: number | null } {
+  const o = saison.enCours;
+  if (o && o.statut.type === "en-cours") {
+    const s = o.statut;
+    return {
+      surtitre: "Bloc en cours",
+      titre: `${titreObjectif(o)} · semaine ${s.semaine}/${s.semaines}`,
+      sous: `${decompte(s.joursAvantCourse)} · course le ${formatIsoCourt(o.date_objectif)}`,
+      progression: s.semaine / s.semaines,
+    };
+  }
+  const p = saison.prochain;
+  return {
+    surtitre: "Fil rouge",
+    titre: "Ton entraînement de fond",
+    sous:
+      p && p.statut.type === "a-venir"
+        ? `Ton bloc ${p.bloc} démarre le ${formatIsoCourt(p.debut)}.`
+        : "Ajoute un objectif quand tu veux : son bloc se branche tout seul.",
+    progression: null,
+  };
+}

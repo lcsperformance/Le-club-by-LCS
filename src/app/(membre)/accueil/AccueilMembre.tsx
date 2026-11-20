@@ -1,12 +1,19 @@
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
+import { dateDuJourParis } from "@/lib/dates";
+import { carteAccueil, organiserSaison, phaseCourte, type Objectif } from "@/lib/saison";
 import { EnTeteAccueil } from "./EnTeteAccueil";
+import styles from "./EnTeteAccueil.module.css";
+
+type Props = { utilisateur: Utilisateur; testsFaits: boolean; objectifs: Objectif[]; aujourdhui: Date };
 
 /** Contenu de l'accueil membre. */
-export function AccueilMembre({ utilisateur, testsFaits, aujourdhui }: { utilisateur: Utilisateur; testsFaits: boolean; aujourdhui: Date }) {
+export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui }: Props) {
+  const saison = organiserSaison(objectifs, dateDuJourParis(aujourdhui));
+  const bloc = carteAccueil(saison);
   return (
     <>
-      <EnTeteAccueil utilisateur={utilisateur} aujourdhui={aujourdhui} />
+      <EnTeteAccueil utilisateur={utilisateur} aujourdhui={aujourdhui} phase={phaseCourte(saison)} />
 
       {testsFaits ? (
         <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -48,6 +55,27 @@ export function AccueilMembre({ utilisateur, testsFaits, aujourdhui }: { utilisa
           </BoutonPrincipal>
         </section>
       )}
+
+      <Carte href="/saison" className={styles.carteBloc}>
+        <span className={styles.carteBlocHaut}>
+          <span className={styles.surtitre}>{bloc.surtitre}</span>
+          <span className={styles.lienSaison}>Ma saison</span>
+        </span>
+        <span className={styles.carteBlocTitre}>{bloc.titre}</span>
+        <span className={styles.carteBlocSous}>{bloc.sous}</span>
+        {bloc.progression !== null && (
+          <span
+            className={styles.jauge}
+            role="progressbar"
+            aria-label="Avancement du bloc"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(bloc.progression * 100)}
+          >
+            <span style={{ width: `${Math.round(bloc.progression * 100)}%` }} />
+          </span>
+        )}
+      </Carte>
 
       <Carte as="section">
         <p className="message-info">Ton programme arrive bientôt. Lancement le 1er janvier 2027.</p>

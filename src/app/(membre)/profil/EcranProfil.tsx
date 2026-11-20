@@ -8,7 +8,6 @@ import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 
 const LIENS = [
-  { href: "/saison", libelle: "Ma saison" },
   { href: "/records", libelle: "Mes records" },
   { href: "/progres", libelle: "Mes progrès" },
   { href: "/zones", libelle: "Mes zones" },
@@ -26,6 +25,15 @@ function Fleche() {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <path d="M9 5l7 7-7 7" />
     </svg>
+  );
+}
+
+function LienCarte({ href, libelle }: { href: string; libelle: string }) {
+  return (
+    <Carte href={href} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <span style={{ flex: 1, fontSize: 16, fontWeight: 800 }}>{libelle}</span>
+      <Fleche />
+    </Carte>
   );
 }
 
@@ -73,13 +81,15 @@ export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisat
       {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
       {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
 
-      <ChoixNiveauProfil niveau={utilisateur.niveau} profil={utilisateur.profil} ecran="profil" />
+      <ChoixNiveauProfil
+        niveau={utilisateur.niveau}
+        profil={utilisateur.profil}
+        ecran="profil"
+        entreLesDeux={<LienCarte href="/saison" libelle="Ma saison" />}
+      />
 
       {LIENS.map((l) => (
-        <Carte key={l.href} href={l.href} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span style={{ flex: 1, fontSize: 16, fontWeight: 800 }}>{l.libelle}</span>
-          <Fleche />
-        </Carte>
+        <LienCarte key={l.href} {...l} />
       ))}
 
       <form action={seDeconnecter}>

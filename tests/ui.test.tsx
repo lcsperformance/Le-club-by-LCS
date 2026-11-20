@@ -5,7 +5,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, PastilleZone, ZONES } from "@/components/ui";
-import { ONGLETS, ongletActif } from "@/lib/onglets";
+import { barreVisible, ONGLETS, ongletActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
   it("a 5 onglets dans l'ordre de la maquette", () => {
@@ -17,6 +17,17 @@ describe("barre d'onglets", () => {
     expect(ongletActif("/club/canaux/general")).toBe("club");
     expect(ongletActif("/clubs")).toBeNull();
     expect(ongletActif("/admin")).toBeNull();
+  });
+
+  it("Ma saison est rattachée à l'onglet Semaine", () => {
+    expect(ongletActif("/saison")).toBe("semaine");
+    expect(ongletActif("/saisons")).toBeNull();
+  });
+
+  it("la barre reste sur les sous-pages (zones, profil…), pas sur les écrans plein écran", () => {
+    for (const c of ["/accueil", "/saison", "/zones", "/profil", "/progres", "/records"]) expect(barreVisible(c), c).toBe(true);
+    for (const c of ["/tests", "/abonnement", "/admin", "/connexion", "/bienvenue"]) expect(barreVisible(c), c).toBe(false);
+    expect(ongletActif("/zones")).toBeNull();
   });
 
   it("marque l'onglet de la page courante", () => {
