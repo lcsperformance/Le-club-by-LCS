@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { BoutonSecondaire, Carte, Champ } from "@/components/ui";
 import {
   anciennete,
@@ -106,9 +106,13 @@ function Gestion({ id, membre: m, nom, journal }: { id: string; membre: MembreAd
   const [enCours, demarrer] = useTransition();
   const [resultat, setResultat] = useState<ResultatAdmin>({});
   const [date, setDate] = useState("");
+  // Verrou immédiat : un double toucher arrive avant que les boutons ne s'affichent désactivés.
+  const occupe = useRef(false);
 
   function agir(question: string | null, action: () => Promise<ResultatAdmin>) {
+    if (occupe.current) return;
     if (question && !window.confirm(question)) return;
+    occupe.current = true;
     setResultat({});
     demarrer(async () => {
       let r: ResultatAdmin;
@@ -116,6 +120,8 @@ function Gestion({ id, membre: m, nom, journal }: { id: string; membre: MembreAd
         r = await action();
       } catch {
         r = { erreur: "Action impossible pour le moment. Recharge la page et réessaie." };
+      } finally {
+        occupe.current = false;
       }
       setResultat(r);
       if (!r.erreur || r.erreur.startsWith("Accès coupé")) router.refresh();
