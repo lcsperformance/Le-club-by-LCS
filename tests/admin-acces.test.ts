@@ -78,6 +78,30 @@ describe("l'admin gère les accès", () => {
     expect(await base.enTantQue(ADMIN, "select membre_id from journal_admin")).toHaveLength(2);
   });
 
+  it("répéter une action qui ne change rien n'ajoute pas de ligne au journal (double toucher)", async () => {
+    const date = "date_trunc('day', now()) + interval '30 days 23 hours'";
+    await base.enTantQue(ADMIN, `select admin_offrir_acces($1, ${date})`, [MEMBRE]);
+    await base.enTantQue(ADMIN, `select admin_offrir_acces($1, ${date})`, [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_offrir_acces($1, null)", [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_offrir_acces($1, null)", [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_couper_acces($1, true)", [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_couper_acces($1, true)", [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_couper_acces($1, false)", [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_couper_acces($1, false)", [MEMBRE]);
+    expect((await journal()).map((l) => l.action)).toEqual([
+      "acces_offert",
+      "acces_offert_retire",
+      "acces_coupe",
+      "acces_retabli",
+    ]);
+  });
+
+  it("changer la date offerte reste noté dans le journal", async () => {
+    await base.enTantQue(ADMIN, `select admin_offrir_acces($1, ${DANS_UN_MOIS})`, [MEMBRE]);
+    await base.enTantQue(ADMIN, "select admin_offrir_acces($1, now() + interval '60 days')", [MEMBRE]);
+    expect((await journal()).map((l) => l.action)).toEqual(["acces_offert", "acces_offert"]);
+  });
+
   it("refuse une date passée", async () => {
     await expect(
       base.enTantQue(ADMIN, "select admin_offrir_acces($1, now() - interval '1 day')", [MEMBRE]),

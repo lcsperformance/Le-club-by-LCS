@@ -74,6 +74,20 @@ describe("liste des membres", () => {
     }
   });
 
+  it("un double toucher sur « Ouvrir l'accès » n'envoie qu'une seule demande au serveur", async () => {
+    const lea = page.getByRole("article", { name: /Léa/ });
+    await lea.getByLabel("Ouvrir l'accès jusqu'au").fill("2027-02-15");
+    let demandes = 0;
+    const compter = (r: { method(): string; headers(): Record<string, string> }) => {
+      if (r.method() === "POST" && r.headers()["next-action"]) demandes++;
+    };
+    page.on("request", compter);
+    await lea.getByRole("button", { name: "Ouvrir l'accès", exact: true }).dblclick();
+    await lea.getByText("Action réservée à un administrateur.").waitFor();
+    page.off("request", compter);
+    expect(demandes).toBe(1);
+  });
+
   it("le serveur refuse l'action sans session admin, même depuis l'écran", async () => {
     const marc = page.getByRole("article", { name: /Marc/ });
     await marc.getByRole("button", { name: "Gérer l'accès" }).click();
