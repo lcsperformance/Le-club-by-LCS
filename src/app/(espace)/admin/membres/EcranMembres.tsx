@@ -111,7 +111,12 @@ function Gestion({ id, membre: m, nom, journal }: { id: string; membre: MembreAd
     if (question && !window.confirm(question)) return;
     setResultat({});
     demarrer(async () => {
-      const r = await action();
+      let r: ResultatAdmin;
+      try {
+        r = await action();
+      } catch {
+        r = { erreur: "Action impossible pour le moment. Recharge la page et réessaie." };
+      }
       setResultat(r);
       if (!r.erreur || r.erreur.startsWith("Accès coupé")) router.refresh();
     });
@@ -128,7 +133,6 @@ function Gestion({ id, membre: m, nom, journal }: { id: string; membre: MembreAd
           onChange={(e) => setDate(e.target.value)}
         />
         <BoutonSecondaire
-          compact
           disabled={!date || enCours}
           onClick={() => agir(null, () => offrirAcces(m.id, date))}
         >

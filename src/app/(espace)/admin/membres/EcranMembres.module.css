@@ -83,14 +83,8 @@
 }
 
 .ligneAction {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 8px;
-  align-items: flex-end;
-}
-
-.ligneAction > :first-child {
-  flex: 1 1 160px;
 }
 
 .journal {
