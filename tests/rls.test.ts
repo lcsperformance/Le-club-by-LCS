@@ -199,6 +199,27 @@ describe("tests de départ : un par jour", () => {
   });
 });
 
+describe("objectifs : nom de course facultatif", () => {
+  it("le membre nomme sa course, ou la laisse sans nom", async () => {
+    await enTantQue(A, "update objectifs set nom = 'Triathlon de Nice'");
+    expect(await enTantQue(A, "select nom from objectifs")).toEqual([{ nom: "Triathlon de Nice" }]);
+    await enTantQue(A, "update objectifs set nom = null");
+    expect(await enTantQue(A, "select nom from objectifs")).toEqual([{ nom: null }]);
+  });
+
+  it.each([
+    ["vide", ""],
+    ["trop long", "x".repeat(61)],
+    ["avec des espaces autour", " Nice "],
+  ])("un nom %s est refusé par la base", async (_, nom) => {
+    await expect(enTantQue(A, "update objectifs set nom = $1", [nom])).rejects.toThrow(/objectifs_nom_valide/);
+  });
+
+  it("le membre ne peut pas nommer l'objectif d'un autre", async () => {
+    expect(await enTantQue(A, "update objectifs set nom = 'Piraté' where membre_id = $1 returning id", [B])).toEqual([]);
+  });
+});
+
 describe("zones personnalisées : bornes cohérentes", () => {
   const essayer = (bornes: string) =>
     enTantQue(A, "insert into zones (sport, bornes) values ('natation', $1::jsonb)", [bornes]);

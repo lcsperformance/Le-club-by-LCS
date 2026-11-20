@@ -31,19 +31,25 @@ describe("Ma saison", () => {
     const page = await ouvrir("saison");
     const objectifs = page.getByRole("listitem");
     expect(await objectifs.count()).toBe(3);
-    await expect.poll(() => objectifs.nth(0).innerText()).toContain("Triathlon M · 30/05/2027");
+    await expect.poll(() => objectifs.nth(0).innerText()).toContain(
+      "Triathlon international de Saint-Jean-de-Luz Côte Basque · 30/05/2027",
+    );
+    expect(await objectifs.nth(0).innerText()).toContain("Bloc M");
+    expect(await objectifs.nth(1).innerText()).toContain("Triathlon S · 20/06/2027");
     expect(await objectifs.nth(0).innerText()).toContain("J-139");
     expect(await objectifs.nth(0).innerText()).toContain("Ce bloc chevauche celui du 20/06/2027.");
     expect(await objectifs.nth(2).innerText()).toContain("Terminé");
     // Décompte jusqu'au prochain objectif.
-    expect(await page.getByRole("region", { name: /139 jours avant ton objectif Triathlon M/ }).isVisible()).toBe(true);
+    expect(
+      await page.getByRole("region", { name: /139 jours avant ton objectif Triathlon international de Saint-Jean-de-Luz/ }).isVisible(),
+    ).toBe(true);
     await page.close();
   });
 
   it("bloc en cours de route : semaine adaptée, l'autre bloc à venir", async () => {
     const page = await ouvrir("saison-en-cours");
     const premier = await page.getByRole("listitem").first().innerText();
-    expect(premier).toContain("Triathlon M · 14/02/2027");
+    expect(premier).toContain("Triathlon de Nice · 14/02/2027");
     expect(premier).toMatch(/Bloc en cours · semaine \d+\/\d+ · J-34/);
     await page.close();
   });
@@ -86,6 +92,35 @@ describe("Ma saison", () => {
     await page.close();
   });
 
+  it("nommer une course : le champ s'ouvre sous l'objectif, Annuler le referme", async () => {
+    const page = await ouvrir("saison", 320);
+    const s = page.getByRole("listitem").nth(1);
+    await s.getByRole("button", { name: "Nommer la course" }).click();
+    const champ = s.getByLabel("Nom de ta course (facultatif)");
+    expect(await champ.isVisible()).toBe(true);
+    expect(await champ.getAttribute("maxlength")).toBe("60");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+    await s.getByRole("button", { name: "Annuler" }).click();
+    expect(await s.getByRole("button", { name: "Nommer la course" }).isVisible()).toBe(true);
+    // Un objectif déjà nommé propose de changer son nom, prérempli.
+    const premier = page.getByRole("listitem").first();
+    await premier.getByRole("button", { name: "Changer le nom" }).click();
+    expect(await premier.getByLabel("Nom de ta course (facultatif)").inputValue()).toBe(
+      "Triathlon international de Saint-Jean-de-Luz Côte Basque",
+    );
+    await premier.getByRole("button", { name: "Enregistrer" }).click();
+    await page.getByText(/Ta session a expiré/).waitFor();
+    await page.close();
+  });
+
+  it("à l'ajout, le nom de la course est facultatif", async () => {
+    const page = await ouvrir("saison-vide");
+    const champ = page.getByLabel("Nom de ta course (facultatif)");
+    expect(await champ.inputValue()).toBe("");
+    expect(await page.getByRole("button", { name: "Ajouter à ma saison" }).isEnabled()).toBe(true);
+    await page.close();
+  });
+
   it("le serveur refuse l'ajout sans session, avec un message", async () => {
     const page = await ouvrir("saison-vide");
     await page.getByRole("button", { name: "Ajouter à ma saison" }).click();
@@ -98,7 +133,7 @@ describe("Ma semaine", () => {
   it("affiche la phase du moment et le décompte, qui mène à Ma saison", async () => {
     const page = await ouvrir("semaine");
     expect(await page.getByText(/^Bloc M, semaine \d+\/\d+$/).isVisible()).toBe(true);
-    const carte = page.getByRole("link", { name: /34 jours avant ton objectif Triathlon M, le 14\/02\/2027/ });
+    const carte = page.getByRole("link", { name: /34 jours avant ton objectif Triathlon de Nice, le 14\/02\/2027/ });
     expect(await carte.getAttribute("href")).toBe("/saison");
     await page.close();
   });

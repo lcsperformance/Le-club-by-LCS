@@ -50,6 +50,7 @@
 
 .liste .objectif {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 12px;
   padding: 14px;
@@ -100,6 +101,31 @@
   line-height: 1.35;
   font-weight: 600;
   color: var(--texte-doux);
+}
+
+.objectifBloc {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 16px;
+}
+
+.edition {
+  flex-basis: 100%;
+  display: grid;
+  gap: 8px;
+}
+
+.editionBoutons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .avertissement {

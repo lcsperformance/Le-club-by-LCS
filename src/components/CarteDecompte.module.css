@@ -40,6 +40,7 @@
 .titre {
   font-size: 16px;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .sous {

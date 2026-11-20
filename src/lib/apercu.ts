@@ -86,21 +86,22 @@ export const JOURNAL_FICTIF: LigneJournal[] = [
 /** « Aujourd'hui » des aperçus de saison (un lundi), pour des écrans toujours identiques. */
 export const AUJOURDHUI_FICTIF = "2027-01-11";
 
-const objectifFictif = (n: number, bloc: Objectif["bloc"], date_objectif: string): Objectif => ({
+const objectifFictif = (n: number, bloc: Objectif["bloc"], date_objectif: string, nom: string | null = null): Objectif => ({
   id: `00000000-0000-0000-0000-0000000000${String(n).padStart(2, "0")}`,
   bloc,
   date_objectif,
+  nom,
 });
 
-/** Saison avec un bloc à venir, un bloc qui le chevauche et une course terminée. */
+/** Saison avec un bloc à venir (nom très long), un bloc qui le chevauche et une course terminée. */
 export const OBJECTIFS_FICTIFS: Objectif[] = [
-  objectifFictif(1, "M", "2027-05-30"),
+  objectifFictif(1, "M", "2027-05-30", "Triathlon international de Saint-Jean-de-Luz Côte Basque"),
   objectifFictif(2, "S", "2027-06-20"),
   objectifFictif(3, "S", "2026-12-20"),
 ];
 
 /** Saison avec un bloc en cours (démarré en cours de route) et un bloc plus tard. */
 export const OBJECTIFS_EN_COURS_FICTIFS: Objectif[] = [
-  objectifFictif(4, "M", "2027-02-14"),
+  objectifFictif(4, "M", "2027-02-14", "Triathlon de Nice"),
   objectifFictif(5, "XL", "2027-09-05"),
 ];
