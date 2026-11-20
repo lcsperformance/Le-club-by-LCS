@@ -55,6 +55,25 @@ describe("liste des membres", () => {
     expect(await deborde()).toBe(false);
   });
 
+  it("le champ date reste dans la carte, au-dessus du bouton « Ouvrir l'accès », sans le recouvrir", async () => {
+    const lea = page.getByRole("article", { name: /Léa/ });
+    const champ = lea.getByLabel("Ouvrir l'accès jusqu'au");
+    await champ.fill("2027-01-31");
+    const bouton = lea.getByRole("button", { name: "Ouvrir l'accès", exact: true });
+    expect(await bouton.isEnabled()).toBe(true);
+    const [c, b, carte] = await Promise.all([champ.boundingBox(), bouton.boundingBox(), lea.boundingBox()]);
+    expect(c!.x + c!.width).toBeLessThanOrEqual(carte!.x + carte!.width);
+    expect(b!.y).toBeGreaterThanOrEqual(c!.y + c!.height);
+    // Le doigt touche bien le bouton, à gauche comme au centre.
+    for (const x of [b!.x + 4, b!.x + b!.width / 2]) {
+      const touche = await page.evaluate(
+        ([px, py]) => document.elementFromPoint(px, py)?.closest("button")?.textContent ?? null,
+        [x, b!.y + b!.height / 2],
+      );
+      expect(touche).toBe("Ouvrir l'accès");
+    }
+  });
+
   it("le serveur refuse l'action sans session admin, même depuis l'écran", async () => {
     const marc = page.getByRole("article", { name: /Marc/ });
     await marc.getByRole("button", { name: "Gérer l'accès" }).click();
