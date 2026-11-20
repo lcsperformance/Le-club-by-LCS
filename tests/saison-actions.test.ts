@@ -45,7 +45,7 @@ vi.mock("@/lib/supabase/server", () => ({
   }),
 }));
 
-import { ajouterObjectif, changerDateObjectif, supprimerObjectif } from "@/app/(membre)/saison/actions";
+import { ajouterObjectif, changerDateObjectif, renommerObjectif, supprimerObjectif } from "@/app/(membre)/saison/actions";
 
 const ID = "11111111-2222-3333-4444-555555555555";
 const DANS_100_JOURS = ajouterJours(dateDuJourParis(), 100);
@@ -57,7 +57,19 @@ beforeEach(() => {
 describe("ajouter un objectif", () => {
   it("enregistre le bloc et la date pour le membre connecté", async () => {
     expect(await ajouterObjectif("M", DANS_100_JOURS)).toEqual({});
-    expect(etat.ecritures).toEqual([`ajout:${JSON.stringify({ membre_id: "membre-1", bloc: "M", date_objectif: DANS_100_JOURS })}`]);
+    expect(etat.ecritures).toEqual([
+      `ajout:${JSON.stringify({ membre_id: "membre-1", bloc: "M", date_objectif: DANS_100_JOURS, nom: null })}`,
+    ]);
+  });
+
+  it("enregistre le nom de la course s'il est donné, nettoyé", async () => {
+    expect(await ajouterObjectif("L", DANS_100_JOURS, "  Ironman 70.3   Aix ")).toEqual({});
+    expect(etat.ecritures[0]).toContain('"nom":"Ironman 70.3 Aix"');
+  });
+
+  it("refuse un nom trop long, sans rien écrire", async () => {
+    expect((await ajouterObjectif("L", DANS_100_JOURS, "x".repeat(61))).erreur).toMatch(/60 caractères/);
+    expect(etat.ecritures).toEqual([]);
   });
 
   it.each([
@@ -106,6 +118,25 @@ describe("changer la date", () => {
   it("refuse un identifiant mal formé ou une date passée, sans rien écrire", async () => {
     expect((await changerDateObjectif("1 or 1=1", DANS_100_JOURS)).erreur).toMatch(/introuvable/);
     expect((await changerDateObjectif(ID, "2020-01-01")).erreur).toMatch(/à venir/);
+    expect(etat.ecritures).toEqual([]);
+  });
+});
+
+describe("nommer une course", () => {
+  it("donne un nom, ou le retire avec un champ vide", async () => {
+    expect(await renommerObjectif(ID, " Triathlon de Nice ")).toEqual({});
+    expect(await renommerObjectif(ID, "")).toEqual({});
+    expect(etat.ecritures).toEqual([`date:${JSON.stringify({ nom: "Triathlon de Nice" })}`, `date:${JSON.stringify({ nom: null })}`]);
+  });
+
+  it("objectif introuvable, nom trop long ou sans session : refusé", async () => {
+    etat.lignesModifiees = 0;
+    expect((await renommerObjectif(ID, "Nice")).erreur).toMatch(/introuvable/);
+    etat.ecritures = [];
+    expect((await renommerObjectif(ID, "x".repeat(61))).erreur).toMatch(/60 caractères/);
+    expect((await renommerObjectif("pas-un-id", "Nice")).erreur).toMatch(/introuvable/);
+    etat.connecte = false;
+    expect((await renommerObjectif(ID, "Nice")).erreur).toMatch(/session/);
     expect(etat.ecritures).toEqual([]);
   });
 });

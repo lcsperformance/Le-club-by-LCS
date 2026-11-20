@@ -12,11 +12,14 @@ import {
   estDateIso,
   formatIsoCourt,
   formatIsoLong,
+  lireNomCourse,
+  LONGUEUR_MAX_NOM,
   organiserSaison,
   phaseDuMoment,
   semainesBloc,
   statut,
   texteStatut,
+  titreObjectif,
   type Objectif,
 } from "@/lib/saison";
 
@@ -179,5 +182,26 @@ describe("organisation de la saison", () => {
   it("une course passée ne compte plus dans les chevauchements", () => {
     const s = organiserSaison([obj("p", "XL", "2027-01-05"), obj("a", "S", "2027-01-20")], AUJ);
     expect(s.objectifs.find((o) => o.id === "a")?.chevauche).toEqual([]);
+  });
+});
+
+describe("nom de la course (facultatif)", () => {
+  it("nettoie les espaces ; vide ou absent = pas de nom", () => {
+    expect(lireNomCourse("  Triathlon   de Nice ")).toEqual({ nom: "Triathlon de Nice" });
+    expect(lireNomCourse("   ")).toEqual({ nom: null });
+    expect(lireNomCourse(undefined)).toEqual({ nom: null });
+    expect(lireNomCourse(null)).toEqual({ nom: null });
+  });
+
+  it("refuse un nom trop long ou qui n'est pas du texte", () => {
+    expect(lireNomCourse("x".repeat(LONGUEUR_MAX_NOM))).toEqual({ nom: "x".repeat(LONGUEUR_MAX_NOM) });
+    expect(lireNomCourse("x".repeat(LONGUEUR_MAX_NOM + 1))).toEqual({ erreur: `${LONGUEUR_MAX_NOM} caractères maximum pour le nom de ta course.` });
+    expect(lireNomCourse(42)).toHaveProperty("erreur");
+  });
+
+  it("le titre est le nom choisi, sinon « Triathlon » et le bloc", () => {
+    expect(titreObjectif({ bloc: "M", nom: "Triathlon de Nice" })).toBe("Triathlon de Nice");
+    expect(titreObjectif({ bloc: "M", nom: null })).toBe("Triathlon M");
+    expect(titreObjectif({ bloc: "XL" })).toBe("Triathlon XL");
   });
 });

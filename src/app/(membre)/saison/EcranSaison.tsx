@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { CarteDecompte } from "@/components/CarteDecompte";
-import { BoutonPrincipal, CalendrierMois, Carte } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, CalendrierMois, Carte, Champ } from "@/components/ui";
 import {
   ANNEES_MAX,
   ajouterJours,
@@ -14,14 +14,16 @@ import {
   erreurDateCourse,
   formatIsoCourt,
   formatIsoLong,
+  LONGUEUR_MAX_NOM,
   organiserSaison,
   semainesBloc,
   texteStatut,
+  titreObjectif,
   type Bloc,
   type Objectif,
   type ObjectifSaison,
 } from "@/lib/saison";
-import { ajouterObjectif, changerDateObjectif, supprimerObjectif, type ResultatSaison } from "./actions";
+import { ajouterObjectif, changerDateObjectif, renommerObjectif, supprimerObjectif, type ResultatSaison } from "./actions";
 import styles from "./saison.module.css";
 
 type Props = {
@@ -43,13 +45,14 @@ export function EcranSaison({ objectifs, aujourdhui, calendrierOuvert = false }:
   const saison = organiserSaison(objectifs, aujourdhui);
   const [bloc, setBloc] = useState<Bloc>("M");
   const [date, setDate] = useState(() => ajouterJours(aujourdhui, semainesBloc("M") * 7));
+  const [nom, setNom] = useState("");
   const [cible, setCible] = useState<Cible>(calendrierOuvert ? { pour: "nouveau" } : null);
   const [message, setMessage] = useState<{ texte: string; erreur: boolean } | null>(null);
   const [enCours, demarrer] = useTransition();
   // Verrou immédiat : un double toucher arrive avant que les boutons ne s'affichent désactivés.
   const occupe = useRef(false);
 
-  function agir(action: () => Promise<ResultatSaison>, reussite: string) {
+  function agir(action: () => Promise<ResultatSaison>, reussite: string, siReussite?: () => void) {
     if (occupe.current) return;
     occupe.current = true;
     setMessage(null);
@@ -67,6 +70,7 @@ export function EcranSaison({ objectifs, aujourdhui, calendrierOuvert = false }:
         return;
       }
       setMessage({ texte: reussite, erreur: false });
+      siReussite?.();
       router.refresh();
     });
   }
@@ -107,8 +111,15 @@ export function EcranSaison({ objectifs, aujourdhui, calendrierOuvert = false }:
                 objectif={o}
                 desactive={enCours}
                 changerDate={() => setCible({ pour: "objectif", objectif: o })}
+                renommer={(nouveau, fermer) =>
+                  agir(
+                    () => renommerObjectif(o.id, nouveau),
+                    nouveau.trim() ? `Nom enregistré : ${nouveau.trim().replace(/\s+/g, " ")}.` : "Nom retiré.",
+                    fermer,
+                  )
+                }
                 supprimer={() => {
-                  if (!window.confirm(`Supprimer l'objectif Triathlon ${o.bloc} du ${formatIsoCourt(o.date_objectif)} ?`)) return;
+                  if (!window.confirm(`Supprimer l'objectif ${titreObjectif(o)} du ${formatIsoCourt(o.date_objectif)} ?`)) return;
                   agir(() => supprimerObjectif(o.id), "Objectif supprimé.");
                 }}
               />
@@ -147,9 +158,24 @@ export function EcranSaison({ objectifs, aujourdhui, calendrierOuvert = false }:
           <IconeCalendrier />
         </button>
         <p className={styles.apercu}>{erreurDate ?? apercuBloc(bloc, date, aujourdhui)}</p>
+        <Champ
+          libelle="Nom de ta course (facultatif)"
+          name="nom-course"
+          placeholder="Ex. Triathlon de Nice"
+          maxLength={LONGUEUR_MAX_NOM}
+          autoComplete="off"
+          value={nom}
+          onChange={(e) => setNom(e.target.value)}
+        />
         <BoutonPrincipal
           disabled={!!erreurDate || enCours}
-          onClick={() => agir(() => ajouterObjectif(bloc, date), `Objectif Triathlon ${bloc} ajouté à ta saison.`)}
+          onClick={() =>
+            agir(
+              () => ajouterObjectif(bloc, date, nom),
+              `Objectif ${titreObjectif({ bloc, nom: nom.trim().replace(/\s+/g, " ") })} ajouté à ta saison.`,
+              () => setNom(""),
+            )
+          }
         >
           Ajouter à ma saison
         </BoutonPrincipal>
@@ -189,14 +215,18 @@ function CarteObjectif({
   objectif: o,
   desactive,
   changerDate,
+  renommer,
   supprimer,
 }: {
   objectif: ObjectifSaison;
   desactive: boolean;
   changerDate: () => void;
+  /** Enregistre le nom saisi (vide = retirer le nom) ; « fermer » est appelé si c'est réussi. */
+  renommer: (nom: string, fermer: () => void) => void;
   supprimer: () => void;
 }) {
   const termine = o.statut.type === "passe";
+  const [edition, setEdition] = useState<string | null>(null);
   return (
     <Carte as="li" className={`${styles.objectif} ${o.mene ? styles.objectifMene : ""} ${termine ? styles.objectifTermine : ""}`}>
       <span className={styles.badge} aria-hidden>
@@ -204,24 +234,32 @@ function CarteObjectif({
       </span>
       <div className={styles.objectifTexte}>
         <p className={styles.objectifTitre}>
-          Triathlon {o.bloc} · {formatIsoCourt(o.date_objectif)}
+          {titreObjectif(o)} · {formatIsoCourt(o.date_objectif)}
         </p>
+        {o.nom && <p className={styles.objectifBloc}>Bloc {o.bloc}</p>}
         <p className={styles.objectifStatut}>{texteStatut(o)}</p>
         {o.chevauche.length > 0 && (
           <p className={styles.avertissement}>
             Ce bloc chevauche celui du {o.chevauche.map(formatIsoCourt).join(" et du ")}.
           </p>
         )}
-        {!termine && (
-          <button type="button" className={styles.lienDate} onClick={changerDate} disabled={desactive}>
-            Changer la date
-          </button>
+        {edition === null && (
+          <div className={styles.liens}>
+            {!termine && (
+              <button type="button" className={styles.lienDate} onClick={changerDate} disabled={desactive}>
+                Changer la date
+              </button>
+            )}
+            <button type="button" className={styles.lienDate} onClick={() => setEdition(o.nom ?? "")} disabled={desactive}>
+              {o.nom ? "Changer le nom" : "Nommer la course"}
+            </button>
+          </div>
         )}
       </div>
       <button
         type="button"
         className={styles.supprimer}
-        aria-label={`Supprimer l'objectif Triathlon ${o.bloc} du ${formatIsoCourt(o.date_objectif)}`}
+        aria-label={`Supprimer l'objectif ${titreObjectif(o)} du ${formatIsoCourt(o.date_objectif)}`}
         onClick={supprimer}
         disabled={desactive}
       >
@@ -229,6 +267,34 @@ function CarteObjectif({
           <path d="M6 6l12 12M18 6L6 18" />
         </svg>
       </button>
+      {edition !== null && (
+        <form
+          className={styles.edition}
+          onSubmit={(e) => {
+            e.preventDefault();
+            renommer(edition, () => setEdition(null));
+          }}
+        >
+          <Champ
+            libelle="Nom de ta course (facultatif)"
+            name={`nom-${o.id}`}
+            placeholder="Ex. Triathlon de Nice"
+            maxLength={LONGUEUR_MAX_NOM}
+            autoComplete="off"
+            autoFocus
+            value={edition}
+            onChange={(e) => setEdition(e.target.value)}
+          />
+          <div className={styles.editionBoutons}>
+            <BoutonSecondaire type="button" onClick={() => setEdition(null)}>
+              Annuler
+            </BoutonSecondaire>
+            <BoutonSecondaire type="submit" disabled={desactive}>
+              Enregistrer
+            </BoutonSecondaire>
+          </div>
+        </form>
+      )}
     </Carte>
   );
 }

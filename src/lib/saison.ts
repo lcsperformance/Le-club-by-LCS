@@ -24,7 +24,23 @@ export const OBJECTIFS_MAX = 20;
 /** Une course ne se programme pas plus de 3 ans à l'avance. */
 export const ANNEES_MAX = 3;
 
-export type Objectif = { id: string; bloc: Bloc; date_objectif: string };
+export type Objectif = { id: string; bloc: Bloc; date_objectif: string; nom?: string | null };
+
+/** Longueur maximale du nom de course (vérifiée aussi par la base). */
+export const LONGUEUR_MAX_NOM = 60;
+
+/** Nom de course saisi : espaces nettoyés ; vide = pas de nom (null). */
+export function lireNomCourse(valeur: unknown): { nom: string | null } | { erreur: string } {
+  if (valeur === null || valeur === undefined) return { nom: null };
+  if (typeof valeur !== "string") return { erreur: "Ce nom n'est pas valable." };
+  const nom = valeur.replace(/\s+/g, " ").trim();
+  if (!nom) return { nom: null };
+  if (nom.length > LONGUEUR_MAX_NOM) return { erreur: `${LONGUEUR_MAX_NOM} caractères maximum pour le nom de ta course.` };
+  return { nom };
+}
+
+/** « Triathlon de Nice » si le membre l'a nommée, sinon « Triathlon M ». */
+export const titreObjectif = (o: Pick<Objectif, "bloc" | "nom">) => o.nom || `Triathlon ${o.bloc}`;
 
 export const estBloc = (v: unknown): v is Bloc => (BLOCS as readonly unknown[]).includes(v);
 

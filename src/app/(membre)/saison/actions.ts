@@ -2,7 +2,7 @@
 
 import { aAccesEspace, utilisateurConnecte } from "@/lib/auth";
 import { dateDuJourParis } from "@/lib/dates";
-import { erreurDateCourse, estBloc, OBJECTIFS_MAX } from "@/lib/saison";
+import { erreurDateCourse, estBloc, lireNomCourse, OBJECTIFS_MAX } from "@/lib/saison";
 import { createClient } from "@/lib/supabase/server";
 
 export type ResultatSaison = { erreur?: string };
@@ -23,13 +23,15 @@ function echec(contexte: string, error: { code?: string; message: string }): Res
   return { erreur: IMPOSSIBLE };
 }
 
-/** Ajoute un objectif (bloc S, M, L ou XL et date de course à venir). */
-export async function ajouterObjectif(bloc: unknown, date: unknown): Promise<ResultatSaison> {
+/** Ajoute un objectif (bloc S, M, L ou XL, date de course à venir, nom facultatif). */
+export async function ajouterObjectif(bloc: unknown, date: unknown, nomSaisi?: unknown): Promise<ResultatSaison> {
   const m = await membreAvecAcces();
   if ("erreur" in m) return { erreur: m.erreur };
   if (!estBloc(bloc)) return { erreur: "Choisis un bloc : S, M, L ou XL." };
   const erreurDate = erreurDateCourse(date, dateDuJourParis());
   if (erreurDate) return { erreur: erreurDate };
+  const lu = lireNomCourse(nomSaisi);
+  if ("erreur" in lu) return { erreur: lu.erreur };
 
   const supabase = await createClient();
   const { data: existants, error: errLecture } = await supabase
@@ -43,7 +45,9 @@ export async function ajouterObjectif(bloc: unknown, date: unknown): Promise<Res
     return { erreur: `Tu as déjà ${OBJECTIFS_MAX} objectifs : supprime ceux qui sont terminés pour en ajouter.` };
   }
 
-  const { error } = await supabase.from("objectifs").insert({ membre_id: m.utilisateur.id, bloc, date_objectif: date });
+  const { error } = await supabase
+    .from("objectifs")
+    .insert({ membre_id: m.utilisateur.id, bloc, date_objectif: date, nom: lu.nom });
   if (error) return echec("Ajout de l'objectif impossible", error);
   return {};
 }
@@ -64,6 +68,26 @@ export async function changerDateObjectif(id: unknown, date: unknown): Promise<R
     .eq("membre_id", m.utilisateur.id)
     .select("id");
   if (error) return echec("Changement de date impossible", error);
+  if (!data.length) return { erreur: "Cet objectif est introuvable." };
+  return {};
+}
+
+/** Donne un nom à sa course, le change, ou le retire (champ vide). */
+export async function renommerObjectif(id: unknown, nomSaisi: unknown): Promise<ResultatSaison> {
+  const m = await membreAvecAcces();
+  if ("erreur" in m) return { erreur: m.erreur };
+  if (typeof id !== "string" || !UUID.test(id)) return { erreur: "Cet objectif est introuvable." };
+  const lu = lireNomCourse(nomSaisi);
+  if ("erreur" in lu) return { erreur: lu.erreur };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("objectifs")
+    .update({ nom: lu.nom })
+    .eq("id", id)
+    .eq("membre_id", m.utilisateur.id)
+    .select("id");
+  if (error) return echec("Changement de nom impossible", error);
   if (!data.length) return { erreur: "Cet objectif est introuvable." };
   return {};
 }

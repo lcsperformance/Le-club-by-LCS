@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { decompte, formatIsoCourt, type ObjectifSaison } from "@/lib/saison";
+import { decompte, formatIsoCourt, titreObjectif, type ObjectifSaison } from "@/lib/saison";
 import styles from "./CarteDecompte.module.css";
 
 /**
@@ -12,9 +12,11 @@ export function CarteDecompte({ prochain, href }: { prochain: ObjectifSaison | n
       <span className={styles.grand}>{prochain && prochain.statut.type !== "passe" ? decompte(prochain.statut.joursAvantCourse) : "—"}</span>
       <span className={styles.texte}>
         <span className={styles.surtitre}>Avant ton objectif</span>
-        <span className={styles.titre}>{prochain ? `Triathlon ${prochain.bloc}` : "Aucun objectif"}</span>
+        <span className={styles.titre}>{prochain ? titreObjectif(prochain) : "Aucun objectif"}</span>
         <span className={styles.sous}>
-          {prochain ? `Course le ${formatIsoCourt(prochain.date_objectif)}` : "Ajoute ta prochaine course dans Ma saison"}
+          {prochain
+            ? `${prochain.nom ? `Bloc ${prochain.bloc} · course` : "Course"} le ${formatIsoCourt(prochain.date_objectif)}`
+            : "Ajoute ta prochaine course dans Ma saison"}
         </span>
       </span>
       {href && (
@@ -39,5 +41,5 @@ function libelle(prochain: ObjectifSaison | null): string {
   if (!prochain || prochain.statut.type === "passe") return "Aucun objectif : ouvrir Ma saison";
   const j = prochain.statut.joursAvantCourse;
   const reste = j === 0 ? "C'est le jour de ta course" : `Encore ${j} jour${j > 1 ? "s" : ""}`;
-  return `${reste} avant ton objectif Triathlon ${prochain.bloc}, le ${formatIsoCourt(prochain.date_objectif)}`;
+  return `${reste} avant ton objectif ${titreObjectif(prochain)}, le ${formatIsoCourt(prochain.date_objectif)}`;
 }
