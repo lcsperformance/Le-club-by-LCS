@@ -1,5 +1,6 @@
 /**
- * PREUVE : un membre ne peut ni lire ni modifier les tests et les bornes de zones d'un autre membre.
+ * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones et les objectifs
+ * de saison d'un autre membre.
  *
  * Alice (A) essaie toutes les manières d'atteindre les données de Bruno (B) avec les mêmes
  * droits qu'un vrai membre connecté (rôle « authenticated » de Supabase, sécurité par ligne active).
@@ -11,6 +12,7 @@ import { creerBaseDeTest, type BaseDeTest } from "./aide/base-de-test";
 
 const ALICE = "00000000-0000-0000-0000-0000000000a1";
 const BRUNO = "00000000-0000-0000-0000-0000000000b2";
+const OBJECTIF_BRUNO = "00000000-0000-0000-0000-0000000000f1";
 
 let base: BaseDeTest;
 let empreinteBruno: string;
@@ -22,7 +24,8 @@ async function donneesDeBruno(): Promise<string> {
   const { rows } = await base.db.query(
     `select json_build_object(
        'tests', (select json_agg(t order by t.date_test) from tests t where t.membre_id = $1),
-       'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1)
+       'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1),
+       'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1)
      ) as d`,
     [BRUNO],
   );
@@ -50,10 +53,16 @@ beforeAll(async () => {
     [BRUNO],
   );
   idZoneBruno = z.rows[0].id;
+  await base.db.query(
+    `insert into objectifs (id, membre_id, bloc, date_objectif)
+     values ($2, $1, 'M', '2027-05-30'), (default, $1, 'S', '2027-09-12')`,
+    [BRUNO, OBJECTIF_BRUNO],
+  );
   // Données d'Alice : une série de tests et une zone.
   await base.db.query(
     `insert into tests (membre_id, date_test, ftp) values ($1, '2026-11-02', 250);
-     insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]');`.replaceAll(
+     insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]');
+     insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');`.replaceAll(
       "$1",
       `'${ALICE}'`,
     ),
@@ -86,6 +95,16 @@ const TABLES = [
     insertion: `insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]')`,
     ecrasement: `insert into zones (membre_id, sport, bornes) values ($1, 'course', '[30, 40, 50, 60, 70, 80]')
                  on conflict (membre_id, sport) do update set bornes = excluded.bornes`,
+  },
+  {
+    table: "objectifs",
+    id: () => OBJECTIF_BRUNO,
+    modification: "date_objectif = '2030-01-01'",
+    insertion: `insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'XL', '2027-10-10')`,
+    // Pas d'autre clé unique que l'identifiant : on vise celui d'une ligne de Bruno.
+    ecrasement: `insert into objectifs (id, membre_id, bloc, date_objectif)
+                 values ('${OBJECTIF_BRUNO}', $1, 'XL', '2030-01-01')
+                 on conflict (id) do update set date_objectif = excluded.date_objectif`,
   },
 ] as const;
 

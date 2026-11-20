@@ -43,11 +43,12 @@ describe("écran Profil : niveau et profil", () => {
 });
 
 describe("écran Profil : raccourcis", () => {
-  it("propose, dans l'ordre de la maquette, Mes records, Mes progrès, Mes zones, Refaire mes tests", async () => {
+  it("propose, dans l'ordre de la maquette, Ma saison, Mes records, Mes progrès, Mes zones, Refaire mes tests", async () => {
     const liens = await page.$$eval("main a[href]", (as) =>
       as.map((a) => [a.textContent?.trim(), a.getAttribute("href")]).filter(([, h]) => h !== "/accueil"),
     );
     expect(liens).toEqual([
+      ["Ma saison", "/saison"],
       ["Mes records", "/records"],
       ["Mes progrès", "/progres"],
       ["Mes zones", "/zones"],
