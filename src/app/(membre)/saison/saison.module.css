@@ -1,0 +1,271 @@
+.retour {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.intro {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--texte-doux);
+}
+
+.section {
+  display: grid;
+  gap: 10px;
+}
+
+.surtitre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.vide {
+  border-radius: 20px;
+  border: 1px dashed var(--pourpre);
+  padding: 22px 18px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.liste .objectif {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+
+.liste .objectifMene {
+  box-shadow:
+    inset 0 0 0 2px var(--aurore),
+    inset 0 0 26px rgba(250, 148, 255, 0.18),
+    0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.liste .objectifTermine {
+  opacity: 0.65;
+}
+
+.badge {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--abysse);
+  border: 1px solid rgba(250, 148, 255, 0.45);
+  font-family: var(--police-titre);
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  font-size: 19px;
+  color: var(--accent);
+}
+
+.objectifTexte {
+  flex: 1;
+  min-width: 0;
+}
+
+.objectifTitre {
+  font-size: 16px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.objectifStatut {
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.avertissement {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--aurore);
+}
+
+.lienDate {
+  margin-top: 4px;
+  min-height: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--texte);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.supprimer {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+
+.blocs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.bloc {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 104px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(244, 238, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--texte);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.bloc[aria-pressed="true"] {
+  background: linear-gradient(135deg, rgba(250, 148, 255, 0.38), rgba(201, 128, 177, 0.22));
+  border: 2px solid rgba(244, 238, 255, 0.5);
+  color: #fff;
+}
+
+.blocLettre {
+  font-family: var(--police-titre);
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.bloc[aria-pressed="true"] .blocLettre {
+  color: var(--accent);
+}
+
+.blocNom {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.blocDuree {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--texte-doux);
+}
+
+.choixDate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 56px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(250, 148, 255, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+}
+
+.apercu {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.pied {
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--texte-doux);
+  padding-bottom: 28px;
+}
+
+/* ===== Feuille du bas (calendrier) ===== */
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(9, 10, 15, 0.7);
+}
+
+.feuille {
+  width: 100%;
+  max-width: 480px;
+  max-height: 100dvh;
+  overflow-y: auto;
+  display: grid;
+  gap: 12px;
+  padding: 18px 18px calc(24px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0;
+  background: linear-gradient(180deg, var(--abysse), var(--cendre));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 -16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.feuilleEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fermer {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  cursor: pointer;
+}

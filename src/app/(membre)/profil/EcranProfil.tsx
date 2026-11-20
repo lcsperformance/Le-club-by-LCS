@@ -8,6 +8,7 @@ import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 
 const LIENS = [
+  { href: "/saison", libelle: "Ma saison" },
   { href: "/records", libelle: "Mes records" },
   { href: "/progres", libelle: "Mes progrès" },
   { href: "/zones", libelle: "Mes zones" },

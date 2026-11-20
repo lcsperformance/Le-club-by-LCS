@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
 import type { Utilisateur } from "@/lib/auth";
+import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
 
 /** Bloque les pages d'aperçu hors du mode test (404). */
@@ -80,4 +81,26 @@ export const JOURNAL_FICTIF: LigneJournal[] = [
   { membre_id: "m5", action: "acces_coupe", detail: null, fait_le: "2027-01-09T15:30:00.000Z" },
   { membre_id: "m4", action: "acces_offert", detail: "30/06/2027", fait_le: "2027-01-08T11:00:00.000Z" },
   { membre_id: "m4", action: "email_acces_renvoye", detail: "Invitation", fait_le: "2027-01-08T11:02:00.000Z" },
+];
+
+/** « Aujourd'hui » des aperçus de saison (un lundi), pour des écrans toujours identiques. */
+export const AUJOURDHUI_FICTIF = "2027-01-11";
+
+const objectifFictif = (n: number, bloc: Objectif["bloc"], date_objectif: string): Objectif => ({
+  id: `00000000-0000-0000-0000-0000000000${String(n).padStart(2, "0")}`,
+  bloc,
+  date_objectif,
+});
+
+/** Saison avec un bloc à venir, un bloc qui le chevauche et une course terminée. */
+export const OBJECTIFS_FICTIFS: Objectif[] = [
+  objectifFictif(1, "M", "2027-05-30"),
+  objectifFictif(2, "S", "2027-06-20"),
+  objectifFictif(3, "S", "2026-12-20"),
+];
+
+/** Saison avec un bloc en cours (démarré en cours de route) et un bloc plus tard. */
+export const OBJECTIFS_EN_COURS_FICTIFS: Objectif[] = [
+  objectifFictif(4, "M", "2027-02-14"),
+  objectifFictif(5, "XL", "2027-09-05"),
 ];

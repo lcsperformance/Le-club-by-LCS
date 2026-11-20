@@ -241,3 +241,76 @@
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
+
+/* ===== Calendrier d'un mois ===== */
+.calendrier {
+  display: grid;
+  gap: 8px;
+}
+.calendrierEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.calendrierMois {
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+}
+.calendrierFleche {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  cursor: pointer;
+}
+.calendrierFleche:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.calendrierGrille {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.calendrierJourSemaine {
+  text-align: center;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--texte-doux);
+  padding-bottom: 2px;
+}
+.calendrierJour {
+  height: 42px;
+  min-width: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.calendrierAutreMois {
+  color: #7c819c;
+}
+.calendrierJour:disabled {
+  color: rgba(244, 238, 255, 0.25);
+  cursor: not-allowed;
+}
+.calendrierAujourdhui {
+  box-shadow: inset 0 0 0 2px var(--aurore);
+}
+.calendrierChoisi {
+  background: var(--accent);
+  color: var(--fond);
+}

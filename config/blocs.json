@@ -1,0 +1,9 @@
+{
+  "_explication": "Durée de chaque bloc de préparation, en semaines (écran « Ma saison »). Le bloc commence ce nombre de semaines avant la date de course. Ne changer que les nombres après « semaines » (entier entre 1 et 52) et « provisoire » (true ou false) ; ne pas renommer les clés S, M, L, XL.",
+  "blocs": {
+    "S": { "semaines": 6, "provisoire": true },
+    "M": { "semaines": 12, "provisoire": false },
+    "L": { "semaines": 16, "provisoire": false },
+    "XL": { "semaines": 20, "provisoire": true }
+  }
+}

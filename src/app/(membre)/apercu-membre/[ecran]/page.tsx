@@ -3,12 +3,21 @@ import { Suspense } from "react";
 import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
+import { EcranSaison } from "@/app/(membre)/saison/EcranSaison";
+import { EcranSemaine } from "@/app/(membre)/semaine/EcranSemaine";
 import { EcranBientot } from "@/components/EcranBientot";
 import { EnTeteTests } from "@/app/(membre)/tests/EnTeteTests";
 import { FormulaireTests } from "@/app/(membre)/tests/FormulaireTests";
 import { AffichageZones } from "@/app/(membre)/zones/AffichageZones";
 import { EnTeteZones } from "@/app/(membre)/zones/EnTeteZones";
-import { exigerApercu, TEST_FICTIF, UTILISATEUR_FICTIF } from "@/lib/apercu";
+import {
+  AUJOURDHUI_FICTIF,
+  exigerApercu,
+  OBJECTIFS_EN_COURS_FICTIFS,
+  OBJECTIFS_FICTIFS,
+  TEST_FICTIF,
+  UTILISATEUR_FICTIF,
+} from "@/lib/apercu";
 import { valeursDeDepart } from "@/lib/tests-depart";
 import { SPORTS } from "@/lib/zones";
 
@@ -76,6 +85,18 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           maintenant={new Date("2027-01-10T10:00:00Z")}
         />
       );
+    case "saison-vide":
+      return <EcranSaison objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} />;
+    case "saison":
+      return <EcranSaison objectifs={OBJECTIFS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} />;
+    case "saison-en-cours":
+      return <EcranSaison objectifs={OBJECTIFS_EN_COURS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} />;
+    case "saison-calendrier":
+      return <EcranSaison objectifs={OBJECTIFS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} calendrierOuvert />;
+    case "semaine":
+      return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={OBJECTIFS_EN_COURS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} />;
+    case "semaine-sans-objectif":
+      return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} />;
     case "records":
       return <EcranBientot titre="Mes records" description="Tes meilleures performances, au fil de tes séances." />;
     case "progres":

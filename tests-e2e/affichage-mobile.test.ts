@@ -28,6 +28,12 @@ const ECRANS = [
   "/apercu-membre/abonnement-termine",
   "/apercu-membre/profil-annuel",
   "/apercu-membre/acces-coupe",
+  "/apercu-membre/saison-vide",
+  "/apercu-membre/saison",
+  "/apercu-membre/saison-en-cours",
+  "/apercu-membre/saison-calendrier",
+  "/apercu-membre/semaine",
+  "/apercu-membre/semaine-sans-objectif",
   "/bienvenue",
 ];
 
