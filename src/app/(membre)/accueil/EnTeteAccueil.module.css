@@ -27,3 +27,51 @@
   font-weight: 500;
   color: var(--texte-doux);
 }
+
+/* Carte « Bloc en cours » / « Fil rouge » (maquette), vers Ma saison. */
+.carteBloc {
+  display: grid;
+  gap: 10px;
+  text-decoration: none;
+}
+.carteBlocHaut {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.surtitre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+.lienSaison {
+  font-size: 13px;
+  font-weight: 700;
+}
+.carteBlocTitre {
+  font-size: 18px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.carteBlocSous {
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--texte-doux);
+}
+.jauge {
+  display: block;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+.jauge > span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--aurore);
+}

@@ -5,6 +5,7 @@ import {
   BLOCS,
   ajouterJours,
   apercuBloc,
+  carteAccueil,
   debutBloc,
   decompte,
   dureeBloc,
@@ -15,6 +16,7 @@ import {
   lireNomCourse,
   LONGUEUR_MAX_NOM,
   organiserSaison,
+  phaseCourte,
   phaseDuMoment,
   semainesBloc,
   statut,
@@ -203,5 +205,37 @@ describe("nom de la course (facultatif)", () => {
     expect(titreObjectif({ bloc: "M", nom: "Triathlon de Nice" })).toBe("Triathlon de Nice");
     expect(titreObjectif({ bloc: "M", nom: null })).toBe("Triathlon M");
     expect(titreObjectif({ bloc: "XL" })).toBe("Triathlon XL");
+  });
+});
+
+describe("accueil : phase et carte du bloc", () => {
+  const obj = (id: string, bloc: Objectif["bloc"], date: string, nom: string | null = null): Objectif => ({ id, bloc, date_objectif: date, nom });
+
+  it("sans objectif : fil rouge et invitation", () => {
+    const s = organiserSaison([], AUJ);
+    expect(phaseCourte(s)).toBe("fil rouge");
+    expect(carteAccueil(s)).toEqual({
+      surtitre: "Fil rouge",
+      titre: "Ton entraînement de fond",
+      sous: "Ajoute un objectif quand tu veux : son bloc se branche tout seul.",
+      progression: null,
+    });
+  });
+
+  it("bloc à venir : fil rouge et date de début du bloc", () => {
+    const s = organiserSaison([obj("a", "M", "2027-05-30")], AUJ);
+    expect(carteAccueil(s).sous).toBe(`Ton bloc M démarre le ${formatIsoCourt(debutBloc("M", "2027-05-30"))}.`);
+  });
+
+  it("bloc en cours : semaine, décompte, date et progression", () => {
+    const course = ajouterJours(AUJ, 20);
+    const s = organiserSaison([obj("a", "M", course, "Triathlon de Nice")], AUJ);
+    expect(phaseCourte(s)).toBe(`semaine ${M - 2} du bloc M`);
+    expect(carteAccueil(s)).toEqual({
+      surtitre: "Bloc en cours",
+      titre: `Triathlon de Nice · semaine ${M - 2}/${M}`,
+      sous: `J-20 · course le ${formatIsoCourt(course)}`,
+      progression: (M - 2) / M,
+    });
   });
 });

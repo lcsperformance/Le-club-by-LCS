@@ -130,17 +130,55 @@ describe("Ma saison", () => {
 });
 
 describe("Ma semaine", () => {
-  it("affiche la phase du moment et le décompte, qui mène à Ma saison", async () => {
+  it("affiche les dates de la semaine, la phase, le niveau et le décompte vers Ma saison", async () => {
     const page = await ouvrir("semaine");
-    expect(await page.getByText(/^Bloc M, semaine \d+\/\d+$/).isVisible()).toBe(true);
+    expect(await page.getByText(/^11 – 17 janvier · Bloc M, semaine \d+\/\d+$/).isVisible()).toBe(true);
+    expect(await page.getByText("Challenger · Extensif", { exact: true }).isVisible()).toBe(true);
+    expect(await page.getByRole("link", { name: "Ma saison", exact: true }).getAttribute("href")).toBe("/saison");
     const carte = page.getByRole("link", { name: /34 jours avant ton objectif Triathlon de Nice, le 14\/02\/2027/ });
     expect(await carte.getAttribute("href")).toBe("/saison");
     await page.close();
   });
 
-  it("sans objectif : fil rouge", async () => {
+  it("bande des 7 jours : aujourd'hui choisi au départ, un autre jour au toucher", async () => {
+    const page = await ouvrir("semaine", 320);
+    const jours = page.getByRole("group", { name: "Jours de la semaine" }).getByRole("button");
+    expect(await jours.count()).toBe(7);
+    expect(await page.getByRole("button", { name: "Lundi 11 janvier" }).getAttribute("aria-pressed")).toBe("true");
+    expect(await page.getByRole("heading", { name: "Lundi 11 janvier" }).isVisible()).toBe(true);
+    await page.getByRole("button", { name: "Jeudi 14 janvier" }).click();
+    expect(await page.getByRole("heading", { name: "Jeudi 14 janvier" }).isVisible()).toBe(true);
+    expect(await page.getByRole("button", { name: "Lundi 11 janvier" }).getAttribute("aria-pressed")).toBe("false");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+    await page.close();
+  });
+
+  it("sans objectif ni niveau : fil rouge et invitation à choisir son niveau", async () => {
     const page = await ouvrir("semaine-sans-objectif");
-    expect(await page.getByText("Fil rouge", { exact: true }).isVisible()).toBe(true);
+    expect(await page.getByText(/· Fil rouge$/).isVisible()).toBe(true);
+    expect(await page.getByRole("link", { name: "Choisis ton niveau" }).getAttribute("href")).toBe("/profil");
+    await page.close();
+  });
+});
+
+describe("Accueil", () => {
+  it("bloc en cours : phase dans la date et carte « Bloc en cours » vers Ma saison", async () => {
+    const page = await ouvrir("accueil-tests-faits");
+    expect(await page.getByText(/^Lundi 11 janvier · semaine \d+ du bloc M$/).isVisible()).toBe(true);
+    const carte = page.getByRole("link", { name: /Bloc en cours/ });
+    expect(await carte.getAttribute("href")).toBe("/saison");
+    expect(await carte.innerText()).toMatch(/Triathlon de Nice · semaine \d+\/12/);
+    expect(await carte.innerText()).toContain("J-34 · course le 14/02/2027");
+    expect(await page.getByRole("progressbar", { name: "Avancement du bloc" }).isVisible()).toBe(true);
+    await page.close();
+  });
+
+  it("sans bloc en cours : fil rouge et date du prochain bloc", async () => {
+    const page = await ouvrir("accueil-sans-prenom");
+    expect(await page.getByText(/· fil rouge$/).isVisible()).toBe(true);
+    const carte = page.getByRole("link", { name: /Fil rouge/ });
+    expect(await carte.innerText()).toContain("Ton bloc M démarre le 07/03/2027.");
+    expect(await page.getByRole("progressbar").count()).toBe(0);
     await page.close();
   });
 });

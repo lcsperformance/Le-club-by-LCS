@@ -35,11 +35,25 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
   const { ecran } = await params;
   switch (ecran) {
     case "accueil":
-      return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits={false} aujourdhui={new Date()} />;
+      return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits={false} objectifs={[]} aujourdhui={new Date()} />;
     case "accueil-sans-prenom":
-      return <AccueilMembre utilisateur={{ ...UTILISATEUR_FICTIF, prenom: null }} testsFaits aujourdhui={new Date()} />;
+      return (
+        <AccueilMembre
+          utilisateur={{ ...UTILISATEUR_FICTIF, prenom: null }}
+          testsFaits
+          objectifs={OBJECTIFS_FICTIFS}
+          aujourdhui={new Date(`${AUJOURDHUI_FICTIF}T10:00:00Z`)}
+        />
+      );
     case "accueil-tests-faits":
-      return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits aujourdhui={new Date()} />;
+      return (
+        <AccueilMembre
+          utilisateur={UTILISATEUR_FICTIF}
+          testsFaits
+          objectifs={OBJECTIFS_EN_COURS_FICTIFS}
+          aujourdhui={new Date(`${AUJOURDHUI_FICTIF}T10:00:00Z`)}
+        />
+      );
     case "tests":
       return (
         <>
@@ -94,7 +108,13 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "saison-calendrier":
       return <EcranSaison objectifs={OBJECTIFS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} calendrierOuvert />;
     case "semaine":
-      return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={OBJECTIFS_EN_COURS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} />;
+      return (
+        <EcranSemaine
+          utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
+          objectifs={OBJECTIFS_EN_COURS_FICTIFS}
+          aujourdhui={AUJOURDHUI_FICTIF}
+        />
+      );
     case "semaine-sans-objectif":
       return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} />;
     case "records":

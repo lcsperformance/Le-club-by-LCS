@@ -1,0 +1,126 @@
+.entete {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.enteteTexte {
+  min-width: 0;
+}
+
+.sousTitre {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texte-doux);
+}
+
+.pastille {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--fond);
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.pastilleVide {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  box-shadow: inset 0 0 0 1px rgba(244, 238, 255, 0.35);
+}
+
+.boutonSaison {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(244, 238, 255, 0.5);
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--texte);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.jours {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* Jour en verre fumé, bordure dégradée de 1 px ; le jour choisi passe en rose. */
+.jour {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  height: 74px;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
+  -webkit-backdrop-filter: blur(26px) saturate(1.5);
+  backdrop-filter: blur(26px) saturate(1.5);
+  box-shadow: inset 0 0 26px rgba(250, 148, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  color: var(--texte);
+  font: inherit;
+  cursor: pointer;
+}
+
+.jour::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(250, 148, 255, 0.85), rgba(255, 255, 255, 0.07) 45%, rgba(222, 253, 98, 0.55));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.jour[aria-pressed="true"] {
+  background: rgba(250, 148, 255, 0.2);
+}
+
+.jour[aria-pressed="true"]::before {
+  display: none;
+}
+
+.jourCourt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.jourNumero {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.jour[aria-pressed="true"] .jourNumero {
+  color: var(--accent);
+}
+
+/* Point des séances : vide tant que le programme n'est pas lancé. */
+.point {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.jourTitre {
+  font-size: 17px;
+  font-weight: 800;
+}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { exigerRole } from "@/lib/auth";
+import { lireObjectifs } from "@/lib/saison-serveur";
 import { createClient } from "@/lib/supabase/server";
 import { AccueilMembre } from "./AccueilMembre";
 
@@ -18,10 +19,10 @@ export default function PageAccueil() {
 async function Contenu() {
   const utilisateur = await exigerRole("membre", "admin");
   const supabase = await createClient();
-  const { count } = await supabase
-    .from("tests")
-    .select("id", { count: "exact", head: true })
-    .eq("membre_id", utilisateur.id);
+  const [{ count }, objectifs] = await Promise.all([
+    supabase.from("tests").select("id", { count: "exact", head: true }).eq("membre_id", utilisateur.id),
+    lireObjectifs(utilisateur.id),
+  ]);
 
-  return <AccueilMembre utilisateur={utilisateur} testsFaits={(count ?? 0) > 0} aujourdhui={new Date()} />;
+  return <AccueilMembre utilisateur={utilisateur} testsFaits={(count ?? 0) > 0} objectifs={objectifs} aujourdhui={new Date()} />;
 }

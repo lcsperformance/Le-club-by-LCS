@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { ONGLETS, ongletActif, type CleOnglet } from "@/lib/onglets";
+import { barreVisible, ONGLETS, ongletActif, type CleOnglet } from "@/lib/onglets";
 import styles from "./BarreOnglets.module.css";
 
 const ICONES: Record<CleOnglet, ReactNode> = {
@@ -28,10 +28,11 @@ const ICONES: Record<CleOnglet, ReactNode> = {
 
 /** Barre d'onglets flottante en verre, en bas de l'écran. */
 export function BarreOnglets() {
-  const actif = ongletActif(usePathname());
+  const chemin = usePathname();
+  const actif = ongletActif(chemin);
 
-  // Comme dans la maquette, pas de barre sur les écrans plein écran (tests, séance…).
-  if (!actif) return null;
+  // Comme dans la maquette, pas de barre sur les écrans plein écran (tests, séance, abonnement…).
+  if (!barreVisible(chemin)) return null;
 
   return (
     <>

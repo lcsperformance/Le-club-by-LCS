@@ -6,8 +6,8 @@ import styles from "./EnTeteAccueil.module.css";
 /** « Salut Caroline » si le prénom est connu, sinon « Salut ! ». */
 export const salutation = (prenom: string | null) => (prenom ? `Salut ${prenom}` : "Salut !");
 
-/** En-tête de l'accueil, comme la maquette : bandeau rose, logo, pastille, salutation et date. */
-export function EnTeteAccueil({ utilisateur, aujourdhui }: { utilisateur: Utilisateur; aujourdhui: Date }) {
+/** En-tête de l'accueil, comme la maquette : bandeau rose, logo, pastille, salutation, date et phase (« semaine 2 du bloc S » ou « fil rouge »). */
+export function EnTeteAccueil({ utilisateur, aujourdhui, phase }: { utilisateur: Utilisateur; aujourdhui: Date; phase: string }) {
   return (
     <>
       <header className={styles.bandeau}>
@@ -19,8 +19,9 @@ export function EnTeteAccueil({ utilisateur, aujourdhui }: { utilisateur: Utilis
         </div>
         <div>
           <h1 className={`titre ${styles.salut}`}>{salutation(utilisateur.prenom)}</h1>
-          {/* La phase du plan (« · Bloc M ») s'ajoutera avec « Ma saison ». */}
-          <p className={styles.date}>{formatJourFr(aujourdhui)}</p>
+          <p className={styles.date}>
+            {formatJourFr(aujourdhui)} · {phase}
+          </p>
         </div>
       </header>
       <BandeauVisite utilisateur={utilisateur} />

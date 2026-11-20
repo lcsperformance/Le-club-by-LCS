@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { enregistrerChoix } from "@/app/(membre)/profil/actions";
 import { Carte } from "@/components/ui";
 import { CONFIG_PROFILS, NIVEAUX, PROFILS, type Niveau, type Profil } from "@/lib/profils";
@@ -11,12 +11,14 @@ type Props = {
   profil: Profil | null;
   /** « zones » : « Ton niveau » (après le calcul des zones) ; « profil » : « Mon niveau » (écran Profil). */
   ecran: "zones" | "profil";
+  /** Contenu placé entre la carte du niveau et celle du profil (Profil : lien « Ma saison », comme la maquette). */
+  entreLesDeux?: ReactNode;
 };
 
 type Etat = { champ: "niveau" | "profil"; texte: string; erreur: boolean } | null;
 
 /** Choix du niveau et du profil par le membre, enregistrés dès qu'il touche une option. */
-export function ChoixNiveauProfil({ niveau: niveauInitial, profil: profilInitial, ecran }: Props) {
+export function ChoixNiveauProfil({ niveau: niveauInitial, profil: profilInitial, ecran, entreLesDeux }: Props) {
   const [niveau, setNiveau] = useState(niveauInitial);
   const [profil, setProfil] = useState(profilInitial);
   const [etat, setEtat] = useState<Etat>(null);
@@ -67,6 +69,8 @@ export function ChoixNiveauProfil({ niveau: niveauInitial, profil: profilInitial
         </div>
         {message("niveau")}
       </Carte>
+
+      {entreLesDeux}
 
       <Carte as="section" style={{ display: "grid", gap: 10 }} aria-labelledby={`titre-profil-${ecran}`}>
         <h2 id={`titre-profil-${ecran}`} className="titre-carte" style={{ fontSize: 16 }}>
