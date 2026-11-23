@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { IconeTheme } from "@/components/IconeTheme";
 import { Carte } from "@/components/ui";
 import type { IconeTheme as Icone } from "@/lib/ressources";
@@ -16,7 +17,7 @@ export function EcranRessources({ themes, nbFavoris }: { themes: CarteTheme[]; n
         <p className={styles.intro}>Classées par thème. Du nouveau chaque semaine d&apos;abonnement.</p>
       </header>
 
-      <div className={styles.calculateur}>
+      <Link href="/ressources/calculateur" className={styles.calculateur}>
         <span className={styles.calculateurIcone} aria-hidden>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--fond)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="5" y="3" width="14" height="18" rx="2" />
@@ -28,10 +29,13 @@ export function EcranRessources({ themes, nbFavoris }: { themes: CarteTheme[]; n
             Calculateur LCS Performance
           </span>
           <span className={styles.calculateurSous} style={{ display: "block" }}>
-            L&apos;outil du site, bientôt dans l&apos;app
+            L&apos;outil du site, dans l&apos;app
           </span>
         </span>
-      </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </Link>
 
       <Carte href="/ressources/favoris" className={styles.ligneFavoris}>
         <svg width="24" height="24" viewBox="0 0 24 24" fill="var(--aurore)" stroke="var(--texte)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

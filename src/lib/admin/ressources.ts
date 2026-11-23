@@ -36,7 +36,7 @@ export function lireLienYoutube(saisie: unknown): { id: string } | { erreur: str
   return id && ID_YOUTUBE.test(id) ? { id } : erreur;
 }
 
-const RESERVEES = ["favoris", "contenu"];
+const RESERVEES = ["favoris", "contenu", "calculateur"];
 
 /** Clé tirée d'un nom : minuscules sans accent, « _ » entre les mots, unique parmi les clés existantes. */
 export function cleDepuisNom(nom: string, existantes: readonly string[], longueurMax = 30): string {

@@ -25,7 +25,9 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
   - `/club` : canaux collectifs en direct (annonces réservé à l'équipe et au coach), badges de non-lus, « Mon bloc », suppression de ses messages (l'admin supprime tout) ; pas de messages privés.
   - `/club/questions` : boîte à questions sans votes, prochaine FAQ en visio ; `/club/agenda` : calendrier mensuel, « Ajouter à mon agenda » (.ics).
 - `/admin/questions` (préparer la FAQ) et `/admin/agenda` (créer et modifier les événements).
-- Écrans « bientôt » (vides) : `/avantages`.
+  - `/avantages` : remises des partenaires (code et « Copier le code ») ; `/ressources/calculateur` : calculateur LCS intégré ou ouvert dans le navigateur.
+- `/admin/partenaires` : ajouter, modifier, masquer, supprimer les partenaires.
+- Plus aucun écran « bientôt ».
 
 **Espace équipe**
 - `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
@@ -35,7 +37,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 21 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 22 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -53,6 +55,7 @@ Sécurité par ligne active sur les 21 tables ; les visiteurs non connectés n'o
 | `lectures_canaux` | dernière lecture de chaque canal | le membre, les siennes | seulement par `marquer_canal_lu()` |
 | `questions_faq` | questions pour la FAQ en visio (sans votes) | tout membre connecté | le membre en son nom, retire les siennes ; l'admin marque traitée ou supprime |
 | `evenements` | agenda du Club | tout membre connecté | admin |
+| `partenaires` | remises et codes promo des Avantages | membres connectés (partenaires affichés) ; admin tous | admin |
 | `ressentis` | séances faites, RPE, douleur, commentaire (**données de santé**) | idem | le membre, les siens (seulement RPE, douleur, commentaire une fois la ligne créée) |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
@@ -68,7 +71,7 @@ Points d'attention :
 ## Ce qui manque (demandes 1 à 9)
 
 1. **Mes progrès** : fait (23/11), avec le bouton « Voir mon évolution » sous Mes zones. **Mes records** : fait.
-2. **Ma saison** : fait. **Calculateur LCS** : à faire (outil du site dans l'app, accès depuis Profil et Ressources).
+2. **Ma saison** : fait. **Calculateur LCS** : fait (23/11), accès depuis Profil et Ressources ; intégré si le site LCS l'autorise, sinon ouvert dans le navigateur.
 3. **Accueil** : phase et carte du bloc faites. Restent :
    - « Voir la vidéo » (attend les vidéos de Martin) ;
    - les cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (dépendent de 5, 6 et 7).
@@ -86,11 +89,11 @@ Points d'attention :
    - Produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; vrai paiement puis remboursement.
    - Aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
 
-Hors liste : « Avantages » est encore vide.
+Hors liste : « Avantages » fait (23/11), avec deux partenaires d'exemple dont les codes sont à remplacer.
 
 ## Ordre conseillé
 
 1. Sans contenu de Martin : Calculateur, application installable.
-2. Puis le Calculateur, l'onglet Avantages et l'application installable.
+2. Puis l'application installable (PWA).
 3. Espace coach complet et RPE : quand le programme existe.
 4. Stripe en mode réel vers la mi-décembre.

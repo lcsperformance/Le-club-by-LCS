@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
-import { EnTeteMembre } from "@/components/EnTeteMembre";
-import { Carte } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
+import type { Partenaire } from "@/lib/partenaires";
+import { createClient } from "@/lib/supabase/server";
+import { EcranAvantages } from "./EcranAvantages";
 
 export const metadata: Metadata = { title: "Avantages · Le Club by LCS" };
 
@@ -17,12 +18,9 @@ export default function PageAvantages() {
 
 async function Contenu() {
   const utilisateur = await exigerRole("membre", "admin");
-  return (
-    <>
-      <EnTeteMembre utilisateur={utilisateur} titre="Avantages" />
-      <Carte as="section">
-        <p className="message-info">Les remises de nos partenaires, réservées aux membres.</p>
-      </Carte>
-    </>
-  );
+  const supabase = await createClient();
+  // Les règles de la base ne donnent aux membres que les partenaires affichés.
+  const { data, error } = await supabase.from("partenaires").select("id, nom, remise, description, code, lien, ordre, affiche, exemple").eq("affiche", true);
+  if (error) console.error("Lecture des partenaires impossible", error.code, error.message);
+  return <EcranAvantages utilisateur={utilisateur} partenaires={(data ?? []) as Partenaire[]} />;
 }

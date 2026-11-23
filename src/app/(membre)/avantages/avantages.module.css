@@ -1,0 +1,117 @@
+.intro {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--texte-doux);
+}
+
+.partenaires {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.partenaire {
+  display: grid;
+  gap: 12px;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.initiale {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(250, 148, 255, 0.2);
+  font-family: var(--police-titre), sans-serif;
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  font-size: 24px;
+  color: var(--accent);
+}
+
+.texte {
+  flex: 1;
+  min-width: 0;
+}
+
+.nom {
+  font-size: 18px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.remise {
+  flex: none;
+  font-family: var(--police-titre), sans-serif;
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  font-size: 28px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.code {
+  padding: 12px;
+  border: 1.5px dashed var(--pourpre);
+  border-radius: 14px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.copier {
+  height: 46px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--accent);
+  color: var(--fond);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(222, 253, 98, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.copier[data-copie="true"] {
+  box-shadow: inset 0 0 0 2px rgba(244, 238, 255, 0.5);
+}
+
+.site {
+  justify-self: center;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.bientot {
+  padding: 20px 18px;
+  border: 1px dashed var(--pourpre);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--texte-doux);
+}
