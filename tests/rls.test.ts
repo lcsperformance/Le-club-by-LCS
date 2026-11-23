@@ -358,3 +358,92 @@ describe("prénom", () => {
     );
   });
 });
+
+describe("programme d'entraînement (séances, blocs, rattachement)", () => {
+  const TABLES = ["seances", "blocs_seance", "programme"];
+  const SEANCE_DEMO = "de000000-0000-0000-0000-000000000201";
+
+  async function enTantQueServeur(sql: string) {
+    await db.query("begin");
+    try {
+      await db.query("set local role service_role");
+      // Plusieurs instructions : on garde le résultat de la dernière.
+      const r = (await db.query(sql)) as unknown as { rows: unknown[] } | { rows: unknown[] }[];
+      return Array.isArray(r) ? r[r.length - 1].rows : r.rows;
+    } finally {
+      await db.query("rollback");
+    }
+  }
+
+  it.each(TABLES)("%s : tout membre connecté lit le programme", async (table) => {
+    const rows = await enTantQue<{ n: number }>(B, `select count(*)::int as n from ${table}`);
+    expect(rows[0].n).toBeGreaterThan(0);
+  });
+
+  it.each(TABLES)("%s : un visiteur non connecté n'a accès à rien", async (table) => {
+    await expect(enTantQue(null, `select * from ${table}`)).rejects.toThrow(/permission denied/);
+  });
+
+  it("un membre (même le coach ou l'admin) ne peut ni ajouter, ni modifier, ni supprimer de séance", async () => {
+    for (const qui of [A, COACH, ADMIN]) {
+      await expect(enTantQue(qui, "insert into seances (sport, titre, duree_minutes) values ('course', 'Pirate', 30)")).rejects.toThrow(
+        /permission denied/,
+      );
+      await expect(enTantQue(qui, `update seances set titre = 'Pirate' where id = '${SEANCE_DEMO}'`)).rejects.toThrow(/permission denied/);
+      await expect(enTantQue(qui, `delete from blocs_seance where seance_id = '${SEANCE_DEMO}'`)).rejects.toThrow(/permission denied/);
+      await expect(enTantQue(qui, `delete from programme where seance_id = '${SEANCE_DEMO}'`)).rejects.toThrow(/permission denied/);
+    }
+  });
+
+  it("le serveur (clé secrète) remplit le programme", async () => {
+    const rows = await enTantQueServeur(`
+      with s as (insert into seances (sport, titre, duree_minutes) values ('velo', 'Test serveur', 60) returning id),
+           b as (insert into blocs_seance (seance_id, ordre, libelle, zone) select id, 1, 'Endurance', 2 from s)
+      insert into programme (phase, semaine, jour, niveau, profil, seance_id)
+      select 'M', 3, 2, 'finisher', 'intensif', id from s returning semaine`);
+    expect(rows).toEqual([{ semaine: 3 }]);
+  });
+
+  it("la base refuse une séance, un bloc ou un rattachement incohérent", async () => {
+    const refus = [
+      "insert into seances (sport, titre, duree_minutes) values ('course', '', 30)",
+      "insert into seances (sport, titre, duree_minutes) values ('course', 'Trop courte', 0)",
+      `insert into blocs_seance (seance_id, ordre, libelle, zone) values ('${SEANCE_DEMO}', 9, 'Zone 6', 6)`,
+      `insert into blocs_seance (seance_id, ordre, libelle) values ('${SEANCE_DEMO}', 1, 'Même ordre')`,
+      `insert into programme (phase, semaine, jour, niveau, profil, seance_id) values ('fil_rouge', 1, 8, 'finisher', 'extensif', '${SEANCE_DEMO}')`,
+      `insert into programme (phase, semaine, jour, niveau, profil, seance_id) values ('M', 0, 1, 'finisher', 'extensif', '${SEANCE_DEMO}')`,
+      // Déjà une séance (ordre 1) le lundi de la semaine 1 du fil rouge, Challenger extensif.
+      `insert into programme (phase, semaine, jour, niveau, profil, seance_id) values ('fil_rouge', 1, 1, 'challenger', 'extensif', '${SEANCE_DEMO}')`,
+    ];
+    for (const sql of refus) await expect(enTantQueServeur(sql), sql).rejects.toThrow(/violates|invalid input/);
+  });
+
+  it("supprimer une séance retire aussi ses blocs et ses rattachements", async () => {
+    const rows = await enTantQueServeur(`
+      delete from seances where id = '${SEANCE_DEMO}';
+      select (select count(*) from blocs_seance where seance_id = '${SEANCE_DEMO}')::int as blocs,
+             (select count(*) from programme where seance_id = '${SEANCE_DEMO}')::int as rattachements`);
+    expect(rows).toEqual([{ blocs: 0, rattachements: 0 }]);
+  });
+
+  it("démonstration : une semaine 1 du fil rouge pour chaque niveau et chaque profil", async () => {
+    const rows = await enTantQue<{ niveau: string; profil: string; n: number }>(
+      A,
+      `select niveau, profil, count(*)::int as n from programme
+       where phase = 'fil_rouge' and semaine = 1 group by niveau, profil order by niveau, profil`,
+    );
+    expect(rows).toEqual([
+      { niveau: "finisher", profil: "extensif", n: 5 },
+      { niveau: "finisher", profil: "intensif", n: 5 },
+      { niveau: "challenger", profil: "extensif", n: 6 },
+      { niveau: "challenger", profil: "intensif", n: 6 },
+      { niveau: "performer", profil: "extensif", n: 8 },
+      { niveau: "performer", profil: "intensif", n: 8 },
+    ]);
+    const [sansBloc] = await enTantQue<{ n: number }>(
+      A,
+      "select count(*)::int as n from seances s where not exists (select 1 from blocs_seance b where b.seance_id = s.id)",
+    );
+    expect(sansBloc.n).toBe(0);
+  });
+});

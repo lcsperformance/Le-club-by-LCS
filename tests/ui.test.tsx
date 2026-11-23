@@ -19,8 +19,9 @@ describe("barre d'onglets", () => {
     expect(ongletActif("/admin")).toBeNull();
   });
 
-  it("Ma saison est rattachée à l'onglet Semaine", () => {
+  it("Ma saison et les séances sont rattachées à l'onglet Semaine", () => {
     expect(ongletActif("/saison")).toBe("semaine");
+    expect(ongletActif("/seance/de000000-0000-0000-0000-000000000201")).toBe("semaine");
     expect(ongletActif("/saisons")).toBeNull();
   });
 

@@ -1,0 +1,16 @@
+.badge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(250, 148, 255, 0.2);
+}
+
+.grande {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+}

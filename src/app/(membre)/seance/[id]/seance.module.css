@@ -1,0 +1,110 @@
+.retour {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.enteteTexte {
+  min-width: 0;
+}
+
+.surtitre {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.duree {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texte-doux);
+}
+
+.blocs {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bloc {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+
+.sansZone {
+  flex: none;
+  width: 44px;
+  display: flex;
+  justify-content: center;
+}
+
+.sansZone::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(250, 148, 255, 0.3);
+}
+
+.blocTexte {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.blocLibelle {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.blocDetail {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.cible {
+  flex: none;
+  max-width: 104px;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.cibleValeur {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.cibleFc {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.cadenas {
+  flex: none;
+  display: flex;
+  color: var(--texte-doux);
+}

@@ -8,8 +8,8 @@ export const ONGLETS = [
 
 export type CleOnglet = (typeof ONGLETS)[number]["cle"];
 
-/** Sous-pages rattachées à un onglet (maquette : Ma saison est sous « Semaine »). */
-const SOUS_PAGES: Record<string, CleOnglet> = { "/saison": "semaine" };
+/** Sous-pages rattachées à un onglet (maquette : Ma saison et les séances sont sous « Semaine »). */
+const SOUS_PAGES: Record<string, CleOnglet> = { "/saison": "semaine", "/seance": "semaine" };
 
 /** Sous-pages qui gardent la barre sans onglet en valeur (comme dans la maquette). */
 const AVEC_BARRE = ["/zones", "/profil", "/progres", "/records"];
