@@ -154,7 +154,7 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
             <BoutonPrincipal type="submit" enCours={enCours} texteEnCours="Enregistrement…">
               {enregistre ? "Ressenti enregistré" : "Enregistrer mon ressenti"}
             </BoutonPrincipal>
-            <p className={styles.confidentiel}>Visible seulement par toi et ton coach.</p>
+            <p className={styles.confidentiel}>Visible seulement par toi et les coachs.</p>
           </form>
         </Carte>
       )}
