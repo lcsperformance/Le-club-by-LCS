@@ -576,7 +576,7 @@ describe("ressources : déblocage, liens protégés, suivi et commentaires", () 
     expect(await ids(B)).not.toContain(VIDEO_S3);
     expect((await ids(COACH)).length).toBeGreaterThanOrEqual(17); // l'équipe voit tout
     const [m] = await enTantQue<Record<string, unknown>>(B, `select * from public.ressources_medias() where id = '${PDF_S1}'`);
-    expect(m).toEqual({ id: PDF_S1, youtube_id: null, fichier_disponible: true }); // jamais le chemin du fichier
+    expect(m).toEqual({ id: PDF_S1, youtube_id: null, fichier_disponible: true, miniature: null }); // jamais le chemin du fichier
   });
 
   it("chemin du PDF seulement s'il est débloqué", async () => {

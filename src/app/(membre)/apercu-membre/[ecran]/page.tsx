@@ -27,6 +27,7 @@ import {
   RESSOURCES_FICTIVES,
   SEMAINE_RESSOURCES_FICTIVE,
   SUIVIS_FICTIFS,
+  THEMES_FICTIFS,
   SEANCE_COURSE_FICTIVE,
   SEANCE_RENFO_FICTIVE,
   SEANCES_FAITES_FICTIVES,
@@ -190,12 +191,12 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "ressources":
       return (
         <EcranRessources
-          themes={cartesThemes(RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
-          nbFavoris={favoris(RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).length}
+          themes={cartesThemes(THEMES_FICTIFS, RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
+          nbFavoris={favoris(THEMES_FICTIFS, RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).length}
         />
       );
     case "ressources-theme": {
-      const theme = themeParCle("nutrition")!;
+      const theme = themeParCle(THEMES_FICTIFS, "nutrition")!;
       return (
         <EcranTheme
           titre={theme.nom}
@@ -218,7 +219,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
               nom: "Contenus ajoutés en favoris",
               contenus:
                 ecran === "ressources-favoris"
-                  ? favoris(RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).map((c) => vueContenu(c, SEMAINE_RESSOURCES_FICTIVE, SUIVIS_FICTIFS[c.id]))
+                  ? favoris(THEMES_FICTIFS, RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).map((c) => vueContenu(c, SEMAINE_RESSOURCES_FICTIVE, SUIVIS_FICTIFS[c.id]))
                   : [],
             },
           ]}
@@ -229,6 +230,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return (
         <EcranContenu
           ressource={RESSOURCES_FICTIVES[0]}
+          theme={THEMES_FICTIFS[0]}
           semaine={SEMAINE_RESSOURCES_FICTIVE}
           media={{ youtube_id: null, fichier_disponible: false }}
           suivi={SUIVIS_FICTIFS[RESSOURCES_FICTIVES[0].id]}
@@ -239,15 +241,16 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return (
         <EcranContenu
           ressource={RESSOURCES_FICTIVES[1]}
+          theme={THEMES_FICTIFS[0]}
           semaine={SEMAINE_RESSOURCES_FICTIVE}
           media={{ youtube_id: null, fichier_disponible: true }}
           suivi={SUIVIS_FICTIFS[RESSOURCES_FICTIVES[1].id]}
         />
       );
     case "ressources-pdf-bientot":
-      return <EcranContenu ressource={RESSOURCES_FICTIVES[3]} semaine={4} media={{ youtube_id: null, fichier_disponible: false }} />;
+      return <EcranContenu ressource={RESSOURCES_FICTIVES[3]} theme={THEMES_FICTIFS[0]} semaine={4} media={{ youtube_id: null, fichier_disponible: false }} />;
     case "ressources-verrouille":
-      return <EcranContenu ressource={RESSOURCES_FICTIVES[6]} semaine={SEMAINE_RESSOURCES_FICTIVE} />;
+      return <EcranContenu ressource={RESSOURCES_FICTIVES[6]} theme={THEMES_FICTIFS[4]} semaine={SEMAINE_RESSOURCES_FICTIVE} />;
     case "records":
       return <EcranRecords records={RECORDS_FICTIFS} />;
     case "records-vide":

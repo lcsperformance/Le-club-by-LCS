@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Cadenas } from "@/components/Cadenas";
 import { Carte } from "@/components/ui";
-import { badgeSuivi, estDebloquee, lecteurYoutube, themeParCle, type Commentaire, type Media, type Ressource, type Suivi } from "@/lib/ressources";
+import { badgeSuivi, estDebloquee, lecteurYoutube, type Commentaire, type Media, type Ressource, type Suivi, type Theme } from "@/lib/ressources";
 import { BoutonFavori } from "../../BoutonFavori";
 import styles from "../../ressources.module.css";
 import { BoutonVue } from "./BoutonSuivi";
@@ -11,9 +11,11 @@ import { Commentaires } from "./Commentaires";
  * Page d'un contenu (maquette) : la vidéo (YouTube non répertoriée) ou l'aperçu du PDF, le titre,
  * « Ajouter aux favoris » et « Marquer comme vue » / « Télécharger le PDF », puis les commentaires (vidéos).
  * semaine : ancienneté du membre (null pour l'équipe du Club) ; un contenu verrouillé ne montre rien.
+ * theme : son thème (pour le retour et le nom de la sous-rubrique).
  */
 export function EcranContenu({
   ressource: r,
+  theme,
   semaine,
   media,
   suivi,
@@ -21,13 +23,13 @@ export function EcranContenu({
   moderateur = false,
 }: {
   ressource: Ressource;
+  theme?: Theme;
   semaine: number | null;
   media?: Media;
   suivi?: Suivi;
   commentaires?: Commentaire[];
   moderateur?: boolean;
 }) {
-  const theme = themeParCle(r.theme);
   const rubrique = theme?.sous_rubriques.find((s) => s.cle === r.sous_rubrique);
   const debloquee = estDebloquee(r, semaine);
 

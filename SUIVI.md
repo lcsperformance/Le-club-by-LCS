@@ -26,12 +26,13 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 **Espace équipe**
 - `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
+- `/admin/ressources` : contenus (PDF, lien YouTube, miniature, semaine de déblocage), thèmes et sous-rubriques, modération des commentaires.
 - `/admin/composants` : vitrine des composants.
 - `/coach` : vide (texte d'attente).
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 14 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 16 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -40,9 +41,10 @@ Sécurité par ligne active sur les 14 tables ; les visiteurs non connectés n'o
 | `zones` | zones personnalisées | idem | le membre, les siennes |
 | `objectifs` | courses de la saison | idem | le membre, les siens |
 | `records` | records personnels (10 km… triathlon XL) | idem | le membre, les siens |
-| `ressources` | catalogue (lien vidéo et fichier jamais lisibles directement) | tout membre connecté ; liens seulement si débloqué | serveur seulement |
+| `themes_ressources`, `sous_rubriques` | thèmes et sous-rubriques des Ressources | tout membre connecté | admin |
+| `ressources` | catalogue (lien vidéo, fichier et miniature jamais lisibles directement) | tout membre connecté ; liens seulement si débloqué | admin |
 | `suivi_ressources` | favoris, vu, téléchargé | le membre, le sien | le membre, le sien (contenus débloqués) |
-| `commentaires_ressources` | commentaires sous les vidéos | les membres qui ont débloqué la vidéo | le membre, les siens ; l'admin supprime |
+| `commentaires_ressources` | commentaires sous les vidéos | les membres qui ont débloqué la vidéo | le membre, les siens ; l'admin supprime (noté au journal) |
 | `ressentis` | séances faites, RPE, douleur, commentaire (**données de santé**) | idem | le membre, les siens (seulement RPE, douleur, commentaire une fois la ligne créée) |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
@@ -73,7 +75,7 @@ Points d'attention :
    - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1, une séance chaque jour).
    - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
 7. **Ressources** : faites (23/11) : thèmes, PDF et vidéos, déblocage par ancienneté, favoris, vu / téléchargé, commentaires.
-   - Reste : écran admin pour que Martin dépose ses PDF et ses liens YouTube (contenus de démo sans fichier pour l'instant).
+   - Écran admin fait (23/11) : contenus, thèmes, sous-rubriques, modération. Reste : remplacer la démo par les vrais PDF et vidéos de Martin.
 8. **Application installable (PWA)** : à faire (manifeste, icônes, écran de démarrage, hors ligne).
 9. **Stripe en mode réel** : à faire avant le 1er janvier 2027.
    - Produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; vrai paiement puis remboursement.
@@ -84,6 +86,6 @@ Hors liste : « Avantages » est encore vide.
 ## Ordre conseillé
 
 1. Sans contenu de Martin : Calculateur, application installable.
-2. Puis Club (canaux et boîte à questions), puis l'écran admin des Ressources.
+2. Puis Club (canaux et boîte à questions).
 3. Espace coach complet et RPE : quand le programme existe.
 4. Stripe en mode réel vers la mi-décembre.

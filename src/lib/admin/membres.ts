@@ -98,6 +98,7 @@ const ACTIONS: Record<string, string> = {
   acces_coupe: "Accès coupé",
   acces_retabli: "Accès rétabli",
   email_acces_renvoye: "E-mail d'accès renvoyé",
+  commentaire_supprime: "Commentaire supprimé",
 };
 
 /** Ligne du journal en clair : « Accès offert jusqu'au 01/02/2027 ». */

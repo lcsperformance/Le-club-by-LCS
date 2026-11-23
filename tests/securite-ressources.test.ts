@@ -48,8 +48,8 @@ describe("membre inscrit depuis 2 semaines", () => {
       `select * from public.ressources_medias() where id in ('${PDF_SEMAINE_1}', '${VIDEO_SEMAINE_1}') order by id`,
     );
     expect(medias).toEqual([
-      { id: VIDEO_SEMAINE_1, youtube_id: "abcdefghijk", fichier_disponible: false },
-      { id: PDF_SEMAINE_1, youtube_id: null, fichier_disponible: true },
+      { id: VIDEO_SEMAINE_1, youtube_id: "abcdefghijk", fichier_disponible: false, miniature: null },
+      { id: PDF_SEMAINE_1, youtube_id: null, fichier_disponible: true, miniature: null },
     ]);
     expect(await bruno(`select public.fichier_ressource('${PDF_SEMAINE_1}') as f`)).toEqual([{ f: FICHIER_SEMAINE_1 }]);
   });
