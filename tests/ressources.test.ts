@@ -71,6 +71,38 @@ describe("ancienneté et déblocage", () => {
   });
 });
 
+describe("membre inscrit depuis 2 semaines (écran)", () => {
+  const inscription = "2027-01-04";
+  const aujourdhui = "2027-01-18"; // 14 jours plus tard
+  const semaine = semaineAnciennete(inscription, aujourdhui);
+  const media = { youtube_id: "dQw4w9WgXcQ", fichier_disponible: true };
+
+  it("est en semaine 3", () => {
+    expect(semaine).toBe(3);
+  });
+
+  it("voit en clair un contenu débloqué à la semaine 1", () => {
+    expect(vueContenu(r("s1", "nutrition", "bases", "video", 1), semaine, undefined, media)).toMatchObject({
+      debloquee: true,
+      meta: "Vidéo",
+      miniature: "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+    });
+  });
+
+  it("voit verrouillé un contenu débloqué à la semaine 4, avec sa semaine d'ouverture", () => {
+    expect(vueContenu(r("s4", "nutrition", "effort", "pdf", 4), semaine, { favori: true, consulte_le: "2027-01-10T10:00:00Z" }, media)).toEqual({
+      id: "s4",
+      titre: "Contenu s4",
+      type: "pdf",
+      meta: "PDF · débloqué semaine 4",
+      badge: null,
+      debloquee: false,
+      favori: false,
+      miniature: null,
+    });
+  });
+});
+
 describe("classement", () => {
   it("cartes des thèmes : contenus débloqués sur le total, rubriques inconnues ignorées", () => {
     const cartes = cartesThemes(CATALOGUE, 3);
