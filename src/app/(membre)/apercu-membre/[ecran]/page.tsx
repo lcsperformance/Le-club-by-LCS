@@ -5,6 +5,8 @@ import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
+import { EcranCanal } from "@/app/(membre)/club/[canal]/EcranCanal";
+import { EcranClub } from "@/app/(membre)/club/EcranClub";
 import { EcranContenu } from "@/app/(membre)/ressources/contenu/[id]/EcranContenu";
 import { EcranRessources } from "@/app/(membre)/ressources/EcranRessources";
 import { EcranTheme } from "@/app/(membre)/ressources/EcranTheme";
@@ -16,12 +18,16 @@ import { FormulaireTests } from "@/app/(membre)/tests/FormulaireTests";
 import { AffichageZones } from "@/app/(membre)/zones/AffichageZones";
 import { EnTeteZones } from "@/app/(membre)/zones/EnTeteZones";
 import {
+  ANNONCES_FICTIVES,
   AUJOURDHUI_FICTIF,
+  CANAUX_FICTIFS,
   COMMENTAIRES_FICTIFS,
   exigerApercu,
   HISTORIQUE_COURSE_FICTIF,
   HISTORIQUE_VELO_FICTIF,
   OBJECTIFS_EN_COURS_FICTIFS,
+  MESSAGES_FICTIFS,
+  NON_LUS_FICTIFS,
   OBJECTIFS_FICTIFS,
   RECORDS_FICTIFS,
   RESSOURCES_FICTIVES,
@@ -188,6 +194,33 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={null} />;
     case "seance-renfo":
       return <EcranSeance seance={SEANCE_RENFO_FICTIVE} tests={null} />;
+    case "club":
+      return <EcranClub utilisateur={UTILISATEUR_FICTIF} canaux={CANAUX_FICTIFS} nonLus={NON_LUS_FICTIFS} monBloc="bloc-m" direct={false} />;
+    case "club-canal":
+    case "club-canal-admin":
+    case "club-canal-vide":
+      return (
+        <EcranCanal
+          canal={CANAUX_FICTIFS[1]}
+          messages={ecran === "club-canal-vide" ? [] : MESSAGES_FICTIFS}
+          encore={ecran === "club-canal"}
+          aujourdhui={AUJOURDHUI_FICTIF}
+          moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-canal-admin" ? "admin" : "membre" }}
+          direct={false}
+        />
+      );
+    case "club-annonces":
+    case "club-annonces-coach":
+      return (
+        <EcranCanal
+          canal={CANAUX_FICTIFS[0]}
+          messages={ANNONCES_FICTIVES}
+          encore={false}
+          aujourdhui={AUJOURDHUI_FICTIF}
+          moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-annonces-coach" ? "coach" : "membre" }}
+          direct={false}
+        />
+      );
     case "ressources":
       return (
         <EcranRessources

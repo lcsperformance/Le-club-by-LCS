@@ -22,7 +22,8 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
   - `/progres` : courbe par sport (course, vélo, natation, cardio), gain depuis le premier test, historique ;
   - `/records` : 10 km, semi, marathon, triathlon S à XL, tous facultatifs.
   - `/ressources` : 5 thèmes avec icône, sous-rubriques, PDF et vidéos (YouTube non répertorié) débloqués selon l'ancienneté, favoris, « Vue » / « Téléchargé », commentaires sous les vidéos.
-- Écrans « bientôt » (vides) : `/club`, `/avantages`.
+  - `/club` : canaux collectifs en direct (annonces réservé à l'équipe et au coach), badges de non-lus, « Mon bloc », suppression de ses messages (l'admin supprime tout) ; pas de messages privés.
+- Écrans « bientôt » (vides) : `/avantages` ; dans le Club, les onglets « Questions » et « Agenda ».
 
 **Espace équipe**
 - `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
@@ -32,7 +33,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 16 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 19 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -45,6 +46,9 @@ Sécurité par ligne active sur les 16 tables ; les visiteurs non connectés n'o
 | `ressources` | catalogue (lien vidéo, fichier et miniature jamais lisibles directement) | tout membre connecté ; liens seulement si débloqué | admin |
 | `suivi_ressources` | favoris, vu, téléchargé | le membre, le sien | le membre, le sien (contenus débloqués) |
 | `commentaires_ressources` | commentaires sous les vidéos | les membres qui ont débloqué la vidéo | le membre, les siens ; l'admin supprime (noté au journal) |
+| `canaux` | les 7 canaux du Club | tout membre connecté | personne (migration seulement : pas de canal privé) |
+| `messages_club` | messages des canaux | tout membre connecté | le membre en son nom (annonces : admin et coach) ; supprime les siens, l'admin tous (noté au journal) |
+| `lectures_canaux` | dernière lecture de chaque canal | le membre, les siennes | seulement par `marquer_canal_lu()` |
 | `ressentis` | séances faites, RPE, douleur, commentaire (**données de santé**) | idem | le membre, les siens (seulement RPE, douleur, commentaire une fois la ligne créée) |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
@@ -67,10 +71,9 @@ Points d'attention :
 4. **Espace coach** : à faire.
    - Liste des athlètes ; fiche avec niveau, objectifs et séances (RPE, douleur, commentaire), en lecture seule.
    - Les droits de lecture sont prêts.
-5. **Club** : à faire.
-   - Canaux (annonces en lecture seule, général, présentations, un par bloc, nutrition-matos, courses), messages en temps réel.
-   - Boîte à questions sans votes, FAQ en visio, agenda.
-   - Tables, temps réel et règles de sécurité à créer.
+5. **Club** : canaux en temps réel faits (23/11).
+   - Reste : boîte à questions sans votes, FAQ en visio, agenda (onglets « bientôt »).
+   - Canaux bloc S et bloc XL à ajouter si besoin (seuls bloc-m et bloc-l existent).
 6. **RPE et douleur** : fait (23/11) : « Marquer comme faite » et ressenti dans l'écran Séance, table de santé protégée.
    - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1, une séance chaque jour).
    - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
@@ -86,6 +89,6 @@ Hors liste : « Avantages » est encore vide.
 ## Ordre conseillé
 
 1. Sans contenu de Martin : Calculateur, application installable.
-2. Puis Club (canaux et boîte à questions).
+2. Puis la boîte à questions et l'agenda du Club.
 3. Espace coach complet et RPE : quand le programme existe.
 4. Stripe en mode réel vers la mi-décembre.
