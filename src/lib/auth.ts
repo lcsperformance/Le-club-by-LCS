@@ -17,6 +17,8 @@ export type Utilisateur = {
   /** Choisis par le membre ; null tant qu'il ne l'a pas fait. */
   niveau: Niveau | null;
   profil: Profil | null;
+  /** Date d'inscription (ISO) : on peut remonter jusqu'à cette semaine dans Ma semaine. */
+  dateInscription: string | null;
   abonnement: {
     statut: StatutAbonnement;
     /** Fin de la période payée (ISO) : accès ouvert jusqu'à cette date. */
@@ -45,7 +47,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe")
+    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe, date_inscription")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
@@ -57,6 +59,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
     role: membre.role as Role,
     niveau: (membre.niveau as Niveau | null) ?? null,
     profil: (membre.profil as Profil | null) ?? null,
+    dateInscription: (membre.date_inscription as string | null) ?? null,
     abonnement: {
       statut: membre.statut_abonnement as StatutAbonnement,
       fin: (membre.abonnement_fin as string | null) ?? null,

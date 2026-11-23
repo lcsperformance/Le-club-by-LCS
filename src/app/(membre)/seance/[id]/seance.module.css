@@ -232,3 +232,29 @@
   text-align: center;
   color: var(--accent);
 }
+
+/* Ressenti en lecture seule (séance de plus de 14 jours). */
+.lecture {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.lecture div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lecture dt {
+  font-size: 14px;
+  color: var(--texte-doux);
+}
+
+.lecture dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+}

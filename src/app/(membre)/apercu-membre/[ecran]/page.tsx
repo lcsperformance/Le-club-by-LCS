@@ -127,6 +127,20 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           programme={{ semaine: { phase: "M", semaine: 5 }, seances: ecran === "semaine-a-venir" ? [] : SEMAINE_FICTIVE }}
           testsFaits={ecran !== "semaine-tests-a-faire"}
           faites={SEANCES_FAITES_FICTIVES}
+          navigation={{ precedente: "2027-01-04", suivante: ecran === "semaine" ? "2027-01-18" : null }}
+        />
+      );
+    case "semaine-passee":
+      return (
+        <EcranSemaine
+          utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
+          objectifs={OBJECTIFS_EN_COURS_FICTIFS}
+          aujourdhui={AUJOURDHUI_FICTIF}
+          programme={{ semaine: { phase: "fil_rouge", semaine: 1 }, seances: SEMAINE_FICTIVE }}
+          testsFaits
+          faites={["2026-11-16|00000000-0000-0000-0000-000000000101"]}
+          lundi="2026-11-16"
+          navigation={{ precedente: null, suivante: "2026-11-23" }}
         />
       );
     case "semaine-sans-objectif":
@@ -139,6 +153,18 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           seance={SEANCE_COURSE_FICTIVE}
           tests={TEST_FICTIF}
           suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, douleur: true, commentaire: "Genou droit un peu raide sur la fin." }, interdit: null }}
+        />
+      );
+    case "seance-ancienne":
+      return (
+        <EcranSeance
+          seance={SEANCE_COURSE_FICTIVE}
+          tests={TEST_FICTIF}
+          suivi={{
+            jour: "2026-11-17",
+            ressenti: { rpe: 6, douleur: false, commentaire: "Bonnes sensations, un peu de vent de face sur le retour." },
+            interdit: "On ne peut plus noter une séance de plus de 14 jours.",
+          }}
         />
       );
     case "seance-a-venir":

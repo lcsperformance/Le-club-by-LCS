@@ -13,7 +13,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 **Espace membre** (barre d'onglets, aussi sur les sous-pages)
 - Faits :
   - `/accueil` : salutation, phase, zones, carte « Bloc en cours » ;
-  - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours, séances du jour (programme) ;
+  - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours, séances du jour (programme), semaines précédentes et suivantes (de l'inscription à la fin de la période payée) ;
   - `/seance/[id]` : blocs de la séance avec zone, allure et FC du membre (cadenas sans tests), « Marquer comme faite » et ressenti (RPE, douleur, commentaire) ;
   - `/saison` : objectifs, blocs S/M/L/XL, calendrier, nom de course, J-xx ;
   - `/tests` : 4 tests de départ ;
@@ -66,7 +66,7 @@ Points d'attention :
    - Boîte à questions sans votes, FAQ en visio, agenda.
    - Tables, temps réel et règles de sécurité à créer.
 6. **RPE et douleur** : fait (23/11) : « Marquer comme faite » et ressenti dans l'écran Séance, table de santé protégée.
-   - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1).
+   - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1, une séance chaque jour).
    - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
 7. **Ressources** : à faire.
    - Thèmes, fiches vidéo ou PDF, déblocage par semaine d'abonnement, favoris, contenus vus, commentaires.

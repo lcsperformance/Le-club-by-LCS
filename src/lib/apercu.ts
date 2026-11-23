@@ -23,6 +23,7 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   role: "membre",
   niveau: null,
   profil: null,
+  dateInscription: "2026-11-02T10:00:00.000Z",
   abonnement: { statut: "actif", fin: "2027-02-10T10:00:00.000Z", annulationPrevue: false, formule: "mensuelle", clientStripe: true, offertJusqua: null, coupe: false },
 };
 
