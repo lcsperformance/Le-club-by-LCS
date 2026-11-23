@@ -91,7 +91,7 @@ describe("Séance : marquer comme faite et ressenti", () => {
     expect(await page.getByRole("switch", { name: "Douleur ou gêne" }).getAttribute("aria-checked")).toBe("true");
     expect(await page.getByLabel("Commentaire (facultatif)").inputValue()).toBe("Genou droit un peu raide sur la fin.");
     expect(await page.getByRole("button", { name: "Ressenti enregistré" }).isVisible()).toBe(true);
-    expect(await page.getByText("Visible seulement par toi et ton coach.").isVisible()).toBe(true);
+    expect(await page.getByText("Visible seulement par toi et les coachs.").isVisible()).toBe(true);
 
     await page.getByRole("button", { name: "RPE 4 sur 10" }).click();
     await page.getByRole("switch", { name: "Douleur ou gêne" }).click();
