@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
-import { validerConfigRessources } from "@/lib/config-ressources";
+import { describe, expect, it, vi } from "vitest";
+import { THEMES_FICTIFS as THEMES } from "@/lib/apercu";
+
+vi.mock("server-only", () => ({}));
 import {
   cartesThemes,
-  CONFIG_RESSOURCES,
   dateCommentaire,
   estDebloquee,
   favoris,
@@ -33,23 +34,6 @@ const CATALOGUE = [
   r("e", "velo", "puissance", "video", 2),
   r("x", "nutrition", "rubrique_supprimee", "pdf", 1),
 ];
-
-describe("thèmes (config/ressources.json)", () => {
-  it("Nutrition, Natation, Vélo, Course à pied, Préparation, chacun avec son icône et ses sous-rubriques", () => {
-    expect(CONFIG_RESSOURCES.themes.map((t) => t.nom)).toEqual(["Nutrition", "Natation", "Vélo", "Course à pied", "Préparation"]);
-    expect(CONFIG_RESSOURCES.themes.map((t) => t.icone)).toEqual(["nutrition", "natation", "velo", "course", "preparation"]);
-    for (const t of CONFIG_RESSOURCES.themes) expect(t.sous_rubriques.length).toBeGreaterThan(0);
-  });
-
-  it("refuse une config mal écrite, avec un message clair", () => {
-    const base = { cle: "nutrition", nom: "Nutrition", icone: "nutrition", sous_rubriques: [{ cle: "bases", nom: "Bases" }] };
-    expect(() => validerConfigRessources({ themes: [{ ...base, icone: "pizza" }] })).toThrow(/« icone » doit valoir/);
-    expect(() => validerConfigRessources({ themes: [{ ...base, cle: "Nutrition" }] })).toThrow(/minuscules/);
-    expect(() => validerConfigRessources({ themes: [base, base] })).toThrow(/utilisée deux fois/);
-    expect(() => validerConfigRessources({ themes: [{ ...base, cle: "favoris" }] })).toThrow(/réservée/);
-    expect(() => validerConfigRessources({ themes: [{ ...base, sous_rubriques: [] }] })).toThrow(/au moins une sous-rubrique/);
-  });
-});
 
 describe("ancienneté et déblocage", () => {
   it("semaine 1 la première semaine après l'inscription, puis +1 tous les 7 jours", () => {
@@ -105,21 +89,21 @@ describe("membre inscrit depuis 2 semaines (écran)", () => {
 
 describe("classement", () => {
   it("cartes des thèmes : contenus débloqués sur le total, rubriques inconnues ignorées", () => {
-    const cartes = cartesThemes(CATALOGUE, 3);
+    const cartes = cartesThemes(THEMES, CATALOGUE, 3);
     expect(cartes.find((c) => c.cle === "nutrition")?.compte).toBe("3 / 4 contenus");
     expect(cartes.find((c) => c.cle === "velo")?.compte).toBe("1 / 1 contenu");
     expect(cartes.find((c) => c.cle === "natation")?.compte).toBe("0 / 0 contenu");
   });
 
-  it("sous-rubriques dans l'ordre de la config, contenus dans leur ordre", () => {
-    const s = sousRubriques(themeParCle("nutrition")!, CATALOGUE);
+  it("sous-rubriques dans leur ordre, contenus dans leur ordre", () => {
+    const s = sousRubriques(themeParCle(THEMES, "nutrition")!, CATALOGUE);
     expect(s.map((x) => x.nom)).toEqual(["Les bases de la nutrition", "Nutrition à l'effort"]);
     expect(s[0].contenus.map((c) => c.id)).toEqual(["c", "b"]);
   });
 
   it("favoris : seulement ceux qui sont débloqués", () => {
     const suivis = { a: { favori: true, consulte_le: null }, d: { favori: true, consulte_le: null }, e: { favori: false, consulte_le: null } };
-    expect(favoris(CATALOGUE, suivis, 3).map((c) => c.id)).toEqual(["a"]);
+    expect(favoris(THEMES, CATALOGUE, suivis, 3).map((c) => c.id)).toEqual(["a"]);
   });
 });
 
@@ -131,7 +115,10 @@ describe("carte d'un contenu", () => {
     expect(vueContenu(CATALOGUE[1], 3).badge).toBeNull();
   });
 
-  it("miniature YouTube seulement pour une vidéo débloquée", () => {
+  it("miniature choisie par l'admin ou celle de YouTube, seulement pour une vidéo débloquée", () => {
+    const perso = { youtube_id: "dQw4w9WgXcQ", fichier_disponible: false, miniature: "https://exemple.supabase.co/miniature.webp" };
+    expect(vueContenu(CATALOGUE[2], 3, undefined, perso).miniature).toBe("https://exemple.supabase.co/miniature.webp");
+    expect(vueContenu(CATALOGUE[0], 2, undefined, perso).miniature).toBeNull();
     const media = { youtube_id: "dQw4w9WgXcQ", fichier_disponible: false };
     expect(vueContenu(CATALOGUE[2], 3, undefined, media).miniature).toBe("https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg");
     expect(vueContenu(CATALOGUE[0], 2, undefined, media)).toMatchObject({ miniature: null, debloquee: false, favori: false, badge: null });

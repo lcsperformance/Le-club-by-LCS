@@ -7,6 +7,11 @@ const LIENS = [
     titre: "Membres",
     texte: "Abonnements, niveaux et ancienneté ; ouvrir ou couper un accès, renvoyer l'e-mail d'accès.",
   },
+  {
+    href: "/admin/ressources",
+    titre: "Ressources",
+    texte: "Thèmes, sous-rubriques, PDF et vidéos, semaine de déblocage ; modération des commentaires.",
+  },
   { href: "/accueil", titre: "Voir l'espace membre", texte: "Parcourir l'app comme un athlète, avec la barre d'onglets." },
   { href: "/coach", titre: "Voir l'espace coach", texte: "L'historique des athlètes, en lecture seule." },
   { href: "/admin/composants", titre: "Vitrine des composants", texte: "Cartes, boutons, champs et pastilles de zone." },

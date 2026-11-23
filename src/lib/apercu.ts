@@ -6,7 +6,8 @@ import type { Utilisateur } from "@/lib/auth";
 import type { PointHistorique } from "@/lib/historique";
 import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Records } from "@/lib/records";
-import type { Commentaire, Ressource, Suivi } from "@/lib/ressources";
+import type { CommentaireAdmin, ContenuAdmin } from "@/lib/admin/ressources-serveur";
+import type { Commentaire, Ressource, Suivi, Theme } from "@/lib/ressources";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
 
@@ -218,3 +219,38 @@ export const COMMENTAIRES_FICTIFS: Commentaire[] = [
   { id: "c2", auteur: "Martin", auteur_role: "coach", texte: "Gardez ce repère en tête pour vos sorties longues du week-end.", cree_le: "2027-01-09T07:15:00.000Z", mien: false },
   { id: "c3", auteur: "Caroline", auteur_role: "membre", texte: "Je la regarde avant chaque bloc 💪", cree_le: "2027-01-10T20:05:00.000Z", mien: true },
 ];
+
+const sous = (cle: string, nom: string, ordre: number) => ({ cle, nom, ordre });
+
+/** Thèmes fictifs : les 5 thèmes du Club, comme dans la base. */
+export const THEMES_FICTIFS: Theme[] = [
+  { cle: "nutrition", nom: "Nutrition", icone: "nutrition", ordre: 1, sous_rubriques: [sous("bases", "Les bases de la nutrition", 1), sous("effort", "Nutrition à l'effort", 2)] },
+  { cle: "natation", nom: "Natation", icone: "natation", ordre: 2, sous_rubriques: [sous("technique", "Technique", 1), sous("eau_libre", "Eau libre", 2)] },
+  { cle: "velo", nom: "Vélo", icone: "velo", ordre: 3, sous_rubriques: [sous("position_materiel", "Position et matériel", 1), sous("puissance", "Travail de puissance", 2)] },
+  { cle: "course", nom: "Course à pied", icone: "course", ordre: 4, sous_rubriques: [sous("technique", "Technique de course", 1), sous("sorties_longues", "Sorties longues", 2)] },
+  {
+    cle: "preparation",
+    nom: "Préparation",
+    icone: "preparation",
+    ordre: 5,
+    sous_rubriques: [sous("tests_zones", "Tests et zones", 1), sous("chaleur_transitions", "Chaleur et transitions", 2)],
+  },
+];
+
+/** Contenus fictifs vus par l'admin : avec et sans lien, avec et sans PDF, une miniature. */
+export const CONTENUS_ADMIN_FICTIFS: ContenuAdmin[] = RESSOURCES_FICTIVES.map((r, i) => ({
+  ...r,
+  youtube_id: r.type === "video" && i % 2 === 0 ? "dQw4w9WgXcQ" : null,
+  fichier: r.type === "pdf" && i === 1 ? `${r.theme}/00000000-0000-0000-0000-000000000001.pdf` : null,
+  miniature: null,
+}));
+
+export const COMMENTAIRES_ADMIN_FICTIFS: CommentaireAdmin[] = COMMENTAIRES_FICTIFS.map((c) => ({
+  id: c.id,
+  ressource_id: RESSOURCES_FICTIVES[0].id,
+  titre: RESSOURCES_FICTIVES[0].titre,
+  auteur: c.auteur,
+  auteur_role: c.auteur_role,
+  texte: c.texte,
+  cree_le: c.cree_le,
+}));

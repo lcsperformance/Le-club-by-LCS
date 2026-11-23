@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { exigerRole } from "@/lib/auth";
-import { estDebloquee } from "@/lib/ressources";
-import { lireCommentaires, lireMedias, lireRessource, lireSuivis, semaineDuMembre } from "@/lib/ressources-serveur";
+import { estDebloquee, themeParCle } from "@/lib/ressources";
+import { lireCommentaires, lireMedias, lireRessource, lireSuivis, lireThemes, semaineDuMembre } from "@/lib/ressources-serveur";
 import { EcranContenu } from "./EcranContenu";
 
 export const metadata: Metadata = { title: "Ressources · Le Club by LCS" };
@@ -22,7 +22,8 @@ async function Contenu({ params }: Pick<PageProps<"/ressources/contenu/[id]">, "
   const ressource = await lireRessource((await params).id);
   if (!ressource) notFound();
   const semaine = semaineDuMembre(utilisateur);
-  if (!estDebloquee(ressource, semaine)) return <EcranContenu ressource={ressource} semaine={semaine} />;
+  const theme = themeParCle(await lireThemes(), ressource.theme);
+  if (!estDebloquee(ressource, semaine)) return <EcranContenu ressource={ressource} theme={theme} semaine={semaine} />;
 
   const [medias, suivis, commentaires] = await Promise.all([
     lireMedias(),
@@ -32,6 +33,7 @@ async function Contenu({ params }: Pick<PageProps<"/ressources/contenu/[id]">, "
   return (
     <EcranContenu
       ressource={ressource}
+      theme={theme}
       semaine={semaine}
       media={medias[ressource.id]}
       suivi={suivis[ressource.id]}

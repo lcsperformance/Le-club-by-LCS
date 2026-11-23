@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { exigerRole } from "@/lib/auth";
 import { favoris, sousRubriques, themeParCle, vueContenu } from "@/lib/ressources";
-import { lireCatalogue, lireMedias, lireSuivis, semaineDuMembre } from "@/lib/ressources-serveur";
+import { lireCatalogue, lireMedias, lireSuivis, lireThemes, semaineDuMembre } from "@/lib/ressources-serveur";
 import { EcranTheme } from "../EcranTheme";
 
 export const metadata: Metadata = { title: "Ressources · Le Club by LCS" };
@@ -21,7 +21,8 @@ export default function PageTheme({ params }: PageProps<"/ressources/[theme]">) 
 async function Contenu({ params }: Pick<PageProps<"/ressources/[theme]">, "params">) {
   const utilisateur = await exigerRole("membre", "admin");
   const { theme: cle } = await params;
-  const theme = themeParCle(cle);
+  const themes = await lireThemes();
+  const theme = themeParCle(themes, cle);
   if (cle !== "favoris" && !theme) notFound();
 
   const semaine = semaineDuMembre(utilisateur);
@@ -32,7 +33,7 @@ async function Contenu({ params }: Pick<PageProps<"/ressources/[theme]">, "param
     return (
       <EcranTheme
         titre="Mes favoris"
-        rubriques={[{ cle: "favoris", nom: "Contenus ajoutés en favoris", contenus: favoris(catalogue, suivis, semaine).map(vue) }]}
+        rubriques={[{ cle: "favoris", nom: "Contenus ajoutés en favoris", contenus: favoris(themes, catalogue, suivis, semaine).map(vue) }]}
         messageVide="Aucun favori pour l'instant. Touche l'étoile d'un contenu pour l'ajouter ici."
       />
     );

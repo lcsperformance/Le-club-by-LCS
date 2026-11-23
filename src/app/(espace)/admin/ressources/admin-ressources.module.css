@@ -1,0 +1,349 @@
+.retour {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.theme {
+  display: grid;
+  gap: 10px;
+}
+
+.themeEntete {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.themeIcone {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.themeIcone svg {
+  width: 26px;
+  height: 26px;
+}
+
+.themeNom {
+  font-size: 18px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.sousTitre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.liste {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  text-decoration: none;
+}
+
+.ligneTexte {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.ligneTitre {
+  font-size: 15px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ligneMeta {
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+
+.manque {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.vide {
+  font-size: 14px;
+  color: var(--texte-doux);
+}
+
+/* ===== Formulaires ===== */
+.formulaire {
+  display: grid;
+  gap: 16px;
+}
+
+.deuxColonnes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 16px;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.libelle {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.choix {
+  height: 52px;
+  width: 100%;
+  min-width: 0;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1.5px solid rgba(250, 148, 255, 0.45);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  font: inherit;
+  font-size: 16px;
+}
+
+.choix option {
+  background: var(--abysse);
+  color: var(--texte);
+}
+
+.choix:focus {
+  border-color: var(--aurore);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(250, 148, 255, 0.25);
+}
+
+.choix[aria-invalid="true"] {
+  border-color: var(--erreur);
+}
+
+.types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.type {
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--texte);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.type[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--fond);
+  box-shadow: 0 6px 18px rgba(222, 253, 98, 0.35);
+}
+
+.fichier {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1.5px dashed rgba(244, 238, 255, 0.35);
+}
+
+.fichierActuel {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* Sélecteur de fichier : le vrai champ est caché, le bouton en français le remplace. */
+.boutonFichier {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.boutonFichier > span:first-of-type {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1.5px rgba(244, 238, 255, 0.5);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.boutonFichier:focus-within > span:first-of-type {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.nomFichier {
+  min-width: 0;
+  font-size: 13px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+
+.cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.apercuMiniature {
+  width: 160px;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07) center / cover no-repeat;
+}
+
+.aide {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--texte-doux);
+}
+
+.erreur {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--erreur);
+}
+
+.lienDiscret {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--texte-doux);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.danger {
+  color: var(--erreur);
+}
+
+.icones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(244, 238, 255, 0.2);
+  cursor: pointer;
+}
+
+.icone[aria-pressed="true"] {
+  background: rgba(250, 148, 255, 0.35);
+  box-shadow: inset 0 0 0 2px var(--aurore);
+}
+
+.icone span {
+  display: flex;
+}
+
+.icone svg {
+  width: 28px;
+  height: 28px;
+}
+
+.ligneSousRubrique {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.ligneSousRubrique > :first-child {
+  flex: 1 1 200px;
+}
+
+.ordre {
+  flex: 0 0 88px;
+}
+
+.commentaire {
+  display: grid;
+  gap: 6px;
+}
+
+.commentaireEntete {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.commentaireQuand {
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.commentaireTexte {
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}

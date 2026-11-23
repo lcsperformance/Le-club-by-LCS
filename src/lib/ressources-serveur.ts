@@ -1,8 +1,37 @@
 import "server-only";
 import type { Utilisateur } from "@/lib/auth";
 import { dateDuJourParis } from "@/lib/dates";
+import { getSupabaseEnv } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
-import { semaineAnciennete, type Commentaire, type Media, type Ressource, type Suivi } from "./ressources";
+import { estIcone, semaineAnciennete, type Commentaire, type Media, type Ressource, type Suivi, type Theme } from "./ressources";
+
+/** Adresse publique d'une miniature déposée dans le stockage « miniatures ». */
+export const urlMiniature = (chemin: string) =>
+  `${getSupabaseEnv().url}/storage/v1/object/public/miniatures/${chemin.split("/").map(encodeURIComponent).join("/")}`;
+
+/** Thèmes et sous-rubriques, dans leur ordre (puis par nom). */
+export async function lireThemes(): Promise<Theme[]> {
+  const supabase = await createClient();
+  const [{ data: themes, error }, { data: sous }] = await Promise.all([
+    supabase.from("themes_ressources").select("cle, nom, icone, ordre"),
+    supabase.from("sous_rubriques").select("theme, cle, nom, ordre"),
+  ]);
+  if (error) console.error("Lecture des thèmes impossible", error.code, error.message);
+  const parOrdre = (a: { ordre: number; nom: string }, b: { ordre: number; nom: string }) => a.ordre - b.ordre || a.nom.localeCompare(b.nom, "fr");
+  return (themes ?? [])
+    .filter((t) => estIcone(t.icone))
+    .map((t) => ({
+      cle: t.cle as string,
+      nom: t.nom as string,
+      icone: t.icone as Theme["icone"],
+      ordre: t.ordre as number,
+      sous_rubriques: (sous ?? [])
+        .filter((s) => s.theme === t.cle)
+        .map((s) => ({ cle: s.cle as string, nom: s.nom as string, ordre: s.ordre as number }))
+        .sort(parOrdre),
+    }))
+    .sort(parOrdre);
+}
 
 const CHAMPS = "id, theme, sous_rubrique, titre, type, semaine_deblocage, ordre";
 
@@ -46,15 +75,15 @@ export async function lireSuivis(membreId: string): Promise<Record<string, Suivi
   return Object.fromEntries((data ?? []).map((s) => [s.ressource_id as string, { favori: !!s.favori, consulte_le: (s.consulte_le as string | null) ?? null }]));
 }
 
-/** Lien vidéo et présence du PDF des contenus débloqués pour la personne connectée (calculé par la base). */
+/** Lien vidéo, présence du PDF et miniature des contenus débloqués pour la personne connectée (calculé par la base). */
 export async function lireMedias(): Promise<Record<string, Media>> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("ressources_medias");
   if (error) console.error("Lecture des médias impossible", error.code, error.message);
   return Object.fromEntries(
-    ((data ?? []) as { id: string; youtube_id: string | null; fichier_disponible: boolean }[]).map((m) => [
+    ((data ?? []) as { id: string; youtube_id: string | null; fichier_disponible: boolean; miniature: string | null }[]).map((m) => [
       m.id,
-      { youtube_id: m.youtube_id, fichier_disponible: !!m.fichier_disponible },
+      { youtube_id: m.youtube_id, fichier_disponible: !!m.fichier_disponible, miniature: m.miniature ? urlMiniature(m.miniature) : null },
     ]),
   );
 }

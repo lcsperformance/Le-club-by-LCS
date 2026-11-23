@@ -2,8 +2,12 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { AccueilAdmin } from "@/app/(espace)/admin/AccueilAdmin";
 import { EcranMembres } from "@/app/(espace)/admin/membres/EcranMembres";
+import { EcranAdminRessources } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
+import { FormulaireContenu } from "@/app/(espace)/admin/ressources/FormulaireContenu";
+import { GestionThemes } from "@/app/(espace)/admin/ressources/GestionThemes";
+import { ModerationCommentaires } from "@/app/(espace)/admin/ressources/ModerationCommentaires";
 import { AccueilCoach } from "@/app/(espace)/coach/AccueilCoach";
-import { JOURNAL_FICTIF, MEMBRES_FICTIFS } from "@/lib/apercu";
+import { COMMENTAIRES_ADMIN_FICTIFS, CONTENUS_ADMIN_FICTIFS, JOURNAL_FICTIF, MEMBRES_FICTIFS, THEMES_FICTIFS } from "@/lib/apercu";
 import { exigerApercu, UTILISATEUR_FICTIF } from "@/lib/apercu";
 
 /** Aperçus des espaces admin et coach (mode test uniquement). */
@@ -23,5 +27,19 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
     return <EcranMembres membres={MEMBRES_FICTIFS} journal={JOURNAL_FICTIF} maintenant="2027-01-10T10:00:00.000Z" />;
   }
   if (ecran === "coach") return <AccueilCoach email={UTILISATEUR_FICTIF.email} />;
+  if (ecran === "admin-ressources") {
+    return <EcranAdminRessources themes={THEMES_FICTIFS} contenus={CONTENUS_ADMIN_FICTIFS} nbCommentaires={COMMENTAIRES_ADMIN_FICTIFS.length} />;
+  }
+  if (ecran === "admin-ressources-nouveau") return <FormulaireContenu themes={THEMES_FICTIFS} />;
+  if (ecran === "admin-ressources-video") {
+    return <FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[0]} />;
+  }
+  if (ecran === "admin-ressources-pdf") return <FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[1]} />;
+  if (ecran === "admin-ressources-themes") {
+    const parRubrique: Record<string, number> = {};
+    for (const c of CONTENUS_ADMIN_FICTIFS) parRubrique[`${c.theme}/${c.sous_rubrique}`] = (parRubrique[`${c.theme}/${c.sous_rubrique}`] ?? 0) + 1;
+    return <GestionThemes themes={THEMES_FICTIFS} contenusParRubrique={parRubrique} />;
+  }
+  if (ecran === "admin-ressources-commentaires") return <ModerationCommentaires commentaires={COMMENTAIRES_ADMIN_FICTIFS} />;
   notFound();
 }

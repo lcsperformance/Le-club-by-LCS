@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { IconeTheme as Icone } from "@/lib/config-ressources";
+import type { IconeTheme as Icone } from "@/lib/ressources";
 
 const TRACES: Record<Icone, ReactNode> = {
   nutrition: (
