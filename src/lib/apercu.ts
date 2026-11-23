@@ -7,7 +7,9 @@ import type { PointHistorique } from "@/lib/historique";
 import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Records } from "@/lib/records";
 import type { CommentaireAdmin, ContenuAdmin } from "@/lib/admin/ressources-serveur";
+import type { Evenement } from "@/lib/agenda";
 import type { Canal, Message } from "@/lib/club";
+import type { Question } from "@/lib/questions";
 import type { Commentaire, Ressource, Suivi, Theme } from "@/lib/ressources";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
@@ -300,4 +302,68 @@ export const MESSAGES_FICTIFS: Message[] = [
 
 export const ANNONCES_FICTIVES: Message[] = [
   message(5, "annonces", MARTIN, "Martin", "coach", "Nouvelle vidéo dans Ressources › Nutrition : que manger pendant une sortie longue.", "2027-01-11T06:30:00.000Z"),
+];
+
+/** Agenda fictif (janvier 2027, heures de Paris), avec un événement aux dates à confirmer. */
+export const EVENEMENTS_FICTIFS: Evenement[] = [
+  {
+    id: "00000000-0000-0000-0003-000000000001",
+    titre: "FAQ en visio",
+    type: "faq",
+    debut: "2027-01-14T18:30:00.000Z",
+    fin: "2027-01-14T19:30:00.000Z",
+    lieu: "En visio",
+    lien: "https://visio.exemple.fr/faq-janvier",
+    description: "Martin répond en direct aux questions déposées dans la boîte à questions.",
+    dates_a_confirmer: false,
+    periode: null,
+  },
+  {
+    id: "00000000-0000-0000-0003-000000000002",
+    titre: "Webinaire : bien démarrer sa saison avec un titre assez long",
+    type: "webinaire",
+    debut: "2027-01-21T19:00:00.000Z",
+    fin: "2027-01-21T20:00:00.000Z",
+    lieu: "En visio",
+    lien: null,
+    description: null,
+    dates_a_confirmer: false,
+    periode: null,
+  },
+  {
+    id: "00000000-0000-0000-0003-000000000003",
+    titre: "Week-end vélo",
+    type: "autre",
+    debut: "2027-05-01T08:00:00.000Z",
+    fin: null,
+    lieu: null,
+    lien: null,
+    description: null,
+    dates_a_confirmer: true,
+    periode: "Printemps 2027",
+  },
+];
+
+const question = (n: number, membre_id: string, auteur: string, texte: string, cree_le: string, traitee_le: string | null = null): Question => ({
+  id: `00000000-0000-0000-0004-0000000000${String(n).padStart(2, "0")}`,
+  membre_id,
+  auteur,
+  auteur_role: "membre",
+  texte,
+  cree_le,
+  traitee_le,
+});
+
+/** Questions fictives : une de Caroline (UTILISATEUR_FICTIF), une traitée, une très longue. */
+export const QUESTIONS_FICTIVES: Question[] = [
+  question(1, "00000000-0000-0000-0000-0000000000a2", "Thomas", "Comment adapter ma semaine si je rate une séance ?", "2027-01-08T19:12:00.000Z"),
+  question(2, "00000000-0000-0000-0000-000000000000", "Caroline", "Faut-il refaire ses tests avant chaque bloc ?", "2027-01-10T08:40:00.000Z"),
+  question(
+    3,
+    "00000000-0000-0000-0000-0000000000a3",
+    "Élodie",
+    "Quelle stratégie de nutrition adopter sur un triathlon L quand on a l'estomac fragile et qu'il fait très chaud sur le parcours vélo ?",
+    "2027-01-10T21:05:00.000Z",
+  ),
+  question(4, "00000000-0000-0000-0000-0000000000a4", "Hugo", "Combien de séances de natation par semaine pour un Finisher ?", "2026-12-20T10:00:00.000Z", "2026-12-28T20:30:00.000Z"),
 ];

@@ -1,6 +1,8 @@
 import "server-only";
 import { createClient } from "@/lib/supabase/server";
+import type { Evenement } from "./agenda";
 import { lireMessageRecu, MESSAGES_PAR_PAGE, type Canal, type Message } from "./club";
+import type { Question } from "./questions";
 
 const CHAMPS = "id, canal, membre_id, auteur, auteur_role, texte, cree_le";
 
@@ -36,4 +38,23 @@ export async function marquerCanalLu(canal: string): Promise<void> {
   const supabase = await createClient();
   const { error } = await supabase.rpc("marquer_canal_lu", { c: canal });
   if (error) console.error("Lecture du canal non notée", error.code, error.message);
+}
+
+const CHAMPS_QUESTION = "id, membre_id, auteur, auteur_role, texte, cree_le, traitee_le";
+const CHAMPS_EVENEMENT = "id, titre, type, debut, fin, lieu, lien, description, dates_a_confirmer, periode";
+
+/** Toutes les questions de la boîte à questions (lisibles par tous les membres, sans votes). */
+export async function lireQuestions(): Promise<Question[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("questions_faq").select(CHAMPS_QUESTION).order("cree_le", { ascending: false }).limit(500);
+  if (error) console.error("Lecture des questions impossible", error.code, error.message);
+  return (data ?? []) as Question[];
+}
+
+/** Tous les événements de l'agenda, du plus ancien au plus récent. */
+export async function lireEvenements(): Promise<Evenement[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("evenements").select(CHAMPS_EVENEMENT).order("debut");
+  if (error) console.error("Lecture de l'agenda impossible", error.code, error.message);
+  return (data ?? []).map((e) => ({ ...e, debut: new Date(e.debut as string).toISOString(), fin: e.fin ? new Date(e.fin as string).toISOString() : null })) as Evenement[];
 }

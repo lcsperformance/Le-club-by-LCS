@@ -2,6 +2,7 @@
 
 import { aAccesEspace, utilisateurConnecte } from "@/lib/auth";
 import { lireMessage, lireMessageRecu, type Message } from "@/lib/club";
+import { lireQuestion } from "@/lib/questions";
 import { lireMessages, marquerCanalLu } from "@/lib/club-serveur";
 import { createClient } from "@/lib/supabase/server";
 
@@ -74,4 +75,31 @@ export async function noterLecture(canal: unknown): Promise<void> {
   const c = await connecte();
   if ("erreur" in c || typeof canal !== "string" || !CANAL.test(canal)) return;
   await marquerCanalLu(canal);
+}
+
+/** Pose une question pour la FAQ en visio (prénom et date ajoutés par la base). */
+export async function poserQuestion(saisie: unknown): Promise<ResultatClub> {
+  const c = await connecte();
+  if ("erreur" in c) return { erreur: c.erreur };
+  const lu = lireQuestion(saisie);
+  if ("erreur" in lu) return { erreur: lu.erreur };
+  const { error } = await c.supabase.from("questions_faq").insert({ membre_id: c.u.id, texte: lu.texte });
+  if (error) {
+    console.error("Envoi de la question impossible", error.code, error.message);
+    return { erreur: IMPOSSIBLE };
+  }
+  return {};
+}
+
+/** Retire une de ses questions (l'admin peut retirer n'importe laquelle). */
+export async function retirerQuestion(id: unknown): Promise<ResultatClub> {
+  const c = await connecte();
+  if ("erreur" in c) return { erreur: c.erreur };
+  if (typeof id !== "string" || !UUID.test(id)) return { erreur: "Cette question est introuvable." };
+  const { data, error } = await c.supabase.from("questions_faq").delete().eq("id", id).select("id");
+  if (error) {
+    console.error("Retrait de la question impossible", error.code, error.message);
+    return { erreur: IMPOSSIBLE };
+  }
+  return data.length ? {} : { erreur: "Tu ne peux retirer que tes propres questions." };
 }

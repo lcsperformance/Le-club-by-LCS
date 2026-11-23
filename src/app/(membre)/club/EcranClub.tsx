@@ -7,18 +7,19 @@ import { badgeNonLus, type Canal } from "@/lib/club";
 import { ActualiserEnDirect } from "./ActualiserEnDirect";
 import styles from "./club.module.css";
 
-/** Onglets du Club (maquette) : Discussion, puis Questions et Agenda (étape suivante). */
-export function OngletsClub() {
+/** Onglets du Club (maquette) : Discussion, Questions, Agenda. */
+export function OngletsClub({ actif }: { actif: "discussion" | "questions" | "agenda" }) {
+  const onglets = [
+    { cle: "discussion", libelle: "Discussion", href: "/club" },
+    { cle: "questions", libelle: "Questions", href: "/club/questions" },
+    { cle: "agenda", libelle: "Agenda", href: "/club/agenda" },
+  ] as const;
   return (
     <nav className={styles.onglets} aria-label="Rubriques du Club">
-      <Link href="/club" className={styles.onglet} aria-current="page">
-        Discussion
-      </Link>
-      {["Questions", "Agenda"].map((t) => (
-        <span key={t} className={styles.onglet} aria-disabled="true">
-          {t}
-          <span className={styles.bientot}>bientôt</span>
-        </span>
+      {onglets.map((o) => (
+        <Link key={o.cle} href={o.href} className={styles.onglet} aria-current={o.cle === actif ? "page" : undefined}>
+          {o.libelle}
+        </Link>
       ))}
     </nav>
   );
@@ -44,7 +45,7 @@ export function EcranClub({
   return (
     <>
       <EnTeteMembre utilisateur={utilisateur} titre="Le Club" />
-      <OngletsClub />
+      <OngletsClub actif="discussion" />
       <ul className={styles.canaux}>
         {canaux.map((c) => {
           const badge = badgeNonLus(nonLus[c.cle] ?? 0);

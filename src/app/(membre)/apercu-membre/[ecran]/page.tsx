@@ -6,6 +6,8 @@ import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranCanal } from "@/app/(membre)/club/[canal]/EcranCanal";
+import { EcranAgenda } from "@/app/(membre)/club/agenda/EcranAgenda";
+import { EcranQuestions } from "@/app/(membre)/club/questions/EcranQuestions";
 import { EcranClub } from "@/app/(membre)/club/EcranClub";
 import { EcranContenu } from "@/app/(membre)/ressources/contenu/[id]/EcranContenu";
 import { EcranRessources } from "@/app/(membre)/ressources/EcranRessources";
@@ -22,6 +24,7 @@ import {
   AUJOURDHUI_FICTIF,
   CANAUX_FICTIFS,
   COMMENTAIRES_FICTIFS,
+  EVENEMENTS_FICTIFS,
   exigerApercu,
   HISTORIQUE_COURSE_FICTIF,
   HISTORIQUE_VELO_FICTIF,
@@ -29,6 +32,7 @@ import {
   MESSAGES_FICTIFS,
   NON_LUS_FICTIFS,
   OBJECTIFS_FICTIFS,
+  QUESTIONS_FICTIVES,
   RECORDS_FICTIFS,
   RESSOURCES_FICTIVES,
   SEMAINE_RESSOURCES_FICTIVE,
@@ -221,6 +225,14 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           direct={false}
         />
       );
+    case "club-questions":
+      return <EcranQuestions utilisateur={UTILISATEUR_FICTIF} prochaine={EVENEMENTS_FICTIFS[0]} questions={QUESTIONS_FICTIVES} />;
+    case "club-questions-vide":
+      return <EcranQuestions utilisateur={UTILISATEUR_FICTIF} prochaine={null} questions={[]} />;
+    case "club-agenda":
+      return <EcranAgenda utilisateur={UTILISATEUR_FICTIF} evenements={EVENEMENTS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} />;
+    case "club-agenda-vide":
+      return <EcranAgenda utilisateur={UTILISATEUR_FICTIF} evenements={[]} aujourdhui={AUJOURDHUI_FICTIF} />;
     case "ressources":
       return (
         <EcranRessources

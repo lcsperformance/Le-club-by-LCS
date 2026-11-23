@@ -5,8 +5,14 @@ import { ajouterJours, formatIsoLong } from "@/lib/saison";
 import styles from "./ui.module.css";
 
 type Props = {
-  /** Jour choisi (AAAA-MM-JJ). */
+  /** Jour choisi (AAAA-MM-JJ), ou "" si aucun. */
   valeur: string;
+  /** Mois affiché au départ (AAAA-MM), sinon celui du jour choisi ou d'aujourd'hui. */
+  moisInitial?: string;
+  /** Jours marqués d'un point (ex. jours d'événement de l'agenda). */
+  marques?: readonly string[];
+  /** Appelé quand on change de mois avec les flèches. */
+  onChangerMois?: (mois: string) => void;
   /** Aujourd'hui à Paris (AAAA-MM-JJ), entouré dans la grille. */
   aujourdhui: string;
   /** Premier et dernier jour possibles. */
@@ -53,8 +59,12 @@ function grille(mois: string): string[] {
 }
 
 /** Calendrier d'un mois en français (semaine du lundi au dimanche), pour choisir un jour au doigt. */
-export function CalendrierMois({ valeur, aujourdhui, min, max, onChoisir }: Props) {
-  const [mois, setMois] = useState(valeur.slice(0, 7));
+export function CalendrierMois({ valeur, moisInitial, marques = [], onChangerMois, aujourdhui, min, max, onChoisir }: Props) {
+  const [mois, setMoisInterne] = useState(moisInitial ?? (valeur || aujourdhui).slice(0, 7));
+  const setMois = (m: string) => {
+    setMoisInterne(m);
+    onChangerMois?.(m);
+  };
   const hors = (j: string) => (min !== undefined && j < min) || (max !== undefined && j > max);
   const moisPrecedentPossible = min === undefined || decalerMois(mois, -1) >= min.slice(0, 7);
   const moisSuivantPossible = max === undefined || decalerMois(mois, 1) <= max.slice(0, 7);
@@ -96,8 +106,10 @@ export function CalendrierMois({ valeur, aujourdhui, min, max, onChoisir }: Prop
         ))}
         {grille(mois).map((j) => {
           const choisi = j === valeur;
+          const marque = marques.includes(j);
           const classes = [
             styles.calendrierJour,
+            marque ? styles.calendrierMarque : "",
             j.slice(0, 7) !== mois ? styles.calendrierAutreMois : "",
             choisi ? styles.calendrierChoisi : "",
             j === aujourdhui && !choisi ? styles.calendrierAujourdhui : "",
@@ -110,7 +122,7 @@ export function CalendrierMois({ valeur, aujourdhui, min, max, onChoisir }: Prop
               disabled={hors(j)}
               aria-pressed={choisi}
               aria-current={j === aujourdhui ? "date" : undefined}
-              aria-label={formatIsoLong(j)}
+              aria-label={`${formatIsoLong(j)}${marque ? " · événement" : ""}`}
               onClick={() => onChoisir(j)}
             >
               {+j.slice(8, 10)}
