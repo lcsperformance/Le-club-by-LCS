@@ -35,6 +35,8 @@ const ECRANS = [
   "/apercu-membre/accueil-deux-seances",
   "/apercu-membre/accueil-repos",
   "/apercu-membre/accueil-a-venir",
+  "/apercu-membre/accueil-installer-android",
+  "/apercu-membre/accueil-installer-iphone",
   "/apercu-membre/tests",
   "/apercu-membre/zones-course",
   "/apercu-membre/zones-velo",
