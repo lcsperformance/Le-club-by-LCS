@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
 import type { Utilisateur } from "@/lib/auth";
+import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
 
@@ -104,4 +105,59 @@ export const OBJECTIFS_FICTIFS: Objectif[] = [
 export const OBJECTIFS_EN_COURS_FICTIFS: Objectif[] = [
   objectifFictif(4, "M", "2027-02-14", "Triathlon de Nice"),
   objectifFictif(5, "XL", "2027-09-05"),
+];
+
+const seanceFictive = (n: number, sport: Seance["sport"], titre: string, dureeMinutes: number, blocs: Seance["blocs"]): Seance => ({
+  id: `00000000-0000-0000-0000-0000000001${String(n).padStart(2, "0")}`,
+  sport,
+  titre,
+  dureeMinutes,
+  blocs,
+});
+
+export const SEANCE_COURSE_FICTIVE = seanceFictive(2, "course", "Footing endurance avec un titre de séance assez long", 50, [
+  { libelle: "Échauffement", detail: "10 min en douceur", zone: 1 },
+  { libelle: "Footing", detail: "30 min régulier", zone: 2 },
+  { libelle: "Lignes droites", detail: "5 × 20 s, récupération en marchant entre chaque ligne droite", zone: 4 },
+  { libelle: "Retour au calme", detail: "5 min", zone: 1 },
+]);
+
+export const SEANCE_RENFO_FICTIVE = seanceFictive(3, "renfo", "Gainage & stabilité", 30, [
+  { libelle: "Mobilité hanches", detail: "5 min", zone: null },
+  { libelle: "Circuit gainage", detail: "3 tours · 40 s par exercice", zone: null },
+  { libelle: "Fentes & montées de banc", detail: "3 × 10 par jambe", zone: null },
+]);
+
+/** Semaine fictive (Challenger, comme la maquette) : vendredi au repos, deux séances le jeudi. */
+export const SEMAINE_FICTIVE: SeancePrevue[] = [
+  {
+    jour: 1,
+    ordre: 1,
+    seance: seanceFictive(1, "natation", "Technique & endurance", 45, [
+      { libelle: "Échauffement", detail: "300 m souple", zone: 1 },
+      { libelle: "Corps de séance", detail: "5 × 200 m, récup 20 s", zone: 3 },
+    ]),
+  },
+  { jour: 2, ordre: 1, seance: SEANCE_COURSE_FICTIVE },
+  { jour: 3, ordre: 1, seance: SEANCE_RENFO_FICTIVE },
+  {
+    jour: 4,
+    ordre: 1,
+    seance: seanceFictive(4, "velo", "Sweet spot", 75, [{ libelle: "Corps de séance", detail: "3 × 10 min, récup 5 min", zone: 3 }]),
+  },
+  {
+    jour: 4,
+    ordre: 2,
+    seance: seanceFictive(5, "course", "Enchaînement", 15, [{ libelle: "Course", detail: "15 min", zone: 3 }]),
+  },
+  {
+    jour: 6,
+    ordre: 1,
+    seance: seanceFictive(6, "velo", "Sortie longue", 150, [{ libelle: "Endurance", detail: "2 h 30 régulier", zone: 2 }]),
+  },
+  {
+    jour: 7,
+    ordre: 1,
+    seance: seanceFictive(7, "course", "Sortie longue", 80, [{ libelle: "Endurance", detail: "1 h 20", zone: 2 }]),
+  },
 ];

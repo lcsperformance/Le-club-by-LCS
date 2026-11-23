@@ -34,6 +34,11 @@ const ECRANS = [
   "/apercu-membre/saison-calendrier",
   "/apercu-membre/semaine",
   "/apercu-membre/semaine-sans-objectif",
+  "/apercu-membre/semaine-tests-a-faire",
+  "/apercu-membre/semaine-a-venir",
+  "/apercu-membre/seance",
+  "/apercu-membre/seance-verrouillee",
+  "/apercu-membre/seance-renfo",
   "/bienvenue",
 ];
 

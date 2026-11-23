@@ -13,7 +13,8 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 **Espace membre** (barre d'onglets, aussi sur les sous-pages)
 - Faits :
   - `/accueil` : salutation, phase, zones, carte « Bloc en cours » ;
-  - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours ;
+  - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours, séances du jour (programme) ;
+  - `/seance/[id]` : blocs de la séance avec zone, allure et FC du membre (cadenas sans tests) ;
   - `/saison` : objectifs, blocs S/M/L/XL, calendrier, nom de course, J-xx ;
   - `/tests` : 4 tests de départ ;
   - `/zones` : 3 sports, zones personnalisables, niveau et profil ;
@@ -27,7 +28,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 6 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 9 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -37,6 +38,7 @@ Sécurité par ligne active sur les 6 tables ; les visiteurs non connectés n'on
 | `objectifs` | courses de la saison | idem | le membre, les siens |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
+| `seances`, `blocs_seance`, `programme` | programme d'entraînement (pas de donnée personnelle) | tout membre connecté | serveur seulement |
 
 Fonctions protégées (vérifient le rôle admin) : `admin_offrir_acces`, `admin_couper_acces`, `admin_noter_email_acces`, `admin_changer_role`, `admin_changer_statut`.
 Preuves : `tests/rls.test.ts` et `tests/securite-tests-zones.test.ts`.
@@ -63,7 +65,8 @@ Points d'attention :
    - Boîte à questions sans votes, FAQ en visio, agenda.
    - Tables, temps réel et règles de sécurité à créer.
 6. **RPE et douleur** : écran Séance et table de santé protégée à faire.
-   - **Bloquant : aucun programme ni aucune séance n'existe encore** (plans de Martin par niveau, profil et bloc).
+   - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1).
+   - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
 7. **Ressources** : à faire.
    - Thèmes, fiches vidéo ou PDF, déblocage par semaine d'abonnement, favoris, contenus vus, commentaires.
    - Tables et stockage des fichiers à créer.

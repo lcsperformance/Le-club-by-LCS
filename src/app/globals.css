@@ -100,3 +100,17 @@ a {
   line-height: 1.5;
   color: var(--texte);
 }
+
+/* Le programme n'est jamais téléchargeable ni imprimable : il reste dans l'app. */
+@media print {
+  [data-programme] {
+    display: none !important;
+  }
+
+  body:has([data-programme])::after {
+    content: "Le programme reste dans l'app Le Club by LCS.";
+    display: block;
+    padding: 24px;
+    color: #000;
+  }
+}

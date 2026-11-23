@@ -4,6 +4,7 @@ import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranSaison } from "@/app/(membre)/saison/EcranSaison";
+import { EcranSeance } from "@/app/(membre)/seance/[id]/EcranSeance";
 import { EcranSemaine } from "@/app/(membre)/semaine/EcranSemaine";
 import { EcranBientot } from "@/components/EcranBientot";
 import { EnTeteTests } from "@/app/(membre)/tests/EnTeteTests";
@@ -15,6 +16,9 @@ import {
   exigerApercu,
   OBJECTIFS_EN_COURS_FICTIFS,
   OBJECTIFS_FICTIFS,
+  SEANCE_COURSE_FICTIVE,
+  SEANCE_RENFO_FICTIVE,
+  SEMAINE_FICTIVE,
   TEST_FICTIF,
   UTILISATEUR_FICTIF,
 } from "@/lib/apercu";
@@ -108,15 +112,25 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "saison-calendrier":
       return <EcranSaison objectifs={OBJECTIFS_FICTIFS} aujourdhui={AUJOURDHUI_FICTIF} calendrierOuvert />;
     case "semaine":
+    case "semaine-tests-a-faire":
+    case "semaine-a-venir":
       return (
         <EcranSemaine
           utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
           objectifs={OBJECTIFS_EN_COURS_FICTIFS}
           aujourdhui={AUJOURDHUI_FICTIF}
+          programme={{ semaine: { phase: "M", semaine: 5 }, seances: ecran === "semaine-a-venir" ? [] : SEMAINE_FICTIVE }}
+          testsFaits={ecran !== "semaine-tests-a-faire"}
         />
       );
     case "semaine-sans-objectif":
-      return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} />;
+      return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} programme={null} testsFaits={false} />;
+    case "seance":
+      return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={TEST_FICTIF} />;
+    case "seance-verrouillee":
+      return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={null} />;
+    case "seance-renfo":
+      return <EcranSeance seance={SEANCE_RENFO_FICTIVE} tests={null} />;
     case "records":
       return <EcranBientot titre="Mes records" description="Tes meilleures performances, au fil de tes séances." />;
     case "progres":
