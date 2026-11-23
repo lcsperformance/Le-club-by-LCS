@@ -3,10 +3,11 @@ import { Suspense } from "react";
 import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
+import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
+import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranSaison } from "@/app/(membre)/saison/EcranSaison";
 import { EcranSeance } from "@/app/(membre)/seance/[id]/EcranSeance";
 import { EcranSemaine } from "@/app/(membre)/semaine/EcranSemaine";
-import { EcranBientot } from "@/components/EcranBientot";
 import { EnTeteTests } from "@/app/(membre)/tests/EnTeteTests";
 import { FormulaireTests } from "@/app/(membre)/tests/FormulaireTests";
 import { AffichageZones } from "@/app/(membre)/zones/AffichageZones";
@@ -14,8 +15,11 @@ import { EnTeteZones } from "@/app/(membre)/zones/EnTeteZones";
 import {
   AUJOURDHUI_FICTIF,
   exigerApercu,
+  HISTORIQUE_COURSE_FICTIF,
+  HISTORIQUE_VELO_FICTIF,
   OBJECTIFS_EN_COURS_FICTIFS,
   OBJECTIFS_FICTIFS,
+  RECORDS_FICTIFS,
   SEANCE_COURSE_FICTIVE,
   SEANCE_RENFO_FICTIVE,
   SEMAINE_FICTIVE,
@@ -132,9 +136,19 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "seance-renfo":
       return <EcranSeance seance={SEANCE_RENFO_FICTIVE} tests={null} />;
     case "records":
-      return <EcranBientot titre="Mes records" description="Tes meilleures performances, au fil de tes séances." />;
+      return <EcranRecords records={RECORDS_FICTIFS} />;
+    case "records-vide":
+      return <EcranRecords records={{}} />;
     case "progres":
-      return <EcranBientot titre="Mes progrès" description="Les courbes de tes tests de départ, sport par sport." />;
+      return <EcranProgres sport="course" points={HISTORIQUE_COURSE_FICTIF} testsFaits />;
+    case "progres-velo":
+      return <EcranProgres sport="velo" points={HISTORIQUE_VELO_FICTIF} testsFaits />;
+    case "progres-un-test":
+      return <EcranProgres sport="natation" points={[{ date: "2027-01-11", valeur: 105 }]} testsFaits />;
+    case "progres-sans-mesure":
+      return <EcranProgres sport="cardio" points={[]} testsFaits />;
+    case "progres-sans-test":
+      return <EcranProgres sport="course" points={[]} testsFaits={false} />;
     case "zones-personnalisation":
       return (
         <>

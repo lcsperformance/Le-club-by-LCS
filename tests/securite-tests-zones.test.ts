@@ -1,6 +1,6 @@
 /**
- * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones et les objectifs
- * de saison d'un autre membre.
+ * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones, les objectifs
+ * de saison et les records d'un autre membre.
  *
  * Alice (A) essaie toutes les manières d'atteindre les données de Bruno (B) avec les mêmes
  * droits qu'un vrai membre connecté (rôle « authenticated » de Supabase, sécurité par ligne active).
@@ -13,6 +13,7 @@ import { creerBaseDeTest, type BaseDeTest } from "./aide/base-de-test";
 const ALICE = "00000000-0000-0000-0000-0000000000a1";
 const BRUNO = "00000000-0000-0000-0000-0000000000b2";
 const OBJECTIF_BRUNO = "00000000-0000-0000-0000-0000000000f1";
+const RECORD_BRUNO = "00000000-0000-0000-0000-0000000000e1";
 
 let base: BaseDeTest;
 let empreinteBruno: string;
@@ -25,7 +26,8 @@ async function donneesDeBruno(): Promise<string> {
     `select json_build_object(
        'tests', (select json_agg(t order by t.date_test) from tests t where t.membre_id = $1),
        'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1),
-       'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1)
+       'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1),
+       'records', (select json_agg(r order by r.epreuve) from records r where r.membre_id = $1)
      ) as d`,
     [BRUNO],
   );
@@ -58,11 +60,16 @@ beforeAll(async () => {
      values ($2, $1, 'M', '2027-05-30'), (default, $1, 'S', '2027-09-12')`,
     [BRUNO, OBJECTIF_BRUNO],
   );
+  await base.db.query(
+    `insert into records (id, membre_id, epreuve, duree_secondes) values ($2, $1, '10km', 2492), (default, $1, 'tri_m', 9000)`,
+    [BRUNO, RECORD_BRUNO],
+  );
   // Données d'Alice : une série de tests et une zone.
   await base.db.query(
     `insert into tests (membre_id, date_test, ftp) values ($1, '2026-11-02', 250);
      insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]');
-     insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');`.replaceAll(
+     insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');
+     insert into records (membre_id, epreuve, duree_secondes) values ($1, 'semi', 5530);`.replaceAll(
       "$1",
       `'${ALICE}'`,
     ),
@@ -105,6 +112,14 @@ const TABLES = [
     ecrasement: `insert into objectifs (id, membre_id, bloc, date_objectif)
                  values ('${OBJECTIF_BRUNO}', $1, 'XL', '2030-01-01')
                  on conflict (id) do update set date_objectif = excluded.date_objectif`,
+  },
+  {
+    table: "records",
+    id: () => RECORD_BRUNO,
+    modification: "duree_secondes = 600",
+    insertion: `insert into records (membre_id, epreuve, duree_secondes) values ($1, 'marathon', 600)`,
+    ecrasement: `insert into records (membre_id, epreuve, duree_secondes) values ($1, '10km', 600)
+                 on conflict (membre_id, epreuve) do update set duree_secondes = excluded.duree_secondes`,
   },
 ] as const;
 
@@ -183,6 +198,8 @@ describe("contre-épreuve", () => {
     const tests = await base.enTantQue<{ ftp: number }>(BRUNO, "select ftp from tests order by date_test");
     const zones = await base.enTantQue<{ sport: string }>(BRUNO, "select sport from zones order by sport");
     expect(tests.map((t) => t.ftp)).toEqual([210, 218]);
+    const records = await base.enTantQue<{ duree_secondes: number }>(BRUNO, "select duree_secondes from records order by epreuve");
+    expect(records.map((r) => r.duree_secondes)).toEqual([2492, 9000]);
     expect(zones.map((z) => z.sport).sort()).toEqual(["course", "velo"]);
   });
 

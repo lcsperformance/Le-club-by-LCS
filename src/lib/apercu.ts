@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
 import type { Utilisateur } from "@/lib/auth";
+import type { PointHistorique } from "@/lib/historique";
 import type { SeancePrevue, Seance } from "@/lib/programme";
+import type { Records } from "@/lib/records";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
 
@@ -161,3 +163,19 @@ export const SEMAINE_FICTIVE: SeancePrevue[] = [
     seance: seanceFictive(7, "course", "Sortie longue", 80, [{ libelle: "Endurance", detail: "1 h 20", zone: 2 }]),
   },
 ];
+
+/** Historique fictif de l'allure seuil en course : 4 séries de tests, de plus en plus rapides. */
+export const HISTORIQUE_COURSE_FICTIF: PointHistorique[] = [
+  { date: "2026-09-14", valeur: 292 },
+  { date: "2026-10-12", valeur: 284 },
+  { date: "2026-11-16", valeur: 286 },
+  { date: "2027-01-11", valeur: 270 },
+];
+
+/** Historique fictif de la FTP : 7 séries (seuls le premier et le dernier point portent leur valeur). */
+export const HISTORIQUE_VELO_FICTIF: PointHistorique[] = [180, 186, 185, 194, 201, 208, 220].map((valeur, i) => ({
+  date: `2026-${String(i + 3).padStart(2, "0")}-15`,
+  valeur,
+}));
+
+export const RECORDS_FICTIFS: Records = { "10km": 41 * 60 + 32, semi: 3600 + 32 * 60 + 10, tri_xl: 11 * 3600 + 4 * 60 + 59 };

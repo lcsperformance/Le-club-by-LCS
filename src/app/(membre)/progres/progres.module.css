@@ -1,0 +1,167 @@
+.retour {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.intro {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--texte-doux);
+}
+
+/* Sélecteur à 4 sports, comme Mes zones. */
+.selecteur {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 5px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.onglet {
+  height: 44px;
+  min-width: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--texte);
+  text-decoration: none;
+}
+
+.onglet[aria-current="page"] {
+  background: var(--accent);
+  color: var(--fond);
+  box-shadow: 0 6px 18px rgba(222, 253, 98, 0.35);
+}
+
+.carteCourbe {
+  display: grid;
+  gap: 6px;
+}
+
+.gain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.gainGrand {
+  font-family: var(--police-titre), sans-serif;
+  font-weight: var(--titre-graisse);
+  font-stretch: var(--titre-largeur);
+  font-size: 34px;
+  line-height: 1.1;
+}
+
+.gainSous {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.depuis {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.courbe {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 330 / 190;
+  margin-top: 6px;
+}
+
+.courbe svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.valeur,
+.date {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.valeur {
+  transform: translate(-50%, -100%);
+  font-weight: 800;
+  color: var(--texte);
+  text-shadow: 0 0 8px rgba(9, 10, 15, 0.9);
+}
+
+.date {
+  transform: translate(-50%, -50%);
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+
+.surtitre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.historique {
+  padding: 4px 16px;
+}
+
+.lignes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(244, 238, 255, 0.1);
+}
+
+.ligne:last-child {
+  border-bottom: 0;
+}
+
+.ligneDate {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ligneValeur {
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ligneEcart {
+  min-width: 56px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--texte-doux);
+  white-space: nowrap;
+}

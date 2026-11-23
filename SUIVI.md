@@ -19,7 +19,9 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
   - `/tests` : 4 tests de départ ;
   - `/zones` : 3 sports, zones personnalisables, niveau et profil ;
   - `/profil` : prénom, abonnement, niveau, profil, liens.
-- Écrans « bientôt » (vides) : `/progres`, `/records`, `/ressources`, `/club`, `/avantages`.
+  - `/progres` : courbe par sport (course, vélo, natation, cardio), gain depuis le premier test, historique ;
+  - `/records` : 10 km, semi, marathon, triathlon S à XL, tous facultatifs.
+- Écrans « bientôt » (vides) : `/ressources`, `/club`, `/avantages`.
 
 **Espace équipe**
 - `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
@@ -28,7 +30,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 9 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 10 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -36,6 +38,7 @@ Sécurité par ligne active sur les 9 tables ; les visiteurs non connectés n'on
 | `tests` | tests de départ | le membre les siens ; coach et admin tous | le membre, les siens |
 | `zones` | zones personnalisées | idem | le membre, les siennes |
 | `objectifs` | courses de la saison | idem | le membre, les siens |
+| `records` | records personnels (10 km… triathlon XL) | idem | le membre, les siens |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
 | `seances`, `blocs_seance`, `programme` | programme d'entraînement (pas de donnée personnelle) | tout membre connecté | serveur seulement |
@@ -49,10 +52,7 @@ Points d'attention :
 
 ## Ce qui manque (demandes 1 à 9)
 
-1. **Mes progrès** :
-   - écran à faire : choix du sport, courbe des tests, écart depuis le premier test, historique ;
-   - bouton « Voir mon évolution » sous Mes zones ;
-   - la lecture de l'historique existe déjà, aucune table à créer.
+1. **Mes progrès** : fait (23/11), avec le bouton « Voir mon évolution » sous Mes zones. **Mes records** : fait.
 2. **Ma saison** : fait. **Calculateur LCS** : à faire (outil du site dans l'app, accès depuis Profil et Ressources).
 3. **Accueil** : phase et carte du bloc faites. Restent :
    - « Voir la vidéo » (attend les vidéos de Martin) ;
@@ -75,11 +75,11 @@ Points d'attention :
    - Produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; vrai paiement puis remboursement.
    - Aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
 
-Hors liste : « Mes records » et « Avantages » sont encore vides.
+Hors liste : « Avantages » est encore vide.
 
 ## Ordre conseillé
 
-1. Sans contenu de Martin : Mes progrès, Calculateur, application installable.
+1. Sans contenu de Martin : Calculateur, application installable.
 2. Puis Club (canaux et boîte à questions), puis Ressources.
 3. Espace coach complet et RPE : quand le programme existe.
 4. Stripe en mode réel vers la mi-décembre.
