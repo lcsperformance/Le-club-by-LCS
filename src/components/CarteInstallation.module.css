@@ -1,0 +1,77 @@
+.carte {
+  display: grid;
+  gap: 12px;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.surtitre {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+
+.fermer {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin: -8px -8px -8px 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+
+.titre {
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.texte {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--texte-doux);
+}
+
+.etapes {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.etapes li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.numero {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--fond);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.icone {
+  display: inline-block;
+  vertical-align: -3px;
+  color: var(--accent);
+}

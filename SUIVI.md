@@ -19,6 +19,7 @@ Tests : 615 tests automatiques (dont la sécurité de chaque table sur PostgreSQ
 - `/ressources` : thèmes, sous-rubriques, PDF et vidéos débloqués selon l'ancienneté, favoris, vu / téléchargé, commentaires ; `/ressources/calculateur`.
 - `/club` : canaux en direct, non-lus, « Mon bloc » ; `/club/questions` : boîte à questions sans votes ; `/club/agenda` : calendrier mensuel, « Ajouter à mon agenda ».
 - `/avantages` : remises des partenaires, « Copier le code ».
+- **Application installable** : icône sur l'écran d'accueil, plein écran, écran de démarrage, page « Pas de connexion » sans réseau, carte « Installer l'app » sur l'accueil (logo provisoire).
 
 **Espace coach** (`/coach`, `/coach/athletes/[id]`) : liste des athlètes (prénom et nom, recherche, anciens membres), fiche en lecture seule (niveau, objectifs, séances avec RPE, douleur, commentaire, filtre douleurs).
 
@@ -66,7 +67,7 @@ Points d'attention :
 Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (23/11), le bandeau des canaux mène à la boîte à questions. Restent les contenus listés plus bas (vidéos des tests, plans, ressources).
 
 ### Demandes encore ouvertes
-4. **Application installable (PWA)** : manifeste, icônes, écran de démarrage, fonctionnement hors ligne minimal.
+4. ~~Application installable~~ : faite le 23/11 (logo provisoire : remplacer `marque/logo-provisoire.jpg`, puis `npm run icones`).
 5. **Stripe en mode réel**, avant le 1er janvier 2027 :
    - produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; un vrai paiement puis un remboursement ;
    - aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
@@ -82,6 +83,5 @@ Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FA
 
 ## Ordre conseillé
 
-1. Application installable (4).
-2. Saisie du programme par Martin (6), puis ses plans et ses contenus (8 à 11).
-3. Stripe en mode réel vers la mi-décembre (5).
+1. Saisie du programme par Martin (6), puis ses plans et ses contenus (8 à 11).
+2. Stripe en mode réel vers la mi-décembre (5).

@@ -1,3 +1,4 @@
+import { CarteInstallation } from "@/components/CarteInstallation";
 import { IconeSport } from "@/components/IconeSport";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import { texteQuestionsFaq, type CarteAujourdhui } from "@/lib/accueil";
@@ -22,10 +23,12 @@ type Props = {
   faq: { evenement: Evenement | null; questions: number };
   /** Contenu des Ressources débloqué cette semaine ; null : la carte est masquée. */
   nouveau: Pick<Ressource, "id" | "titre" | "type"> | null;
+  /** Aperçus seulement : force la carte « Installer l'app » (sinon le téléphone décide). */
+  installation?: "android" | "iphone";
 };
 
 /** Contenu de l'accueil membre (maquette) : tests ou zones, aujourd'hui, bloc, FAQ en visio, nouveau cette semaine. */
-export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, seanceDuJour, faq, nouveau }: Props) {
+export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, seanceDuJour, faq, nouveau, installation }: Props) {
   const saison = organiserSaison(objectifs, dateDuJourParis(aujourdhui));
   const bloc = carteAccueil(saison);
   return (
@@ -133,6 +136,8 @@ export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, 
           </span>
         </Carte>
       )}
+
+      <CarteInstallation apercu={installation} />
     </>
   );
 }

@@ -83,7 +83,9 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "accueil-seance-faite":
     case "accueil-deux-seances":
     case "accueil-repos":
-    case "accueil-a-venir": {
+    case "accueil-a-venir":
+    case "accueil-installer-android":
+    case "accueil-installer-iphone": {
       // Lundi 11/01/2027 : natation au programme ; le jeudi a deux séances, le vendredi est un jour de repos.
       const jour = ecran === "accueil-deux-seances" ? 4 : ecran === "accueil-repos" ? 5 : 1;
       const faites = ecran === "accueil-seance-faite" ? [SEMAINE_FICTIVE[0].seance.id] : [];
@@ -98,6 +100,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           seanceDuJour={carteAujourdhui(semaine, jour, AUJOURDHUI_FICTIF, faites)}
           faq={calme ? { evenement: null, questions: 0 } : { evenement: EVENEMENTS_FICTIFS[0], questions: 3 }}
           nouveau={calme ? null : nouveauCetteSemaine(THEMES_FICTIFS, RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
+          installation={ecran === "accueil-installer-android" ? "android" : ecran === "accueil-installer-iphone" ? "iphone" : undefined}
         />
       );
     }

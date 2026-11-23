@@ -14,6 +14,7 @@
     "prebuild": "npm run verifier-config",
     "migrations": "node scripts/migrations.mjs",
     "emails": "node scripts/emails.mjs",
+    "icones": "node scripts/icones.mjs",
     "verifier-config": "node --experimental-strip-types --no-warnings scripts/verifier-config.mjs"
   },
   "dependencies": {
