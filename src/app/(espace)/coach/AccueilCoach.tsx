@@ -9,7 +9,7 @@ export function AccueilCoach({ email }: { email: string }) {
       <Carte href="/club">
         <span style={{ display: "block", fontSize: 16, fontWeight: 800 }}>Le Club →</span>
         <span style={{ display: "block", marginTop: 6, fontSize: 13, color: "var(--texte-doux)" }}>
-          Les canaux collectifs, en direct : publier dans # annonces et échanger avec les athlètes.
+          Les canaux collectifs en direct (publier dans # annonces), la boîte à questions pour la FAQ en visio et l&apos;agenda.
         </span>
       </Carte>
       <Carte as="section">

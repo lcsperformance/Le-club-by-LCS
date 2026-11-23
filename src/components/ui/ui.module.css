@@ -314,3 +314,23 @@
   background: var(--accent);
   color: var(--fond);
 }
+/* Jour marqué (agenda) : point rose sous le numéro. */
+.calendrierMarque {
+  position: relative;
+}
+.calendrierMarque::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--aurore);
+  transform: translateX(-50%);
+  box-shadow: 0 0 6px rgba(250, 148, 255, 0.8);
+}
+.calendrierChoisi.calendrierMarque::after {
+  background: var(--fond);
+  box-shadow: none;
+}
