@@ -48,6 +48,7 @@ import {
   TEST_FICTIF,
   UTILISATEUR_FICTIF,
 } from "@/lib/apercu";
+import { carteAujourdhui, nouveauCetteSemaine } from "@/lib/accueil";
 import { cartesThemes, favoris, sousRubriques, themeParCle, vueContenu } from "@/lib/ressources";
 import { valeursDeDepart } from "@/lib/tests-depart";
 import { SPORTS } from "@/lib/zones";
@@ -66,25 +67,40 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
   const { ecran } = await params;
   switch (ecran) {
     case "accueil":
-      return <AccueilMembre utilisateur={UTILISATEUR_FICTIF} testsFaits={false} objectifs={[]} aujourdhui={new Date()} />;
-    case "accueil-sans-prenom":
-      return (
-        <AccueilMembre
-          utilisateur={{ ...UTILISATEUR_FICTIF, prenom: null }}
-          testsFaits
-          objectifs={OBJECTIFS_FICTIFS}
-          aujourdhui={new Date(`${AUJOURDHUI_FICTIF}T10:00:00Z`)}
-        />
-      );
-    case "accueil-tests-faits":
       return (
         <AccueilMembre
           utilisateur={UTILISATEUR_FICTIF}
-          testsFaits
-          objectifs={OBJECTIFS_EN_COURS_FICTIFS}
-          aujourdhui={new Date(`${AUJOURDHUI_FICTIF}T10:00:00Z`)}
+          testsFaits={false}
+          objectifs={[]}
+          aujourdhui={new Date()}
+          seanceDuJour={carteAujourdhui(null, 1, AUJOURDHUI_FICTIF, [])}
+          faq={{ evenement: null, questions: 0 }}
+          nouveau={null}
         />
       );
+    case "accueil-sans-prenom":
+    case "accueil-tests-faits":
+    case "accueil-seance-faite":
+    case "accueil-deux-seances":
+    case "accueil-repos":
+    case "accueil-a-venir": {
+      // Lundi 11/01/2027 : natation au programme ; le jeudi a deux séances, le vendredi est un jour de repos.
+      const jour = ecran === "accueil-deux-seances" ? 4 : ecran === "accueil-repos" ? 5 : 1;
+      const faites = ecran === "accueil-seance-faite" ? [SEMAINE_FICTIVE[0].seance.id] : [];
+      const semaine = ecran === "accueil-a-venir" ? [] : SEMAINE_FICTIVE;
+      const calme = ecran === "accueil-repos" || ecran === "accueil-a-venir";
+      return (
+        <AccueilMembre
+          utilisateur={ecran === "accueil-sans-prenom" ? { ...UTILISATEUR_FICTIF, prenom: null } : UTILISATEUR_FICTIF}
+          testsFaits
+          objectifs={ecran === "accueil-sans-prenom" ? OBJECTIFS_FICTIFS : OBJECTIFS_EN_COURS_FICTIFS}
+          aujourdhui={new Date(`${AUJOURDHUI_FICTIF}T10:00:00Z`)}
+          seanceDuJour={carteAujourdhui(semaine, jour, AUJOURDHUI_FICTIF, faites)}
+          faq={calme ? { evenement: null, questions: 0 } : { evenement: EVENEMENTS_FICTIFS[0], questions: 3 }}
+          nouveau={calme ? null : nouveauCetteSemaine(THEMES_FICTIFS, RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
+        />
+      );
+    }
     case "tests":
       return (
         <>

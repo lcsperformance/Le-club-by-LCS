@@ -1,99 +1,87 @@
-# Où on en est — revue du 20/11/2026
+# Où on en est — revue du 23/11/2026
 
-Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérifications GitHub vertes sur `main`.
+Tout ce qui suit est en ligne (`main`, PR n°40 comprise ; Stripe en **mode test**). Vérifications GitHub vertes.
+Tests : 615 tests automatiques (dont la sécurité de chaque table sur PostgreSQL) et 322 vérifications dans un navigateur (chaque écran à 320, 360 et 390 px).
 
 ## Écrans
 
 **Accès et paiement**
 - `/connexion`, `/mot-de-passe-oublie`, `/mot-de-passe/nouveau`, `/auth/confirm` : connexion et mot de passe (pas d'inscription libre).
-- `/abonnement` : choix 49 €/mois ou 499 €/an, abonnement terminé, accès coupé.
-- `/bienvenue` : retour après paiement.
-- Webhook Stripe : création du compte, résiliation, impayé, doublon remboursé, formule.
+- `/abonnement` : 49 €/mois ou 499 €/an, abonnement terminé, accès coupé ; `/bienvenue` : retour après paiement.
+- Webhook Stripe : création du compte, prénom et nom, résiliation, impayé, doublon remboursé, formule.
 
-**Espace membre** (barre d'onglets, aussi sur les sous-pages)
-- Faits :
-  - `/accueil` : salutation, phase, zones, carte « Bloc en cours » ;
-  - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours, séances du jour (programme), semaines précédentes et suivantes (de l'inscription à la fin de la période payée) ;
-  - `/seance/[id]` : blocs de la séance avec zone, allure et FC du membre (cadenas sans tests), « Marquer comme faite » et ressenti (RPE, douleur, commentaire) ;
-  - `/saison` : objectifs, blocs S/M/L/XL, calendrier, nom de course, J-xx ;
-  - `/tests` : 4 tests de départ ;
-  - `/zones` : 3 sports, zones personnalisables, niveau et profil ;
-  - `/profil` : prénom, abonnement, niveau, profil, liens.
-  - `/progres` : courbe par sport (course, vélo, natation, cardio), gain depuis le premier test, historique ;
-  - `/records` : 10 km, semi, marathon, triathlon S à XL, tous facultatifs.
-  - `/ressources` : 5 thèmes avec icône, sous-rubriques, PDF et vidéos (YouTube non répertorié) débloqués selon l'ancienneté, favoris, « Vue » / « Téléchargé », commentaires sous les vidéos.
-  - `/club` : canaux collectifs en direct (annonces réservé à l'équipe et au coach), badges de non-lus, « Mon bloc », suppression de ses messages (l'admin supprime tout) ; pas de messages privés.
-  - `/club/questions` : boîte à questions sans votes, prochaine FAQ en visio ; `/club/agenda` : calendrier mensuel, « Ajouter à mon agenda » (.ics).
-- `/admin/questions` (préparer la FAQ) et `/admin/agenda` (créer et modifier les événements).
-  - `/avantages` : remises des partenaires (code et « Copier le code ») ; `/ressources/calculateur` : calculateur LCS intégré ou ouvert dans le navigateur.
-- `/admin/partenaires` : ajouter, modifier, masquer, supprimer les partenaires.
-- Plus aucun écran « bientôt ».
+**Espace membre** (barre d'onglets Accueil, Semaine, Ressources, Club, Avantages)
+- `/accueil` : salutation, phase, zones, « Aujourd'hui » (séance du jour), « Bloc en cours » / « Fil rouge », « FAQ en visio », « Nouveau cette semaine ».
+- `/semaine` : semaine du programme (séances du jour, coches des séances faites), décompte, semaines précédentes et suivantes ; `/seance/[id]` : blocs avec zone, allure et FC, « Marquer comme faite », ressenti (RPE, douleur, commentaire).
+- `/saison` : objectifs, blocs S/M/L/XL, calendrier, J-xx.
+- `/tests` (4 tests de départ), `/zones` (3 sports, zones personnalisables), `/progres` (courbes), `/records`.
+- `/profil` : prénom, nom, abonnement, niveau, profil, liens (Ma saison, Mes records, Mes progrès, Calculateur, Mes zones, Refaire mes tests).
+- `/ressources` : thèmes, sous-rubriques, PDF et vidéos débloqués selon l'ancienneté, favoris, vu / téléchargé, commentaires ; `/ressources/calculateur`.
+- `/club` : canaux en direct, non-lus, « Mon bloc » ; `/club/questions` : boîte à questions sans votes ; `/club/agenda` : calendrier mensuel, « Ajouter à mon agenda ».
+- `/avantages` : remises des partenaires, « Copier le code ».
 
-**Espace équipe**
-- `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
-- `/admin/ressources` : contenus (PDF, lien YouTube, miniature, semaine de déblocage), thèmes et sous-rubriques, modération des commentaires.
-- `/admin/composants` : vitrine des composants.
-- `/coach` : liste des athlètes (prénom et nom, recherche, anciens membres) et fiche en lecture seule (niveau, objectifs, séances avec RPE, douleur et commentaire, filtre douleurs).
+**Espace coach** (`/coach`, `/coach/athletes/[id]`) : liste des athlètes (prénom et nom, recherche, anciens membres), fiche en lecture seule (niveau, objectifs, séances avec RPE, douleur, commentaire, filtre douleurs).
+
+**Espace admin** (`/admin`)
+- `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
+- `/admin/ressources` (+ `/themes`, `/commentaires`) : contenus, PDF, liens YouTube, miniatures, thèmes, modération.
+- `/admin/questions` : préparer la FAQ (à traiter / traitées, copier la liste).
+- `/admin/agenda` : événements ; `/admin/partenaires` : Avantages ; `/admin/composants` : vitrine.
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 22 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur **les 22 tables** ; un visiteur non connecté n'a accès à **aucune**. Vérifié en ligne le 23/11.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
-| `membres` | fiche, abonnement, accès | le membre la sienne ; admin toutes ; le coach seulement prénom, nom, niveau, profil par `coach_athletes()` | le membre : prénom, nom, niveau, profil seulement ; abonnement : le serveur ; accès : fonctions admin |
-| `tests` | tests de départ | le membre les siens ; coach et admin tous | le membre, les siens |
-| `zones` | zones personnalisées | idem | le membre, les siennes |
-| `objectifs` | courses de la saison | idem | le membre, les siens |
-| `records` | records personnels (10 km… triathlon XL) | idem | le membre, les siens |
-| `themes_ressources`, `sous_rubriques` | thèmes et sous-rubriques des Ressources | tout membre connecté | admin |
-| `ressources` | catalogue (lien vidéo, fichier et miniature jamais lisibles directement) | tout membre connecté ; liens seulement si débloqué | admin |
-| `suivi_ressources` | favoris, vu, téléchargé | le membre, le sien | le membre, le sien (contenus débloqués) |
-| `commentaires_ressources` | commentaires sous les vidéos | les membres qui ont débloqué la vidéo | le membre, les siens ; l'admin supprime (noté au journal) |
-| `canaux` | les 7 canaux du Club | tout membre connecté | personne (migration seulement : pas de canal privé) |
-| `messages_club` | messages des canaux | tout membre connecté | le membre en son nom (annonces : admin et coach) ; supprime les siens, l'admin tous (noté au journal) |
-| `lectures_canaux` | dernière lecture de chaque canal | le membre, les siennes | seulement par `marquer_canal_lu()` |
-| `questions_faq` | questions pour la FAQ en visio (sans votes) | tout membre connecté | le membre en son nom, retire les siennes ; l'admin marque traitée ou supprime |
-| `evenements` | agenda du Club | tout membre connecté | admin |
-| `partenaires` | remises et codes promo des Avantages | membres connectés (partenaires affichés) ; admin tous | admin |
-| `ressentis` | séances faites, RPE, douleur, commentaire (**données de santé**) | idem | le membre, les siens (seulement RPE, douleur, commentaire une fois la ligne créée) |
-| `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
+| `membres` | fiche, abonnement, accès | le membre la sienne ; l'admin toutes ; le coach seulement prénom, nom, niveau, profil par `coach_athletes()` | le membre : prénom, nom, niveau, profil ; abonnement : le serveur ; accès : fonctions admin |
+| `tests`, `zones`, `objectifs`, `records` | tests, zones perso, courses, records | le membre les siens ; coach et admin tous | le membre, les siens |
+| `ressentis` | séances faites, RPE, douleur, commentaire (**santé**) | le membre les siens ; coach et admin (lecture seule) | le membre, les siens (seulement le ressenti) |
+| `seances`, `blocs_seance`, `programme` | programme d'entraînement | tout membre connecté | le serveur seulement |
+| `themes_ressources`, `sous_rubriques` | thèmes des Ressources | tout membre connecté | admin |
+| `ressources` | catalogue | tout membre connecté ; lien, fichier et miniature seulement si débloqué | admin |
+| `suivi_ressources` | favoris, vu, téléchargé | le membre, le sien | le membre (contenus débloqués) |
+| `commentaires_ressources` | commentaires sous les vidéos | membres ayant débloqué la vidéo | le membre, les siens ; l'admin supprime (journal) |
+| `canaux` | 7 canaux du Club | tout membre connecté | personne (pas de canal privé possible) |
+| `messages_club` | messages des canaux (temps réel) | tout membre connecté | le membre en son nom (annonces : admin et coach) ; supprime les siens, l'admin tous (journal) |
+| `lectures_canaux` | non-lus | le membre, les siennes | seulement `marquer_canal_lu()` |
+| `questions_faq` | boîte à questions (sans votes) | tout membre connecté | le membre en son nom ; l'admin traite ou supprime |
+| `evenements` | agenda | tout membre connecté | admin |
+| `partenaires` | Avantages | membres connectés (partenaires affichés) ; admin tous | admin |
+| `journal_admin` | actions de l'admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
-| `seances`, `blocs_seance`, `programme` | programme d'entraînement (pas de donnée personnelle) | tout membre connecté | serveur seulement |
 
-Fonctions protégées (vérifient le rôle admin) : `admin_offrir_acces`, `admin_couper_acces`, `admin_noter_email_acces`, `admin_changer_role`, `admin_changer_statut`.
-Preuves : `tests/rls.test.ts` et `tests/securite-tests-zones.test.ts`.
+- **Fonctions protégées** (vérifient le rôle ou le déblocage) : `admin_offrir_acces`, `admin_couper_acces`, `admin_noter_email_acces`, `admin_changer_role`, `admin_changer_statut`, `admin_ressources`, `admin_supprimer_commentaire`, `admin_supprimer_message`, `coach_athletes`, `ressources_medias`, `fichier_ressource`, `fichier_debloque`, `ressource_debloquee`, `semaine_anciennete`, `canaux_non_lus`, `marquer_canal_lu`.
+- **Stockage** : « ressources » (PDF, privé, 50 Mo, lu seulement si débloqué) et « miniatures » (public, 2 Mo) ; dépôt et suppression réservés à l'admin.
+- **Preuves** : `tests/rls.test.ts` et un fichier `tests/securite-*.test.ts` par sujet (zones et tests, ressenti, ressources, admin des ressources, club, questions et agenda, coach, partenaires).
 
 Points d'attention :
-- Réglé (23/11) : le coach ne lit plus la fiche entière des membres ; il passe par `coach_athletes()` (prénom, nom, niveau, profil, ancienneté, accès en cours).
-- Données de santé (RPE, douleur, commentaires) : table `ressentis` faite, lisible par le membre, le coach et l'admin (lecture seule), jamais par les autres membres ; prouvé par les tests de sécurité.
+- Réglé : le coach ne lit plus l'e-mail ni Stripe ; les données de santé ont leur table protégée.
+- Le temps réel du Club n'a pas encore été essayé en ligne entre deux appareils (les tests le coupent).
+- Le Calculateur : le serveur vérifie si le site LCS accepte l'affichage intégré ; à regarder une fois en ligne.
 
-## Ce qui manque (demandes 1 à 9)
+## Ce qui manque
 
-1. **Mes progrès** : fait (23/11), avec le bouton « Voir mon évolution » sous Mes zones. **Mes records** : fait.
-2. **Ma saison** : fait. **Calculateur LCS** : fait (23/11), accès depuis Profil et Ressources ; intégré si le site LCS l'autorise, sinon ouvert dans le navigateur.
-3. **Accueil** : phase et carte du bloc faites. Restent :
-   - « Voir la vidéo » (attend les vidéos de Martin) ;
-   - les cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (dépendent de 5, 6 et 7).
-4. **Espace coach** : fait (23/11) : liste avec recherche, fiche en lecture seule, filtre douleurs. Nom de famille ajouté (Profil et paiement).
-5. **Club** : canaux en temps réel, boîte à questions sans votes et agenda faits (23/11).
-   - Exemples d'agenda en janvier 2027 à remplacer par les vraies dates depuis `/admin/agenda`.
-   - Canaux bloc S et bloc XL à ajouter si besoin (seuls bloc-m et bloc-l existent).
-6. **RPE et douleur** : fait (23/11) : « Marquer comme faite » et ressenti dans l'écran Séance, table de santé protégée.
-   - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1, une séance chaque jour).
-   - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
-7. **Ressources** : faites (23/11) : thèmes, PDF et vidéos, déblocage par ancienneté, favoris, vu / téléchargé, commentaires.
-   - Écran admin fait (23/11) : contenus, thèmes, sous-rubriques, modération. Reste : remplacer la démo par les vrais PDF et vidéos de Martin.
-8. **Application installable (PWA)** : à faire (manifeste, icônes, écran de démarrage, hors ligne).
-9. **Stripe en mode réel** : à faire avant le 1er janvier 2027.
-   - Produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; vrai paiement puis remboursement.
-   - Aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
+### Écarts avec la maquette
+Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (23/11), le bandeau des canaux mène à la boîte à questions. Restent les contenus listés plus bas (vidéos des tests, plans, ressources).
 
-Hors liste : « Avantages » fait (23/11), avec deux partenaires d'exemple dont les codes sont à remplacer.
+### Demandes encore ouvertes
+4. **Application installable (PWA)** : manifeste, icônes, écran de démarrage, fonctionnement hors ligne minimal.
+5. **Stripe en mode réel**, avant le 1er janvier 2027 :
+   - produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; un vrai paiement puis un remboursement ;
+   - aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
+6. **Saisie du programme par Martin** : aucun écran pour l'instant (la démo est écrite par migration) ; à prévoir dans l'admin, ou par import d'un tableur.
+7. **Canaux bloc-s et bloc-xl** : seuls bloc-m et bloc-l existent (à confirmer).
+
+### Contenus à fournir
+8. **Programme** : les vrais plans de Martin (fil rouge et blocs S/M/L/XL, par niveau et profil) ; toutes les séances actuelles sont des démos (`de000000-…`).
+9. **Ressources** : 3 contenus sur 17 ont déjà leur vidéo ou leur PDF ; les autres affichent « bientôt disponible ».
+10. **Tests de départ** : les vidéos « Voir la vidéo » de la maquette (une par test).
+11. **Agenda** : les vraies dates (exemples en janvier 2027) ; **Avantages** : les vrais codes (Pyrène et Onatera sont des codes d'exemple).
+12. **Polices** : les fichiers Tussilago Bold et Helvetica Neue LT Pro (Archivo et Inter en attendant).
 
 ## Ordre conseillé
 
-1. Sans contenu de Martin : Calculateur, application installable.
-2. Puis l'application installable (PWA).
-3. Espace coach complet et RPE : quand le programme existe.
-4. Stripe en mode réel vers la mi-décembre.
+1. Application installable (4).
+2. Saisie du programme par Martin (6), puis ses plans et ses contenus (8 à 11).
+3. Stripe en mode réel vers la mi-décembre (5).

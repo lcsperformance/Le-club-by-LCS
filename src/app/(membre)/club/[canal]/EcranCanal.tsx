@@ -36,8 +36,11 @@ export function EcranCanal({
       </header>
       {!canal.lecture_seule && (
         <p className={styles.bandeau}>
-          Entre membres ici. Une question pour le coach ? Elle ira dans la boîte à questions (bientôt) : pas de messages privés, tout le
-          monde profite des réponses.
+          Entre membres ici. Une question pour le coach ?{" "}
+          <Link href="/club/questions" className="lien">
+            Pose-la dans la boîte à questions
+          </Link>{" "}
+          : pas de messages privés, tout le monde profite des réponses en FAQ.
         </p>
       )}
       <FilMessages
