@@ -26,7 +26,7 @@ async function Contenu() {
     supabase
       .from("membres")
       .select(
-        "id, email, prenom, niveau, statut_abonnement, abonnement_fin, annulation_prevue, formule, date_inscription, acces_offert_jusqua, acces_coupe",
+        "id, email, prenom, nom, niveau, statut_abonnement, abonnement_fin, annulation_prevue, formule, date_inscription, acces_offert_jusqua, acces_coupe",
       )
       .eq("role", "membre")
       .order("date_inscription", { ascending: false }),

@@ -71,7 +71,7 @@ function FicheMembre({ membre: m, journal, maintenant }: { membre: MembreAdmin; 
   const [ouverte, setOuverte] = useState(false);
   const statut = libelleStatut(m);
   const acces = etatAcces(m, maintenant);
-  const nom = m.prenom ?? "Sans prénom";
+  const nom = [m.prenom, m.nom].filter(Boolean).join(" ") || "Sans prénom";
   const idGestion = `gestion-${m.id}`;
 
   return (

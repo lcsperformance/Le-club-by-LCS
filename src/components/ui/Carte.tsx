@@ -16,7 +16,7 @@ type Props = {
 export function Carte({ children, className = "", style, href, as: Balise = "div", ...reste }: Props) {
   if (href) {
     return (
-      <Link href={href} className={`${styles.carte} ${styles.carteCliquable} ${className}`} style={style}>
+      <Link href={href} className={`${styles.carte} ${styles.carteCliquable} ${className}`} style={style} {...(reste as Record<string, unknown>)}>
         {children}
       </Link>
     );

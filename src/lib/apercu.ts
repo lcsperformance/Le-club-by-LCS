@@ -8,6 +8,7 @@ import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Records } from "@/lib/records";
 import type { CommentaireAdmin, ContenuAdmin } from "@/lib/admin/ressources-serveur";
 import type { Evenement } from "@/lib/agenda";
+import type { AthleteCoach, SeanceCoach } from "@/lib/coach";
 import type { Canal, Message } from "@/lib/club";
 import type { Question } from "@/lib/questions";
 import type { Commentaire, Ressource, Suivi, Theme } from "@/lib/ressources";
@@ -25,6 +26,7 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   id: "00000000-0000-0000-0000-000000000000",
   email: "prenom.nom-tres-long@exemple-de-domaine.fr",
   prenom: "Caroline",
+  nom: "Dupont",
   role: "membre",
   niveau: null,
   profil: null,
@@ -366,4 +368,39 @@ export const QUESTIONS_FICTIVES: Question[] = [
     "2027-01-10T21:05:00.000Z",
   ),
   question(4, "00000000-0000-0000-0000-0000000000a4", "Hugo", "Combien de séances de natation par semaine pour un Finisher ?", "2026-12-20T10:00:00.000Z", "2026-12-28T20:30:00.000Z"),
+];
+
+const athlete = (n: number, prenom: string | null, nom: string | null, niveau: AthleteCoach["niveau"], acces_en_cours = true): AthleteCoach => ({
+  id: `00000000-0000-0000-0005-0000000000${String(n).padStart(2, "0")}`,
+  prenom,
+  nom,
+  niveau,
+  profil: niveau ? "extensif" : null,
+  date_inscription: "2026-11-02T10:00:00.000Z",
+  acces_en_cours,
+});
+
+/** Athlètes vus par le coach : niveaux variés, un nom très long, un sans nom, un ancien membre. */
+export const ATHLETES_FICTIFS: AthleteCoach[] = [
+  athlete(1, "Caroline", "Dupont", "challenger"),
+  athlete(2, "Thomas", "Bernard", "finisher"),
+  athlete(3, "Léa", "Martin-Delacroix de Saint-Exupéry", "performer"),
+  athlete(4, "Hugo", null, null),
+  athlete(5, "Élodie", "Moreau", "challenger", false),
+];
+
+/** Séances fictives de Caroline (aujourd'hui = 11/01/2027), dont une avec douleur et une séance retirée. */
+export const SEANCES_COACH_FICTIVES: SeanceCoach[] = [
+  { date: "2027-01-10", sport: "course", titre: "Sortie longue", rpe: 6, douleur: false, commentaire: "Jambes un peu lourdes sur la fin." },
+  { date: "2027-01-09", sport: "velo", titre: "Sortie longue", rpe: 5, douleur: false, commentaire: null },
+  { date: "2027-01-07", sport: "velo", titre: "Sweet spot", rpe: 8, douleur: false, commentaire: "Dur sur le 3e intervalle." },
+  {
+    date: "2027-01-05",
+    sport: "course",
+    titre: "Footing endurance",
+    rpe: 5,
+    douleur: true,
+    commentaire: "Gêne au mollet droit sur les lignes droites, qui a disparu après l'étirement mais qui revient quand j'accélère.",
+  },
+  { date: "2026-12-28", sport: null, titre: null, rpe: 3, douleur: false, commentaire: null },
 ];

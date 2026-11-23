@@ -124,10 +124,14 @@ describe("rôles", () => {
     expect(await enTantQue(A, "select id from membres")).toEqual([{ id: A }]);
   });
 
-  it.each(["tests", "zones", "objectifs", "membres"])("le coach lit %s de tous les athlètes", async (table) => {
-    const col = table === "membres" ? "id" : "membre_id";
-    const rows = await enTantQue<{ m: string }>(COACH, `select ${col} as m from ${table}`);
+  it.each(["tests", "zones", "objectifs"])("le coach lit %s de tous les athlètes", async (table) => {
+    const rows = await enTantQue<{ m: string }>(COACH, `select membre_id as m from ${table}`);
     expect(rows.map((r) => r.m)).toEqual(expect.arrayContaining([A, B]));
+  });
+
+  it("le coach ne lit plus la fiche entière des membres (e-mail, Stripe) : seulement la sienne", async () => {
+    expect(await enTantQue(COACH, "select id from membres")).toEqual([{ id: COACH }]);
+    expect(await enTantQue(COACH, "select email from membres where id = $1", [A])).toEqual([]);
   });
 
   it.each(["tests", "zones", "objectifs"])("le coach ne peut rien modifier dans %s", async (table) => {

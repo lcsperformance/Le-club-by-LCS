@@ -77,6 +77,7 @@ export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisat
       </header>
 
       <ChampPrenom prenom={utilisateur.prenom} />
+      <ChampPrenom champ="nom" prenom={utilisateur.nom} />
 
       {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
       {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
