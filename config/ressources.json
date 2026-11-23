@@ -1,0 +1,50 @@
+{
+  "_explication": "Thèmes et sous-rubriques de l'onglet Ressources, dans l'ordre d'affichage. On peut changer les noms (« nom ») et ajouter une sous-rubrique (clé en minuscules sans accent ni espace, ex. « recuperation »). Ne pas renommer une clé déjà utilisée par des contenus. « icone » : nutrition, natation, velo, course ou preparation.",
+  "themes": [
+    {
+      "cle": "nutrition",
+      "nom": "Nutrition",
+      "icone": "nutrition",
+      "sous_rubriques": [
+        { "cle": "bases", "nom": "Les bases de la nutrition" },
+        { "cle": "effort", "nom": "Nutrition à l'effort" }
+      ]
+    },
+    {
+      "cle": "natation",
+      "nom": "Natation",
+      "icone": "natation",
+      "sous_rubriques": [
+        { "cle": "technique", "nom": "Technique" },
+        { "cle": "eau_libre", "nom": "Eau libre" }
+      ]
+    },
+    {
+      "cle": "velo",
+      "nom": "Vélo",
+      "icone": "velo",
+      "sous_rubriques": [
+        { "cle": "position_materiel", "nom": "Position et matériel" },
+        { "cle": "puissance", "nom": "Travail de puissance" }
+      ]
+    },
+    {
+      "cle": "course",
+      "nom": "Course à pied",
+      "icone": "course",
+      "sous_rubriques": [
+        { "cle": "technique", "nom": "Technique de course" },
+        { "cle": "sorties_longues", "nom": "Sorties longues" }
+      ]
+    },
+    {
+      "cle": "preparation",
+      "nom": "Préparation",
+      "icone": "preparation",
+      "sous_rubriques": [
+        { "cle": "tests_zones", "nom": "Tests et zones" },
+        { "cle": "chaleur_transitions", "nom": "Chaleur et transitions" }
+      ]
+    }
+  ]
+}

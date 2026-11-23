@@ -1,7 +1,7 @@
 /**
  * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones, les objectifs
- * de saison, les records et les ressentis de séance (RPE, douleur, commentaire : données de santé)
- * d'un autre membre.
+ * de saison, les records, les ressentis de séance (RPE, douleur, commentaire : données de santé)
+ * et le suivi des ressources (favoris, vu, téléchargé) d'un autre membre.
  *
  * Alice (A) essaie toutes les manières d'atteindre les données de Bruno (B) avec les mêmes
  * droits qu'un vrai membre connecté (rôle « authenticated » de Supabase, sécurité par ligne active).
@@ -17,6 +17,9 @@ const OBJECTIF_BRUNO = "00000000-0000-0000-0000-0000000000f1";
 const RECORD_BRUNO = "00000000-0000-0000-0000-0000000000e1";
 const RESSENTI_BRUNO = "00000000-0000-0000-0000-0000000000d1";
 const SEANCE = "de000000-0000-0000-0000-000000000201";
+const SUIVI_BRUNO = "00000000-0000-0000-0000-0000000000c1";
+const RESSOURCE = "de000000-0000-0000-0001-000000000001"; // débloquée dès la semaine 1
+const RESSOURCE_2 = "de000000-0000-0000-0001-000000000002";
 
 let base: BaseDeTest;
 let empreinteBruno: string;
@@ -31,7 +34,8 @@ async function donneesDeBruno(): Promise<string> {
        'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1),
        'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1),
        'records', (select json_agg(r order by r.epreuve) from records r where r.membre_id = $1),
-       'ressentis', (select json_agg(r order by r.date_seance) from ressentis r where r.membre_id = $1)
+       'ressentis', (select json_agg(r order by r.date_seance) from ressentis r where r.membre_id = $1),
+       'suivi_ressources', (select json_agg(s order by s.ressource_id) from suivi_ressources s where s.membre_id = $1)
      ) as d`,
     [BRUNO],
   );
@@ -73,13 +77,18 @@ beforeAll(async () => {
      values ($2, $1, $3, '2027-01-11', 8, true, 'Douleur au genou droit'), (default, $1, $3, '2027-01-12', 4, false, null)`,
     [BRUNO, RESSENTI_BRUNO, SEANCE],
   );
+  await base.db.query(
+    `insert into suivi_ressources (id, membre_id, ressource_id, favori, consulte_le) values ($2, $1, $3, true, '2027-01-08T18:00:00Z')`,
+    [BRUNO, SUIVI_BRUNO, RESSOURCE],
+  );
   // Données d'Alice : une série de tests et une zone.
   await base.db.query(
     `insert into tests (membre_id, date_test, ftp) values ($1, '2026-11-02', 250);
      insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]');
      insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');
      insert into records (membre_id, epreuve, duree_secondes) values ($1, 'semi', 5530);
-     insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 6);`.replaceAll(
+     insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 6);
+     insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE}', true);`.replaceAll(
       "$1",
       `'${ALICE}'`,
     ),
@@ -139,6 +148,16 @@ const TABLES = [
     ecrasement: `insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 1)
                  on conflict (membre_id, seance_id, date_seance) do update set rpe = excluded.rpe`,
     // Le membre ne peut changer que son ressenti : la colonne membre_id lui est fermée.
+    transfert: /permission denied/,
+  },
+  {
+    table: "suivi_ressources",
+    id: () => SUIVI_BRUNO,
+    modification: "favori = false, consulte_le = null",
+    insertion: `insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE_2}', true)`,
+    ecrasement: `insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE}', false)
+                 on conflict (membre_id, ressource_id) do update set favori = excluded.favori`,
+    // Le membre ne change que favori et « vu / téléchargé » : la colonne membre_id lui est fermée.
     transfert: /permission denied/,
   },
 ] as const;

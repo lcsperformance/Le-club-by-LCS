@@ -1,18 +1,20 @@
 /**
  * Vérifie les fichiers de configuration modifiables sans toucher au code, avant chaque
- * compilation (npm run build, donc aussi sur Vercel) : config/zones.json, config/profils.json
- * et config/blocs.json.
+ * compilation (npm run build, donc aussi sur Vercel) : config/zones.json, config/profils.json,
+ * config/blocs.json et config/ressources.json.
  * Objectif : un message clair, en français, si un fichier a été mal modifié.
  */
 import { readFileSync } from "node:fs";
 import { validerConfigBlocs } from "../src/lib/config-blocs.ts";
 import { validerConfigProfils } from "../src/lib/config-profils.ts";
+import { validerConfigRessources } from "../src/lib/config-ressources.ts";
 import { validerConfig } from "../src/lib/config-zones.ts";
 
 const FICHIERS = [
   { nom: "config/zones.json", valider: validerConfig },
   { nom: "config/profils.json", valider: validerConfigProfils },
   { nom: "config/blocs.json", valider: validerConfigBlocs },
+  { nom: "config/ressources.json", valider: validerConfigRessources },
 ];
 
 let echecs = 0;

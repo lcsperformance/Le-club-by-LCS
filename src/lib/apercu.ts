@@ -6,6 +6,7 @@ import type { Utilisateur } from "@/lib/auth";
 import type { PointHistorique } from "@/lib/historique";
 import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Records } from "@/lib/records";
+import type { Commentaire, Ressource, Suivi } from "@/lib/ressources";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
 
@@ -183,3 +184,37 @@ export const RECORDS_FICTIFS: Records = { "10km": 41 * 60 + 32, semi: 3600 + 32 
 
 /** Séances fictives faites cette semaine-là (lundi et mardi), comme sur la maquette. */
 export const SEANCES_FAITES_FICTIVES = ["2027-01-11|00000000-0000-0000-0000-000000000101", "2027-01-12|00000000-0000-0000-0000-000000000102"];
+
+const ressourceFictive = (n: number, theme: string, sous_rubrique: string, titre: string, type: Ressource["type"], semaine_deblocage: number): Ressource => ({
+  id: `00000000-0000-0000-0001-0000000000${String(n).padStart(2, "0")}`,
+  theme,
+  sous_rubrique,
+  titre,
+  type,
+  semaine_deblocage,
+  ordre: n,
+});
+
+/** Catalogue fictif (membre en semaine 3) : contenus ouverts et verrouillés, un titre très long. */
+export const SEMAINE_RESSOURCES_FICTIVE = 3;
+export const RESSOURCES_FICTIVES: Ressource[] = [
+  ressourceFictive(1, "nutrition", "bases", "Les macronutriments en 5 minutes", "video", 1),
+  ressourceFictive(2, "nutrition", "bases", "Guide : composer ses repas de la semaine quand on s'entraîne deux fois par jour", "pdf", 1),
+  ressourceFictive(3, "nutrition", "effort", "Que manger pendant une sortie longue", "video", 3),
+  ressourceFictive(4, "nutrition", "effort", "Tableau des apports en glucides", "pdf", 4),
+  ressourceFictive(5, "natation", "technique", "Technique de nage : les bases", "video", 3),
+  ressourceFictive(6, "velo", "puissance", "Comprendre sa puissance seuil (FTP)", "video", 2),
+  ressourceFictive(7, "preparation", "chaleur_transitions", "Transitions vélo–course : le guide", "pdf", 6),
+];
+
+export const SUIVIS_FICTIFS: Record<string, Suivi> = {
+  [RESSOURCES_FICTIVES[0].id]: { favori: true, consulte_le: "2027-01-08T18:00:00.000Z" },
+  [RESSOURCES_FICTIVES[1].id]: { favori: false, consulte_le: "2027-01-09T07:30:00.000Z" },
+  [RESSOURCES_FICTIVES[5].id]: { favori: true, consulte_le: null },
+};
+
+export const COMMENTAIRES_FICTIFS: Commentaire[] = [
+  { id: "c1", auteur: "Hugo", auteur_role: "membre", texte: "Super clair, merci ! J'avais tendance à oublier les lipides.", cree_le: "2027-01-08T18:42:00.000Z", mien: false },
+  { id: "c2", auteur: "Martin", auteur_role: "coach", texte: "Gardez ce repère en tête pour vos sorties longues du week-end.", cree_le: "2027-01-09T07:15:00.000Z", mien: false },
+  { id: "c3", auteur: "Caroline", auteur_role: "membre", texte: "Je la regarde avant chaque bloc 💪", cree_le: "2027-01-10T20:05:00.000Z", mien: true },
+];

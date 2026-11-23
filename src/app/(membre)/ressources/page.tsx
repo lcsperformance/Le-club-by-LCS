@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
-import { EnTeteMembre } from "@/components/EnTeteMembre";
-import { Carte } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
+import { cartesThemes, favoris } from "@/lib/ressources";
+import { lireCatalogue, lireSuivis, semaineDuMembre } from "@/lib/ressources-serveur";
+import { EcranRessources } from "./EcranRessources";
 
 export const metadata: Metadata = { title: "Ressources · Le Club by LCS" };
 
@@ -17,12 +18,7 @@ export default function PageRessources() {
 
 async function Contenu() {
   const utilisateur = await exigerRole("membre", "admin");
-  return (
-    <>
-      <EnTeteMembre utilisateur={utilisateur} titre="Ressources" />
-      <Carte as="section">
-        <p className="message-info">Vidéos, fiches et conseils, débloqués au fil de ton ancienneté.</p>
-      </Carte>
-    </>
-  );
+  const semaine = semaineDuMembre(utilisateur);
+  const [catalogue, suivis] = await Promise.all([lireCatalogue(), lireSuivis(utilisateur.id)]);
+  return <EcranRessources themes={cartesThemes(catalogue, semaine)} nbFavoris={favoris(catalogue, suivis, semaine).length} />;
 }

@@ -537,3 +537,104 @@ describe("ressentis de séance (données de santé)", () => {
     expect(rows).toEqual([{ seance_id: null, rpe: 7 }]);
   });
 });
+
+describe("ressources : déblocage, liens protégés, suivi et commentaires", () => {
+  const VIDEO_S1 = "de000000-0000-0000-0001-000000000001"; // vidéo, semaine 1
+  const PDF_S1 = "de000000-0000-0000-0001-000000000002"; // PDF, semaine 1
+  const VIDEO_S3 = "de000000-0000-0000-0001-000000000003"; // vidéo, semaine 3
+  const VIDEO_S5 = "de000000-0000-0000-0001-000000000007"; // vidéo, semaine 5
+
+  beforeAll(async () => {
+    // A est inscrit depuis 15 jours (semaine 3), B depuis aujourd'hui (semaine 1).
+    await db.query("update membres set date_inscription = now() - interval '15 days', prenom = 'Alice' where id = $1", [A]);
+    await db.query("update membres set date_inscription = now(), prenom = null where id = $1", [B]);
+    await db.query(
+      `update ressources set youtube_id = 'abcdefghijk' where id in ('${VIDEO_S1}', '${VIDEO_S3}', '${VIDEO_S5}');
+       update ressources set fichier = 'nutrition/guide.pdf' where id = '${PDF_S1}';`,
+    );
+  });
+
+  it("semaine d'ancienneté calculée par la base", async () => {
+    expect(await enTantQue(A, "select public.semaine_anciennete() as s")).toEqual([{ s: 3 }]);
+    expect(await enTantQue(B, "select public.semaine_anciennete() as s")).toEqual([{ s: 1 }]);
+  });
+
+  it("tout membre lit le catalogue (titres, semaines), jamais le lien de la vidéo ni le fichier", async () => {
+    const rows = await enTantQue<{ n: number }>(B, "select count(*)::int as n from ressources");
+    expect(rows[0].n).toBeGreaterThanOrEqual(17);
+    await expect(enTantQue(B, "select youtube_id from ressources")).rejects.toThrow(/permission denied/);
+    await expect(enTantQue(B, "select fichier from ressources")).rejects.toThrow(/permission denied/);
+    await expect(enTantQue(null, "select titre from ressources")).rejects.toThrow(/permission denied/);
+  });
+
+  it("liens donnés seulement pour les contenus débloqués", async () => {
+    const ids = async (qui: string) =>
+      (await enTantQue<{ id: string }>(qui, "select id from public.ressources_medias()")).map((m) => m.id);
+    expect(await ids(A)).toEqual(expect.arrayContaining([VIDEO_S1, VIDEO_S3]));
+    expect(await ids(A)).not.toContain(VIDEO_S5);
+    expect(await ids(B)).toContain(VIDEO_S1);
+    expect(await ids(B)).not.toContain(VIDEO_S3);
+    expect((await ids(COACH)).length).toBeGreaterThanOrEqual(17); // l'équipe voit tout
+    const [m] = await enTantQue<Record<string, unknown>>(B, `select * from public.ressources_medias() where id = '${PDF_S1}'`);
+    expect(m).toEqual({ id: PDF_S1, youtube_id: null, fichier_disponible: true }); // jamais le chemin du fichier
+  });
+
+  it("chemin du PDF seulement s'il est débloqué", async () => {
+    expect(await enTantQue(B, `select public.fichier_ressource('${PDF_S1}') as f`)).toEqual([{ f: "nutrition/guide.pdf" }]);
+    expect(await enTantQue(B, `select public.fichier_ressource('${VIDEO_S3}') as f`)).toEqual([{ f: null }]);
+    expect(await enTantQue(B, "select public.fichier_debloque('nutrition/guide.pdf') as ok")).toEqual([{ ok: true }]);
+  });
+
+  it("favori ou « Vue » refusé sur un contenu verrouillé", async () => {
+    await expect(enTantQue(B, `insert into suivi_ressources (ressource_id, favori) values ('${VIDEO_S3}', true)`)).rejects.toThrow(
+      /row-level security/,
+    );
+    await enTantQue(A, `insert into suivi_ressources (ressource_id, favori) values ('${VIDEO_S3}', true)`);
+    await enTantQue(A, `update suivi_ressources set consulte_le = now() where ressource_id = '${VIDEO_S3}'`);
+    expect(await enTantQue(B, "select * from suivi_ressources where membre_id = $1", [A])).toEqual([]);
+  });
+
+  it("commentaire : prénom et rôle de l'auteur ajoutés par la base, impossibles à usurper", async () => {
+    const [c] = await enTantQue<{ auteur: string; auteur_role: string }>(
+      A,
+      `insert into commentaires_ressources (ressource_id, texte) values ('${VIDEO_S1}', 'Merci !') returning auteur, auteur_role`,
+    );
+    expect(c).toEqual({ auteur: "Alice", auteur_role: "membre" });
+    await expect(
+      enTantQue(A, `insert into commentaires_ressources (ressource_id, texte, auteur) values ('${VIDEO_S1}', 'x', 'Martin')`),
+    ).rejects.toThrow(/permission denied/);
+    const [sansPrenom] = await enTantQue<{ auteur: string }>(
+      B,
+      `insert into commentaires_ressources (ressource_id, texte) values ('${VIDEO_S1}', 'Top') returning auteur`,
+    );
+    expect(sansPrenom.auteur).toBe("Membre");
+  });
+
+  it("commentaire refusé sur une vidéo verrouillée, sur un PDF ou au nom d'un autre", async () => {
+    for (const sql of [
+      `insert into commentaires_ressources (ressource_id, texte) values ('${VIDEO_S3}', 'Trop tôt')`,
+      `insert into commentaires_ressources (ressource_id, texte) values ('${PDF_S1}', 'Sur un PDF')`,
+      `insert into commentaires_ressources (ressource_id, membre_id, texte) values ('${VIDEO_S1}', '${A}', 'Au nom de A')`,
+    ]) {
+      await expect(enTantQue(B, sql), sql).rejects.toThrow(/row-level security/);
+    }
+  });
+
+  it("les membres lisent les commentaires des vidéos qu'ils ont débloquées, pas les autres", async () => {
+    await enTantQue(A, `insert into commentaires_ressources (ressource_id, texte) values ('${VIDEO_S3}', 'Semaine 3')`);
+    const textes = (await enTantQue<{ texte: string }>(B, "select texte from commentaires_ressources")).map((c) => c.texte);
+    expect(textes).toEqual(expect.arrayContaining(["Merci !", "Top"]));
+    expect(textes).not.toContain("Semaine 3");
+    await expect(enTantQue(null, "select * from commentaires_ressources")).rejects.toThrow(/permission denied/);
+  });
+
+  it("chacun supprime ou modifie ses commentaires, pas ceux des autres ; l'admin peut tout supprimer", async () => {
+    expect(await enTantQue(B, "delete from commentaires_ressources where texte = 'Merci !' returning id")).toEqual([]);
+    expect(await enTantQue(B, "update commentaires_ressources set texte = 'Pirate' where texte = 'Merci !' returning id")).toEqual([]);
+    expect(await enTantQue(COACH, "delete from commentaires_ressources where texte = 'Merci !' returning id")).toEqual([]);
+    expect(await enTantQue(ADMIN, "delete from commentaires_ressources where texte = 'Merci !' returning texte")).toEqual([
+      { texte: "Merci !" },
+    ]);
+    expect(await enTantQue(B, "delete from commentaires_ressources where texte = 'Top' returning texte")).toEqual([{ texte: "Top" }]);
+  });
+});

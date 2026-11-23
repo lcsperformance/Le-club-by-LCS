@@ -5,6 +5,9 @@ import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
+import { EcranContenu } from "@/app/(membre)/ressources/contenu/[id]/EcranContenu";
+import { EcranRessources } from "@/app/(membre)/ressources/EcranRessources";
+import { EcranTheme } from "@/app/(membre)/ressources/EcranTheme";
 import { EcranSaison } from "@/app/(membre)/saison/EcranSaison";
 import { EcranSeance } from "@/app/(membre)/seance/[id]/EcranSeance";
 import { EcranSemaine } from "@/app/(membre)/semaine/EcranSemaine";
@@ -14,12 +17,16 @@ import { AffichageZones } from "@/app/(membre)/zones/AffichageZones";
 import { EnTeteZones } from "@/app/(membre)/zones/EnTeteZones";
 import {
   AUJOURDHUI_FICTIF,
+  COMMENTAIRES_FICTIFS,
   exigerApercu,
   HISTORIQUE_COURSE_FICTIF,
   HISTORIQUE_VELO_FICTIF,
   OBJECTIFS_EN_COURS_FICTIFS,
   OBJECTIFS_FICTIFS,
   RECORDS_FICTIFS,
+  RESSOURCES_FICTIVES,
+  SEMAINE_RESSOURCES_FICTIVE,
+  SUIVIS_FICTIFS,
   SEANCE_COURSE_FICTIVE,
   SEANCE_RENFO_FICTIVE,
   SEANCES_FAITES_FICTIVES,
@@ -27,6 +34,7 @@ import {
   TEST_FICTIF,
   UTILISATEUR_FICTIF,
 } from "@/lib/apercu";
+import { cartesThemes, favoris, sousRubriques, themeParCle, vueContenu } from "@/lib/ressources";
 import { valeursDeDepart } from "@/lib/tests-depart";
 import { SPORTS } from "@/lib/zones";
 
@@ -179,6 +187,67 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={null} />;
     case "seance-renfo":
       return <EcranSeance seance={SEANCE_RENFO_FICTIVE} tests={null} />;
+    case "ressources":
+      return (
+        <EcranRessources
+          themes={cartesThemes(RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
+          nbFavoris={favoris(RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).length}
+        />
+      );
+    case "ressources-theme": {
+      const theme = themeParCle("nutrition")!;
+      return (
+        <EcranTheme
+          titre={theme.nom}
+          rubriques={sousRubriques(theme, RESSOURCES_FICTIVES).map((r) => ({
+            cle: r.cle,
+            nom: r.nom,
+            contenus: r.contenus.map((c) => vueContenu(c, SEMAINE_RESSOURCES_FICTIVE, SUIVIS_FICTIFS[c.id])),
+          }))}
+        />
+      );
+    }
+    case "ressources-favoris":
+    case "ressources-favoris-vide":
+      return (
+        <EcranTheme
+          titre="Mes favoris"
+          rubriques={[
+            {
+              cle: "favoris",
+              nom: "Contenus ajoutés en favoris",
+              contenus:
+                ecran === "ressources-favoris"
+                  ? favoris(RESSOURCES_FICTIVES, SUIVIS_FICTIFS, SEMAINE_RESSOURCES_FICTIVE).map((c) => vueContenu(c, SEMAINE_RESSOURCES_FICTIVE, SUIVIS_FICTIFS[c.id]))
+                  : [],
+            },
+          ]}
+          messageVide="Aucun favori pour l'instant. Touche l'étoile d'un contenu pour l'ajouter ici."
+        />
+      );
+    case "ressources-video":
+      return (
+        <EcranContenu
+          ressource={RESSOURCES_FICTIVES[0]}
+          semaine={SEMAINE_RESSOURCES_FICTIVE}
+          media={{ youtube_id: null, fichier_disponible: false }}
+          suivi={SUIVIS_FICTIFS[RESSOURCES_FICTIVES[0].id]}
+          commentaires={COMMENTAIRES_FICTIFS}
+        />
+      );
+    case "ressources-pdf":
+      return (
+        <EcranContenu
+          ressource={RESSOURCES_FICTIVES[1]}
+          semaine={SEMAINE_RESSOURCES_FICTIVE}
+          media={{ youtube_id: null, fichier_disponible: true }}
+          suivi={SUIVIS_FICTIFS[RESSOURCES_FICTIVES[1].id]}
+        />
+      );
+    case "ressources-pdf-bientot":
+      return <EcranContenu ressource={RESSOURCES_FICTIVES[3]} semaine={4} media={{ youtube_id: null, fichier_disponible: false }} />;
+    case "ressources-verrouille":
+      return <EcranContenu ressource={RESSOURCES_FICTIVES[6]} semaine={SEMAINE_RESSOURCES_FICTIVE} />;
     case "records":
       return <EcranRecords records={RECORDS_FICTIFS} />;
     case "records-vide":
