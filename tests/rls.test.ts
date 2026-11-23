@@ -427,17 +427,17 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
     expect(rows).toEqual([{ blocs: 0, rattachements: 0 }]);
   });
 
-  it("démonstration : une semaine 1 du fil rouge pour chaque niveau et chaque profil", async () => {
+  it("démonstration : une semaine 1 du fil rouge pour chaque niveau et chaque profil, une séance au moins chaque jour", async () => {
     const rows = await enTantQue<{ niveau: string; profil: string; n: number }>(
       A,
       `select niveau, profil, count(*)::int as n from programme
        where phase = 'fil_rouge' and semaine = 1 group by niveau, profil order by niveau, profil`,
     );
     expect(rows).toEqual([
-      { niveau: "finisher", profil: "extensif", n: 5 },
-      { niveau: "finisher", profil: "intensif", n: 5 },
-      { niveau: "challenger", profil: "extensif", n: 6 },
-      { niveau: "challenger", profil: "intensif", n: 6 },
+      { niveau: "finisher", profil: "extensif", n: 7 },
+      { niveau: "finisher", profil: "intensif", n: 7 },
+      { niveau: "challenger", profil: "extensif", n: 7 },
+      { niveau: "challenger", profil: "intensif", n: 7 },
       { niveau: "performer", profil: "extensif", n: 8 },
       { niveau: "performer", profil: "intensif", n: 8 },
     ]);
@@ -446,6 +446,12 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
       "select count(*)::int as n from seances s where not exists (select 1 from blocs_seance b where b.seance_id = s.id)",
     );
     expect(sansBloc.n).toBe(0);
+    const joursVides = await enTantQue<{ niveau: string; jour: number }>(
+      A,
+      `select n.niveau, j.jour from unnest(enum_range(null::niveau)) as n (niveau) cross join generate_series(1, 7) as j (jour)
+       where not exists (select 1 from programme p where p.phase = 'fil_rouge' and p.semaine = 1 and p.niveau = n.niveau and p.jour = j.jour)`,
+    );
+    expect(joursVides).toEqual([]);
   });
 });
 

@@ -212,3 +212,34 @@
   border-radius: 50%;
   background: var(--accent);
 }
+
+/* Changer de semaine : flèches rondes en verre, texte au centre. */
+.navSemaine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.navTexte {
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.fleche {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(244, 238, 255, 0.25);
+  color: var(--texte);
+}
+
+.fleche[aria-disabled="true"] {
+  opacity: 0.3;
+}

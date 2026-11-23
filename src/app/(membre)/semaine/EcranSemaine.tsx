@@ -6,7 +6,7 @@ import type { Utilisateur } from "@/lib/auth";
 import { CONFIG_PROFILS } from "@/lib/profils";
 import { seancesDuJour, type SeancePrevue, type SemaineProgramme } from "@/lib/programme";
 import { organiserSaison, phaseDuMoment, type Objectif } from "@/lib/saison";
-import { joursDeLaSemaine, titreSemaine } from "@/lib/semaine";
+import { joursDeLaSemaine, lundiDe, titreSemaine } from "@/lib/semaine";
 import { BandeJours, type SeanceCarte } from "./BandeJours";
 import styles from "./semaine.module.css";
 
@@ -15,6 +15,7 @@ export type ProgrammeSemaine = { semaine: SemaineProgramme; seances: SeancePrevu
 /**
  * Ma semaine (maquette) : dates et phase, niveau et profil, décompte, bande des 7 jours et séances du jour.
  * programme : null tant que le membre n'a pas choisi son niveau et son profil.
+ * lundi : semaine affichée (la semaine en cours par défaut) ; navigation : semaines voisines accessibles.
  * Le programme reste dans l'app : ni export, ni PDF, ni impression (data-programme, voir globals.css).
  */
 export function EcranSemaine({
@@ -24,6 +25,8 @@ export function EcranSemaine({
   programme,
   testsFaits,
   faites = [],
+  lundi = lundiDe(aujourdhui),
+  navigation = { precedente: null, suivante: null },
 }: {
   utilisateur: Utilisateur;
   objectifs: Objectif[];
@@ -32,9 +35,14 @@ export function EcranSemaine({
   testsFaits: boolean;
   /** Séances marquées faites cette semaine : « AAAA-MM-JJ|id de séance ». */
   faites?: string[];
+  lundi?: string;
+  navigation?: { precedente: string | null; suivante: string | null };
 }) {
+  const courante = lundi === lundiDe(aujourdhui);
+  // Décompte : toujours depuis aujourd'hui. Phase : celle de la semaine affichée (son lundi, ou aujourd'hui).
   const saison = organiserSaison(objectifs, aujourdhui);
-  const jours = joursDeLaSemaine(aujourdhui);
+  const saisonAffichee = courante ? saison : organiserSaison(objectifs, lundi);
+  const jours = joursDeLaSemaine(lundi);
   const seances = programme
     ? Object.fromEntries(
         jours.map((j, i) => [
@@ -61,7 +69,7 @@ export function EcranSemaine({
             Ma semaine
           </h1>
           <p className={styles.sousTitre}>
-            {titreSemaine(jours)} · {phaseDuMoment(saison)}
+            {titreSemaine(jours)} · {phaseDuMoment(saisonAffichee)}
           </p>
           {pastille ? (
             <p className={styles.pastille}>{pastille}</p>
@@ -83,8 +91,39 @@ export function EcranSemaine({
           <Chevron />
         </Link>
       )}
-      <BandeJours jours={jours} aujourdhui={aujourdhui} seances={seances} />
+      <nav className={styles.navSemaine} aria-label="Changer de semaine">
+        <Fleche vers={navigation.precedente} sens="precedente" />
+        {courante ? (
+          <span className={styles.navTexte}>Cette semaine</span>
+        ) : (
+          <Link href="/semaine" className={`${styles.navTexte} lien`} scroll={false}>
+            Revenir à cette semaine
+          </Link>
+        )}
+        <Fleche vers={navigation.suivante} sens="suivante" />
+      </nav>
+      <BandeJours key={lundi} jours={jours} aujourdhui={aujourdhui} seances={seances} />
     </div>
+  );
+}
+
+/** Flèche vers la semaine précédente ou suivante ; grisée en bout de course (inscription, fin de la période payée). */
+function Fleche({ vers, sens }: { vers: string | null; sens: "precedente" | "suivante" }) {
+  const libelle = sens === "precedente" ? "Semaine précédente" : "Semaine suivante";
+  const trace = sens === "precedente" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7";
+  const icone = (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d={trace} />
+    </svg>
+  );
+  return vers ? (
+    <Link href={`/semaine?du=${vers}`} className={styles.fleche} aria-label={libelle} scroll={false}>
+      {icone}
+    </Link>
+  ) : (
+    <span className={styles.fleche} aria-disabled="true" title={sens === "suivante" ? "Au-delà de ta période d'abonnement" : undefined}>
+      {icone}
+    </span>
   );
 }
 

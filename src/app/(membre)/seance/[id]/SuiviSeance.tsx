@@ -22,7 +22,34 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
   const [message, setMessage] = useState<{ texte: string; erreur: boolean } | null>(null);
   const [enCours, demarrer] = useTransition();
 
-  if (interdit) return <p className="message-info">{interdit}</p>;
+  if (interdit) {
+    // Trop ancienne pour être modifiée : le ressenti déjà noté reste visible, en lecture seule.
+    if (!ressenti) return <p className="message-info">{interdit}</p>;
+    return (
+      <Carte as="section" aria-labelledby="titre-ressenti" className={styles.ressenti}>
+        <h2 id="titre-ressenti" className={styles.ressentiTitre}>
+          Séance faite ✓
+        </h2>
+        <dl className={styles.lecture}>
+          <div>
+            <dt>RPE</dt>
+            <dd>{ressenti.rpe ? `${ressenti.rpe}/10` : "Non noté"}</dd>
+          </div>
+          <div>
+            <dt>Douleur ou gêne</dt>
+            <dd>{ressenti.douleur ? "Oui" : "Non"}</dd>
+          </div>
+          {ressenti.commentaire && (
+            <div>
+              <dt>Commentaire</dt>
+              <dd>{ressenti.commentaire}</dd>
+            </div>
+          )}
+        </dl>
+        <p className={styles.confidentiel}>{interdit}</p>
+      </Carte>
+    );
+  }
 
   function basculer() {
     const voulu = !faite;
