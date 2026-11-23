@@ -31,7 +31,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 - `/admin` et `/admin/membres` : liste, recherche, accès offert ou coupé, renvoi d'e-mail, journal.
 - `/admin/ressources` : contenus (PDF, lien YouTube, miniature, semaine de déblocage), thèmes et sous-rubriques, modération des commentaires.
 - `/admin/composants` : vitrine des composants.
-- `/coach` : vide (texte d'attente).
+- `/coach` : liste des athlètes (prénom et nom, recherche, anciens membres) et fiche en lecture seule (niveau, objectifs, séances avec RPE, douleur et commentaire, filtre douleurs).
 
 ## Base de données et sécurité
 
@@ -39,7 +39,7 @@ Sécurité par ligne active sur les 21 tables ; les visiteurs non connectés n'o
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
-| `membres` | fiche, abonnement, accès | le membre la sienne ; coach et admin toutes | le membre : prénom, niveau, profil seulement ; abonnement : le serveur ; accès : fonctions admin |
+| `membres` | fiche, abonnement, accès | le membre la sienne ; admin toutes ; le coach seulement prénom, nom, niveau, profil par `coach_athletes()` | le membre : prénom, nom, niveau, profil seulement ; abonnement : le serveur ; accès : fonctions admin |
 | `tests` | tests de départ | le membre les siens ; coach et admin tous | le membre, les siens |
 | `zones` | zones personnalisées | idem | le membre, les siennes |
 | `objectifs` | courses de la saison | idem | le membre, les siens |
@@ -62,7 +62,7 @@ Fonctions protégées (vérifient le rôle admin) : `admin_offrir_acces`, `admin
 Preuves : `tests/rls.test.ts` et `tests/securite-tests-zones.test.ts`.
 
 Points d'attention :
-- Le coach lit la fiche entière des membres, y compris l'e-mail et les identifiants Stripe : prévoir une vue limitée pour l'espace coach.
+- Réglé (23/11) : le coach ne lit plus la fiche entière des membres ; il passe par `coach_athletes()` (prénom, nom, niveau, profil, ancienneté, accès en cours).
 - Données de santé (RPE, douleur, commentaires) : table `ressentis` faite, lisible par le membre, le coach et l'admin (lecture seule), jamais par les autres membres ; prouvé par les tests de sécurité.
 
 ## Ce qui manque (demandes 1 à 9)
@@ -72,9 +72,7 @@ Points d'attention :
 3. **Accueil** : phase et carte du bloc faites. Restent :
    - « Voir la vidéo » (attend les vidéos de Martin) ;
    - les cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (dépendent de 5, 6 et 7).
-4. **Espace coach** : à faire.
-   - Liste des athlètes ; fiche avec niveau, objectifs et séances (RPE, douleur, commentaire), en lecture seule.
-   - Les droits de lecture sont prêts.
+4. **Espace coach** : fait (23/11) : liste avec recherche, fiche en lecture seule, filtre douleurs. Nom de famille ajouté (Profil et paiement).
 5. **Club** : canaux en temps réel, boîte à questions sans votes et agenda faits (23/11).
    - Exemples d'agenda en janvier 2027 à remplacer par les vraies dates depuis `/admin/agenda`.
    - Canaux bloc S et bloc XL à ajouter si besoin (seuls bloc-m et bloc-l existent).
@@ -93,6 +91,6 @@ Hors liste : « Avantages » est encore vide.
 ## Ordre conseillé
 
 1. Sans contenu de Martin : Calculateur, application installable.
-2. Puis l'espace coach (historique des athlètes en lecture seule).
+2. Puis le Calculateur, l'onglet Avantages et l'application installable.
 3. Espace coach complet et RPE : quand le programme existe.
 4. Stripe en mode réel vers la mi-décembre.

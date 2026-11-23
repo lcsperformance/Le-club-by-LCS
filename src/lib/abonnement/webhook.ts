@@ -7,7 +7,7 @@
  * - un événement déjà traité est ignoré (webhook reçu deux fois) ;
  * - chaque traitement peut être rejoué sans effet en double.
  */
-import { prenomDepuisNom } from "../prenom";
+import { nomDepuisNomComplet, prenomDepuisNom } from "../prenom";
 import { formuleDepuisAbonnement, type Formule } from "./formules";
 import { estPaye, etatDepuisAbonnement, type AbonnementStripe, type EtatAbonnement } from "./etat";
 
@@ -57,6 +57,7 @@ export type Dependances = {
     ): Promise<void>;
     /** Enregistre le prénom seulement s'il est encore vide (jamais d'écrasement d'un prénom corrigé). */
     definirPrenomSiVide(membreId: string, prenom: string): Promise<void>;
+    definirNomSiVide(membreId: string, nom: string): Promise<void>;
   };
   emails: {
     /** Ancien membre qui se réabonne : il a déjà ses identifiants. */
@@ -195,6 +196,8 @@ async function appliquer(evenement: EvenementStripe, d: Dependances): Promise<Re
 
   const prenom = prenomDepuisNom(nom);
   if (prenom) await d.base.definirPrenomSiVide(membre.id, prenom);
+  const nomDeFamille = nomDepuisNomComplet(nom);
+  if (nomDeFamille) await d.base.definirNomSiVide(membre.id, nomDeFamille);
 
   if (cree) return { action: "compte-cree", membreId: membre.id, etat };
   if (reprise) {

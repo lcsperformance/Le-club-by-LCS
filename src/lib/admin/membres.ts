@@ -12,6 +12,8 @@ export type MembreAdmin = {
   id: string;
   email: string;
   prenom: string | null;
+  /** Nom de famille ; absent ou null s'il n'est pas connu. */
+  nom?: string | null;
   niveau: Niveau | null;
   statut_abonnement: StatutAbonnement;
   abonnement_fin: string | null;
@@ -33,11 +35,11 @@ export const normaliser = (texte: string) =>
     .trim();
 
 /** Membres dont le prénom ou l'e-mail contient chaque mot recherché. */
-export function filtrerMembres<T extends Pick<MembreAdmin, "prenom" | "email">>(membres: T[], recherche: string): T[] {
+export function filtrerMembres<T extends Pick<MembreAdmin, "prenom" | "email" | "nom">>(membres: T[], recherche: string): T[] {
   const mots = normaliser(recherche).split(/\s+/).filter(Boolean);
   if (!mots.length) return membres;
   return membres.filter((m) => {
-    const texte = normaliser(`${m.prenom ?? ""} ${m.email}`);
+    const texte = normaliser(`${m.prenom ?? ""} ${m.nom ?? ""} ${m.email}`);
     return mots.every((mot) => texte.includes(mot));
   });
 }

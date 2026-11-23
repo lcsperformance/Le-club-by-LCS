@@ -80,6 +80,10 @@ export function dependancesReelles(): Dependances {
         const { error } = await base.from("membres").update({ prenom }).eq("id", id).is("prenom", null);
         if (error) throw new Error(`Enregistrement du prénom impossible : ${error.message}`);
       },
+      definirNomSiVide: async (id, nom) => {
+        const { error } = await base.from("membres").update({ nom }).eq("id", id).is("nom", null);
+        if (error) throw new Error(`Enregistrement du nom impossible : ${error.message}`);
+      },
       mettreAJour: async (id, champs) => {
         const { error } = await base.from("membres").update(champs).eq("id", id);
         if (error) throw new Error(`Mise à jour de l'abonnement impossible : ${error.message}`);

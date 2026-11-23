@@ -13,6 +13,8 @@ export type Utilisateur = {
   email: string;
   /** Prénom (récupéré au paiement ou saisi dans le Profil) ; null s'il n'est pas connu. */
   prenom: string | null;
+  /** Nom de famille (récupéré au paiement ou saisi dans le Profil) ; null s'il n'est pas connu. */
+  nom: string | null;
   role: Role;
   /** Choisis par le membre ; null tant qu'il ne l'a pas fait. */
   niveau: Niveau | null;
@@ -47,7 +49,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, prenom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe, date_inscription")
+    .select("email, prenom, nom, role, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe, date_inscription")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
@@ -56,6 +58,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
     id,
     email: membre.email as string,
     prenom: (membre.prenom as string | null) ?? null,
+    nom: (membre.nom as string | null) ?? null,
     role: membre.role as Role,
     niveau: (membre.niveau as Niveau | null) ?? null,
     profil: (membre.profil as Profil | null) ?? null,

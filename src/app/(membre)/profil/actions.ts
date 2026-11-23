@@ -1,7 +1,7 @@
 "use server";
 
 import { utilisateurConnecte } from "@/lib/auth";
-import { lirePrenomSaisi } from "@/lib/prenom";
+import { lireNomSaisi, lirePrenomSaisi } from "@/lib/prenom";
 import { estNiveau, estProfil } from "@/lib/profils";
 import { createClient } from "@/lib/supabase/server";
 
@@ -43,4 +43,21 @@ export async function enregistrerPrenom(valeur: string): Promise<ResultatChoix &
     return { erreur: "Impossible d'enregistrer ton prénom pour le moment. Réessaie dans un instant." };
   }
   return { prenom: lu.prenom };
+}
+
+/** Enregistre le nom de famille du membre, sur sa propre fiche uniquement (vide = effacé). */
+export async function enregistrerNom(valeur: string): Promise<ResultatChoix & { nom?: string | null }> {
+  const utilisateur = await utilisateurConnecte();
+  if (!utilisateur) return { erreur: "Ta session a expiré. Reconnecte-toi pour enregistrer ton nom." };
+
+  const lu = lireNomSaisi(String(valeur ?? ""));
+  if ("erreur" in lu) return { erreur: lu.erreur };
+
+  const supabase = await createClient();
+  const { error } = await supabase.from("membres").update({ nom: lu.nom }).eq("id", utilisateur.id);
+  if (error) {
+    console.error("Enregistrement du nom impossible", error.code, error.message);
+    return { erreur: "Impossible d'enregistrer ton nom pour le moment. Réessaie dans un instant." };
+  }
+  return { nom: lu.nom };
 }

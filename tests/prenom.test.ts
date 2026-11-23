@@ -39,3 +39,22 @@ describe("salutation de l'accueil", async () => {
     expect(salutation(null)).toBe("Salut !");
   });
 });
+
+describe("nom de famille", () => {
+  it("tiré du nom saisi chez Stripe : tout ce qui suit le prénom", async () => {
+    const { nomDepuisNomComplet } = await import("@/lib/prenom");
+    expect(nomDepuisNomComplet("caroline DUPONT")).toBe("Dupont");
+    expect(nomDepuisNomComplet("anne de LA FONTAINE")).toBe("De La Fontaine");
+    expect(nomDepuisNomComplet("Jean-Pierre  martin-moreau ")).toBe("Martin-Moreau");
+    expect(nomDepuisNomComplet("Caroline")).toBeNull();
+    expect(nomDepuisNomComplet(null)).toBeNull();
+  });
+
+  it("saisi par le membre : lettres, espaces, tirets et apostrophes, 60 caractères au plus", async () => {
+    const { lireNomSaisi } = await import("@/lib/prenom");
+    expect(lireNomSaisi("  d'Artagnan  ")).toEqual({ nom: "d'Artagnan" });
+    expect(lireNomSaisi("")).toEqual({ nom: null });
+    expect(lireNomSaisi("Dupont 2")).toHaveProperty("erreur");
+    expect(lireNomSaisi("x".repeat(61))).toHaveProperty("erreur");
+  });
+});

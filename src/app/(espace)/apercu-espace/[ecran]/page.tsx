@@ -10,13 +10,18 @@ import { FormulaireContenu } from "@/app/(espace)/admin/ressources/FormulaireCon
 import { GestionThemes } from "@/app/(espace)/admin/ressources/GestionThemes";
 import { ModerationCommentaires } from "@/app/(espace)/admin/ressources/ModerationCommentaires";
 import { AccueilCoach } from "@/app/(espace)/coach/AccueilCoach";
+import { FicheAthlete } from "@/app/(espace)/coach/FicheAthlete";
 import {
+  ATHLETES_FICTIFS,
+  AUJOURDHUI_FICTIF,
   COMMENTAIRES_ADMIN_FICTIFS,
   CONTENUS_ADMIN_FICTIFS,
   EVENEMENTS_FICTIFS,
   JOURNAL_FICTIF,
   MEMBRES_FICTIFS,
+  OBJECTIFS_EN_COURS_FICTIFS,
   QUESTIONS_FICTIVES,
+  SEANCES_COACH_FICTIVES,
   THEMES_FICTIFS,
 } from "@/lib/apercu";
 import { exigerApercu, UTILISATEUR_FICTIF } from "@/lib/apercu";
@@ -37,7 +42,25 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
   if (ecran === "admin-membres") {
     return <EcranMembres membres={MEMBRES_FICTIFS} journal={JOURNAL_FICTIF} maintenant="2027-01-10T10:00:00.000Z" />;
   }
-  if (ecran === "coach") return <AccueilCoach email={UTILISATEUR_FICTIF.email} />;
+  if (ecran === "coach") return <AccueilCoach email={UTILISATEUR_FICTIF.email} athletes={ATHLETES_FICTIFS} />;
+  if (ecran === "coach-fiche" || ecran === "coach-fiche-vide") {
+    const a = ATHLETES_FICTIFS[ecran === "coach-fiche" ? 0 : 3];
+    return (
+      <AccueilCoach
+        email={UTILISATEUR_FICTIF.email}
+        athletes={ATHLETES_FICTIFS}
+        choisi={a.id}
+        fiche={
+          <FicheAthlete
+            athlete={a}
+            objectifs={ecran === "coach-fiche" ? OBJECTIFS_EN_COURS_FICTIFS : []}
+            seances={ecran === "coach-fiche" ? SEANCES_COACH_FICTIVES : []}
+            aujourdhui={AUJOURDHUI_FICTIF}
+          />
+        }
+      />
+    );
+  }
   if (ecran === "admin-ressources") {
     return <EcranAdminRessources themes={THEMES_FICTIFS} contenus={CONTENUS_ADMIN_FICTIFS} nbCommentaires={COMMENTAIRES_ADMIN_FICTIFS.length} />;
   }
