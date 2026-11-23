@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { exigerRole } from "@/lib/auth";
 import { dateDuJourParis } from "@/lib/dates";
-import { lireSemaineProgramme } from "@/lib/programme-serveur";
+import { lireSeancesFaites, lireSemaineProgramme } from "@/lib/programme-serveur";
 import { organiserSaison } from "@/lib/saison";
 import { lireObjectifs } from "@/lib/saison-serveur";
 import { joursDeLaSemaine } from "@/lib/semaine";
@@ -28,6 +28,19 @@ async function Contenu() {
     lireObjectifs(utilisateur.id),
     supabase.from("tests").select("id", { count: "exact", head: true }).eq("membre_id", utilisateur.id),
   ]);
-  const programme = await lireSemaineProgramme(utilisateur, organiserSaison(objectifs, aujourdhui), joursDeLaSemaine(aujourdhui)[0].iso);
-  return <EcranSemaine utilisateur={utilisateur} objectifs={objectifs} aujourdhui={aujourdhui} programme={programme} testsFaits={(count ?? 0) > 0} />;
+  const jours = joursDeLaSemaine(aujourdhui);
+  const [programme, faites] = await Promise.all([
+    lireSemaineProgramme(utilisateur, organiserSaison(objectifs, aujourdhui), jours[0].iso),
+    lireSeancesFaites(utilisateur.id, jours[0].iso, jours[6].iso),
+  ]);
+  return (
+    <EcranSemaine
+      utilisateur={utilisateur}
+      objectifs={objectifs}
+      aujourdhui={aujourdhui}
+      programme={programme}
+      testsFaits={(count ?? 0) > 0}
+      faites={faites}
+    />
+  );
 }

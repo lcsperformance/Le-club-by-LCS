@@ -23,12 +23,15 @@ export function EcranSemaine({
   aujourdhui,
   programme,
   testsFaits,
+  faites = [],
 }: {
   utilisateur: Utilisateur;
   objectifs: Objectif[];
   aujourdhui: string;
   programme: ProgrammeSemaine | null;
   testsFaits: boolean;
+  /** Séances marquées faites cette semaine : « AAAA-MM-JJ|id de séance ». */
+  faites?: string[];
 }) {
   const saison = organiserSaison(objectifs, aujourdhui);
   const jours = joursDeLaSemaine(aujourdhui);
@@ -36,7 +39,9 @@ export function EcranSemaine({
     ? Object.fromEntries(
         jours.map((j, i) => [
           j.iso,
-          seancesDuJour(programme.seances, i + 1).map(({ id, sport, titre, dureeMinutes }): SeanceCarte => ({ id, sport, titre, dureeMinutes })),
+          seancesDuJour(programme.seances, i + 1).map(
+            ({ id, sport, titre, dureeMinutes }): SeanceCarte => ({ id, sport, titre, dureeMinutes, faite: faites.includes(`${j.iso}|${id}`) }),
+          ),
         ]),
       )
     : null;

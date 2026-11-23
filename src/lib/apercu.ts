@@ -179,3 +179,6 @@ export const HISTORIQUE_VELO_FICTIF: PointHistorique[] = [180, 186, 185, 194, 20
 }));
 
 export const RECORDS_FICTIFS: Records = { "10km": 41 * 60 + 32, semi: 3600 + 32 * 60 + 10, tri_xl: 11 * 3600 + 4 * 60 + 59 };
+
+/** Séances fictives faites cette semaine-là (lundi et mardi), comme sur la maquette. */
+export const SEANCES_FAITES_FICTIVES = ["2027-01-11|00000000-0000-0000-0000-000000000101", "2027-01-12|00000000-0000-0000-0000-000000000102"];

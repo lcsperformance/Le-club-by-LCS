@@ -44,6 +44,8 @@ const ECRANS = [
   "/apercu-membre/seance",
   "/apercu-membre/seance-verrouillee",
   "/apercu-membre/seance-renfo",
+  "/apercu-membre/seance-faite",
+  "/apercu-membre/seance-a-venir",
   "/bienvenue",
 ];
 

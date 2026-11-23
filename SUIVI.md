@@ -14,7 +14,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 - Faits :
   - `/accueil` : salutation, phase, zones, carte « Bloc en cours » ;
   - `/semaine` : dates, phase, niveau et profil, décompte, bande des 7 jours, séances du jour (programme) ;
-  - `/seance/[id]` : blocs de la séance avec zone, allure et FC du membre (cadenas sans tests) ;
+  - `/seance/[id]` : blocs de la séance avec zone, allure et FC du membre (cadenas sans tests), « Marquer comme faite » et ressenti (RPE, douleur, commentaire) ;
   - `/saison` : objectifs, blocs S/M/L/XL, calendrier, nom de course, J-xx ;
   - `/tests` : 4 tests de départ ;
   - `/zones` : 3 sports, zones personnalisables, niveau et profil ;
@@ -30,7 +30,7 @@ Tout ce qui suit est en ligne sur le site (Stripe en **mode test**). Vérificati
 
 ## Base de données et sécurité
 
-Sécurité par ligne active sur les 10 tables ; les visiteurs non connectés n'ont accès à rien.
+Sécurité par ligne active sur les 11 tables ; les visiteurs non connectés n'ont accès à rien.
 
 | Table | Contenu | Qui lit | Qui écrit |
 |---|---|---|---|
@@ -39,6 +39,7 @@ Sécurité par ligne active sur les 10 tables ; les visiteurs non connectés n'o
 | `zones` | zones personnalisées | idem | le membre, les siennes |
 | `objectifs` | courses de la saison | idem | le membre, les siens |
 | `records` | records personnels (10 km… triathlon XL) | idem | le membre, les siens |
+| `ressentis` | séances faites, RPE, douleur, commentaire (**données de santé**) | idem | le membre, les siens (seulement RPE, douleur, commentaire une fois la ligne créée) |
 | `journal_admin` | trace des actions admin | admin | seulement les fonctions admin |
 | `stripe_evenements` | messages Stripe traités | serveur | serveur |
 | `seances`, `blocs_seance`, `programme` | programme d'entraînement (pas de donnée personnelle) | tout membre connecté | serveur seulement |
@@ -48,7 +49,7 @@ Preuves : `tests/rls.test.ts` et `tests/securite-tests-zones.test.ts`.
 
 Points d'attention :
 - Le coach lit la fiche entière des membres, y compris l'e-mail et les identifiants Stripe : prévoir une vue limitée pour l'espace coach.
-- Les données de santé (RPE, douleur, commentaires) n'existent pas encore : table dédiée, lisible par le membre, et par le coach et l'admin en lecture seule, jamais par les autres membres ; à ajouter à la preuve de sécurité.
+- Données de santé (RPE, douleur, commentaires) : table `ressentis` faite, lisible par le membre, le coach et l'admin (lecture seule), jamais par les autres membres ; prouvé par les tests de sécurité.
 
 ## Ce qui manque (demandes 1 à 9)
 
@@ -64,7 +65,7 @@ Points d'attention :
    - Canaux (annonces en lecture seule, général, présentations, un par bloc, nutrition-matos, courses), messages en temps réel.
    - Boîte à questions sans votes, FAQ en visio, agenda.
    - Tables, temps réel et règles de sécurité à créer.
-6. **RPE et douleur** : écran Séance et table de santé protégée à faire.
+6. **RPE et douleur** : fait (23/11) : « Marquer comme faite » et ressenti dans l'écran Séance, table de santé protégée.
    - Tables du programme et vue Semaine faites (23/11), avec une semaine de démonstration par niveau (fil rouge, semaine 1).
    - **Reste bloquant : les vrais plans de Martin** (fil rouge et blocs S/M/L/XL, par niveau et profil), et un moyen pour lui de les saisir.
 7. **Ressources** : à faire.

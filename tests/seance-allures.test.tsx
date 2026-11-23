@@ -3,7 +3,11 @@
  * à partir des tests du membre (pourcentages de config/zones.json).
  */
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+
+// Les actions serveur (enregistrement du ressenti) ne servent pas ici.
+vi.mock("@/app/(membre)/seance/actions", () => ({ marquerSeance: vi.fn(), enregistrerRessenti: vi.fn() }));
+
 import { EcranSeance } from "@/app/(membre)/seance/[id]/EcranSeance";
 import { cibleDuBloc, type Seance } from "@/lib/programme";
 

@@ -4,15 +4,29 @@ import { IconeSport } from "@/components/IconeSport";
 import { Carte, PastilleZone } from "@/components/ui";
 import type { Bornes } from "@/lib/config-zones";
 import { cibleDuBloc, formatDuree, NOMS_SPORTS, type Seance } from "@/lib/programme";
+import type { Ressenti } from "@/lib/ressenti";
+import { libelleJour } from "@/lib/semaine";
 import type { Tests } from "@/lib/zones";
+import { SuiviSeance } from "./SuiviSeance";
 import styles from "./seance.module.css";
 
 /**
  * Séance ouverte (maquette) : sport, titre, durée, puis chaque bloc avec sa zone et l'allure du membre.
  * tests : derniers tests du membre (null : allures verrouillées) ; bornesPerso : ses zones personnalisées.
+ * suivi : jour de la séance et ressenti du membre (« Marquer comme faite », RPE, douleur, commentaire).
  * Le programme reste dans l'app : ni export, ni PDF, ni impression (data-programme).
  */
-export function EcranSeance({ seance, tests, bornesPerso = null }: { seance: Seance; tests: Tests | null; bornesPerso?: Bornes | null }) {
+export function EcranSeance({
+  seance,
+  tests,
+  bornesPerso = null,
+  suivi,
+}: {
+  seance: Seance;
+  tests: Tests | null;
+  bornesPerso?: Bornes | null;
+  suivi?: { jour: string; ressenti: Ressenti | null; interdit: string | null };
+}) {
   const blocs = seance.blocs.map((b) => ({ ...b, cible: cibleDuBloc(seance.sport, b.zone, tests, bornesPerso) }));
   const verrouillee = blocs.some((b) => b.cible.type === "verrouillee");
   return (
@@ -30,7 +44,10 @@ export function EcranSeance({ seance, tests, bornesPerso = null }: { seance: Sea
           <h1 className="titre" style={{ fontSize: 26, lineHeight: 1.1, marginTop: 2 }}>
             {seance.titre}
           </h1>
-          <p className={styles.duree}>{formatDuree(seance.dureeMinutes)}</p>
+          <p className={styles.duree}>
+            {formatDuree(seance.dureeMinutes)}
+            {suivi && ` · ${libelleJour(suivi.jour)}`}
+          </p>
         </div>
       </header>
 
@@ -64,6 +81,7 @@ export function EcranSeance({ seance, tests, bornesPerso = null }: { seance: Sea
           Débloquer mes allures : faire mes tests
         </Link>
       )}
+      {suivi && <SuiviSeance key={suivi.jour} seanceId={seance.id} jour={suivi.jour} ressenti={suivi.ressenti} interdit={suivi.interdit} />}
       <div style={{ height: 12 }} />
     </div>
   );

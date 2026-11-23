@@ -469,3 +469,65 @@ describe("records", () => {
     expect(await enTantQue(A, "delete from records where epreuve = '10km' returning epreuve")).toEqual([{ epreuve: "10km" }]);
   });
 });
+
+describe("ressentis de séance (données de santé)", () => {
+  const SEANCE = "de000000-0000-0000-0000-000000000203";
+
+  beforeAll(async () => {
+    await db.query(
+      `insert into seances (id, sport, titre, duree_minutes) values ($1, 'course', 'Séance retirée plus tard', 30);
+       insert into ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire)
+       values ($2, $1, '2027-01-11', 7, true, 'Genou'), ($3, $1, '2027-01-11', 3, false, null);`
+        .replaceAll("$1", "'de000000-0000-0000-0000-0000000009ff'")
+        .replaceAll("$2", `'${A}'`)
+        .replaceAll("$3", `'${B}'`),
+    );
+  });
+
+  it("le membre marque une séance faite, puis donne son ressenti", async () => {
+    await enTantQue(A, "insert into ressentis (seance_id, date_seance) values ($1, '2027-01-12')", [SEANCE]);
+    const [r] = await enTantQue<{ rpe: number }>(
+      A,
+      "update ressentis set rpe = 6, douleur = false, commentaire = 'Bien' where seance_id = $1 and date_seance = '2027-01-12' returning rpe",
+      [SEANCE],
+    );
+    expect(r.rpe).toBe(6);
+  });
+
+  it("une séance ne se marque qu'une fois par jour", async () => {
+    await expect(enTantQue(A, "insert into ressentis (seance_id, date_seance) values ($1, '2027-01-12')", [SEANCE])).rejects.toThrow(
+      /duplicate key/,
+    );
+  });
+
+  it("le membre ne change que son ressenti : ni la séance, ni la date, ni le membre", async () => {
+    for (const col of ["seance_id = null", "date_seance = '2027-01-01'", `membre_id = '${B}'`]) {
+      await expect(enTantQue(A, `update ressentis set ${col}`), col).rejects.toThrow(/permission denied/);
+    }
+  });
+
+  it("RPE de 1 à 10 et commentaire de 500 caractères au plus", async () => {
+    await expect(enTantQue(A, "update ressentis set rpe = 11")).rejects.toThrow(/check constraint/);
+    await expect(enTantQue(A, `update ressentis set commentaire = '${"x".repeat(501)}'`)).rejects.toThrow(/check constraint/);
+  });
+
+  it("le coach et l'admin lisent les ressentis en lecture seule", async () => {
+    for (const qui of [COACH, ADMIN]) {
+      const rows = await enTantQue<{ membre_id: string }>(qui, "select membre_id from ressentis");
+      expect(rows.map((r) => r.membre_id)).toEqual(expect.arrayContaining([A, B]));
+      expect(await enTantQue(qui, "update ressentis set rpe = 1 where membre_id = $1 returning id", [A])).toEqual([]);
+      expect(await enTantQue(qui, "delete from ressentis where membre_id = $1 returning id", [A])).toEqual([]);
+    }
+  });
+
+  it("un autre membre et un visiteur ne voient rien", async () => {
+    expect(await enTantQue(B, "select * from ressentis where membre_id = $1", [A])).toEqual([]);
+    await expect(enTantQue(null, "select * from ressentis")).rejects.toThrow(/permission denied/);
+  });
+
+  it("si une séance est retirée du programme, le ressenti reste dans l'historique du membre", async () => {
+    await db.query("delete from seances where id = 'de000000-0000-0000-0000-0000000009ff'");
+    const rows = await enTantQue<{ seance_id: string | null; rpe: number }>(A, "select seance_id, rpe from ressentis where rpe = 7");
+    expect(rows).toEqual([{ seance_id: null, rpe: 7 }]);
+  });
+});

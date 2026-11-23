@@ -200,3 +200,15 @@
 .verrouTexte {
   flex: 1;
 }
+
+/* Séance marquée faite (maquette) : rond vert accent avec une coche. */
+.coche {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+}

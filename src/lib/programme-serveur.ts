@@ -56,3 +56,16 @@ export async function lireSeanceProgramme(id: string): Promise<Seance | null> {
   if (error) console.error("Lecture de la séance impossible", error.code, error.message);
   return lireSeance(data);
 }
+
+/** Séances marquées faites par le membre entre ces deux jours, sous la forme « AAAA-MM-JJ|id de séance ». */
+export async function lireSeancesFaites(membreId: string, du: string, au: string): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("ressentis")
+    .select("seance_id, date_seance")
+    .eq("membre_id", membreId)
+    .gte("date_seance", du)
+    .lte("date_seance", au);
+  if (error) console.error("Lecture des séances faites impossible", error.code, error.message);
+  return (data ?? []).filter((r) => typeof r.seance_id === "string").map((r) => `${r.date_seance}|${r.seance_id}`);
+}

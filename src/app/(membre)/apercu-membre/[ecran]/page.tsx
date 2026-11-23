@@ -22,6 +22,7 @@ import {
   RECORDS_FICTIFS,
   SEANCE_COURSE_FICTIVE,
   SEANCE_RENFO_FICTIVE,
+  SEANCES_FAITES_FICTIVES,
   SEMAINE_FICTIVE,
   TEST_FICTIF,
   UTILISATEUR_FICTIF,
@@ -125,12 +126,29 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           aujourdhui={AUJOURDHUI_FICTIF}
           programme={{ semaine: { phase: "M", semaine: 5 }, seances: ecran === "semaine-a-venir" ? [] : SEMAINE_FICTIVE }}
           testsFaits={ecran !== "semaine-tests-a-faire"}
+          faites={SEANCES_FAITES_FICTIVES}
         />
       );
     case "semaine-sans-objectif":
       return <EcranSemaine utilisateur={UTILISATEUR_FICTIF} objectifs={[]} aujourdhui={AUJOURDHUI_FICTIF} programme={null} testsFaits={false} />;
     case "seance":
-      return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={TEST_FICTIF} />;
+      return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={TEST_FICTIF} suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: null, interdit: null }} />;
+    case "seance-faite":
+      return (
+        <EcranSeance
+          seance={SEANCE_COURSE_FICTIVE}
+          tests={TEST_FICTIF}
+          suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, douleur: true, commentaire: "Genou droit un peu raide sur la fin." }, interdit: null }}
+        />
+      );
+    case "seance-a-venir":
+      return (
+        <EcranSeance
+          seance={SEANCE_RENFO_FICTIVE}
+          tests={null}
+          suivi={{ jour: "2027-01-14", ressenti: null, interdit: "Tu pourras marquer cette séance le jour J." }}
+        />
+      );
     case "seance-verrouillee":
       return <EcranSeance seance={SEANCE_COURSE_FICTIVE} tests={null} />;
     case "seance-renfo":
