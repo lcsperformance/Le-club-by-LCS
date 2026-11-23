@@ -43,7 +43,7 @@ Sécurité par ligne active sur **les 22 tables** ; un visiteur non connecté n'
 | `ressources` | catalogue | tout membre connecté ; lien, fichier et miniature seulement si débloqué | admin |
 | `suivi_ressources` | favoris, vu, téléchargé | le membre, le sien | le membre (contenus débloqués) |
 | `commentaires_ressources` | commentaires sous les vidéos | membres ayant débloqué la vidéo | le membre, les siens ; l'admin supprime (journal) |
-| `canaux` | 7 canaux du Club | tout membre connecté | personne (pas de canal privé possible) |
+| `canaux` | 9 canaux du Club (dont bloc-s, bloc-m, bloc-l, bloc-xl) | tout membre connecté | personne (pas de canal privé possible) |
 | `messages_club` | messages des canaux (temps réel) | tout membre connecté | le membre en son nom (annonces : admin et coach) ; supprime les siens, l'admin tous (journal) |
 | `lectures_canaux` | non-lus | le membre, les siennes | seulement `marquer_canal_lu()` |
 | `questions_faq` | boîte à questions (sans votes) | tout membre connecté | le membre en son nom ; l'admin traite ou supprime |
@@ -72,7 +72,7 @@ Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FA
    - produits, prix, liens de paiement, portail et webhook en mode réel ; variables Vercel ; un vrai paiement puis un remboursement ;
    - aligner la version des messages du webhook (2022 côté Stripe, 2025 dans le code).
 6. **Saisie du programme par Martin** : aucun écran pour l'instant (la démo est écrite par migration) ; à prévoir dans l'admin, ou par import d'un tableur.
-7. **Canaux bloc-s et bloc-xl** : seuls bloc-m et bloc-l existent (à confirmer).
+7. ~~Canaux bloc-s et bloc-xl~~ : ajoutés le 23/11.
 
 ### Contenus à fournir
 8. **Programme** : les vrais plans de Martin (fil rouge et blocs S/M/L/XL, par niveau et profil) ; toutes les séances actuelles sont des démos (`de000000-…`).

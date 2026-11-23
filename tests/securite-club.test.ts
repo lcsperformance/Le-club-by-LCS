@@ -36,9 +36,9 @@ afterAll(async () => {
 });
 
 describe("canaux", () => {
-  it("les 7 canaux, annonces en lecture seule", async () => {
+  it("les 9 canaux (blocs S, M, L, XL), annonces en lecture seule", async () => {
     const canaux = await en<{ cle: string; lecture_seule: boolean }>(ALICE, "select cle, lecture_seule from canaux order by ordre");
-    expect(canaux.map((c) => c.cle)).toEqual(["annonces", "general", "presentations", "bloc-m", "bloc-l", "nutrition-matos", "courses"]);
+    expect(canaux.map((c) => c.cle)).toEqual(["annonces", "general", "presentations", "bloc-s", "bloc-m", "bloc-l", "bloc-xl", "nutrition-matos", "courses"]);
     expect(canaux.filter((c) => c.lecture_seule).map((c) => c.cle)).toEqual(["annonces"]);
   });
 
