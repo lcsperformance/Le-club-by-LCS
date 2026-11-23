@@ -54,10 +54,11 @@ describe("affichage", () => {
     expect(libelleRole("membre")).toBeNull();
   });
 
-  it("« Mon bloc » : bloc-m ou bloc-l selon le bloc en cours", () => {
+  it("« Mon bloc » : bloc-s, bloc-m, bloc-l ou bloc-xl selon le bloc en cours", () => {
+    expect(canalDuBloc("S")).toBe("bloc-s");
     expect(canalDuBloc("M")).toBe("bloc-m");
     expect(canalDuBloc("L")).toBe("bloc-l");
-    expect(canalDuBloc("S")).toBeNull();
+    expect(canalDuBloc("XL")).toBe("bloc-xl");
     expect(canalDuBloc(null)).toBeNull();
   });
 

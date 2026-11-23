@@ -20,10 +20,10 @@ async function ouvrir(ecran: string): Promise<Page> {
 }
 
 describe("Le Club : canaux", () => {
-  it("les 7 canaux, annonces en lecture seule, badges de non-lus et « Mon bloc »", async () => {
+  it("les 9 canaux, annonces en lecture seule, badges de non-lus et « Mon bloc »", async () => {
     const page = await ouvrir("club");
     const canaux = page.getByRole("listitem");
-    expect(await canaux.count()).toBe(7);
+    expect(await canaux.count()).toBe(9);
     const annonces = page.getByRole("link", { name: /annonces/ });
     expect(await annonces.getAttribute("href")).toBe("/club/annonces");
     expect(await annonces.getByRole("img", { name: "Lecture seule" }).count()).toBe(1);

@@ -39,8 +39,8 @@ export const badgeNonLus = (n: number) => (n <= 0 ? null : n > 99 ? "99+" : Stri
 /** Étiquette à côté du prénom : « Coach », « Équipe du Club », ou rien pour un membre. */
 export const libelleRole = (role: string) => (role === "coach" ? "Coach" : role === "admin" ? "Équipe du Club" : null);
 
-/** Canal du bloc en cours (« Mon bloc ») : bloc-m ou bloc-l, sinon aucun. */
-export const canalDuBloc = (bloc: Bloc | null | undefined) => (bloc === "M" ? "bloc-m" : bloc === "L" ? "bloc-l" : null);
+/** Canal du bloc en cours (« Mon bloc ») : bloc-s, bloc-m, bloc-l ou bloc-xl, sinon aucun (fil rouge). */
+export const canalDuBloc = (bloc: Bloc | null | undefined) => (bloc ? `bloc-${bloc.toLowerCase()}` : null);
 
 export const initialeAuteur = (auteur: string) => (auteur.trim().charAt(0) || "?").toLocaleUpperCase("fr-FR");
 

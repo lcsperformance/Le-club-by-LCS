@@ -266,10 +266,12 @@ export const CANAUX_FICTIFS: Canal[] = [
   { cle: "annonces", nom: "annonces", description: "Rappels, nouveaux contenus, événements", lecture_seule: true, ordre: 1 },
   { cle: "general", nom: "général", description: "La discussion libre du Club", lecture_seule: false, ordre: 2 },
   { cle: "presentations", nom: "présentations", description: "Dis-nous qui tu es et ce que tu prépares", lecture_seule: false, ordre: 3 },
-  { cle: "bloc-m", nom: "bloc-m", description: "Préparation triathlon M", lecture_seule: false, ordre: 4 },
-  { cle: "bloc-l", nom: "bloc-l", description: "Préparation triathlon L", lecture_seule: false, ordre: 5 },
-  { cle: "nutrition-matos", nom: "nutrition-matos", description: "Nutrition, matériel, bons plans", lecture_seule: false, ordre: 6 },
-  { cle: "courses", nom: "courses", description: "Calendrier, résultats, retours de course", lecture_seule: false, ordre: 7 },
+  { cle: "bloc-s", nom: "bloc-s", description: "Préparation triathlon S", lecture_seule: false, ordre: 4 },
+  { cle: "bloc-m", nom: "bloc-m", description: "Préparation triathlon M", lecture_seule: false, ordre: 5 },
+  { cle: "bloc-l", nom: "bloc-l", description: "Préparation triathlon L", lecture_seule: false, ordre: 6 },
+  { cle: "bloc-xl", nom: "bloc-xl", description: "Préparation triathlon XL", lecture_seule: false, ordre: 7 },
+  { cle: "nutrition-matos", nom: "nutrition-matos", description: "Nutrition, matériel, bons plans", lecture_seule: false, ordre: 8 },
+  { cle: "courses", nom: "courses", description: "Calendrier, résultats, retours de course", lecture_seule: false, ordre: 9 },
 ];
 
 export const NON_LUS_FICTIFS: Record<string, number> = { annonces: 2, general: 3, "bloc-m": 1, courses: 128 };
