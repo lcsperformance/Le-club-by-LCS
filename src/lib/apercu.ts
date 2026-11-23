@@ -7,6 +7,7 @@ import type { PointHistorique } from "@/lib/historique";
 import type { SeancePrevue, Seance } from "@/lib/programme";
 import type { Records } from "@/lib/records";
 import type { CommentaireAdmin, ContenuAdmin } from "@/lib/admin/ressources-serveur";
+import type { Canal, Message } from "@/lib/club";
 import type { Commentaire, Ressource, Suivi, Theme } from "@/lib/ressources";
 import type { Objectif } from "@/lib/saison";
 import { apercuActif } from "@/lib/roles";
@@ -254,3 +255,49 @@ export const COMMENTAIRES_ADMIN_FICTIFS: CommentaireAdmin[] = COMMENTAIRES_FICTI
   texte: c.texte,
   cree_le: c.cree_le,
 }));
+
+/** Canaux du Club, comme dans la base. */
+export const CANAUX_FICTIFS: Canal[] = [
+  { cle: "annonces", nom: "annonces", description: "Rappels, nouveaux contenus, événements", lecture_seule: true, ordre: 1 },
+  { cle: "general", nom: "général", description: "La discussion libre du Club", lecture_seule: false, ordre: 2 },
+  { cle: "presentations", nom: "présentations", description: "Dis-nous qui tu es et ce que tu prépares", lecture_seule: false, ordre: 3 },
+  { cle: "bloc-m", nom: "bloc-m", description: "Préparation triathlon M", lecture_seule: false, ordre: 4 },
+  { cle: "bloc-l", nom: "bloc-l", description: "Préparation triathlon L", lecture_seule: false, ordre: 5 },
+  { cle: "nutrition-matos", nom: "nutrition-matos", description: "Nutrition, matériel, bons plans", lecture_seule: false, ordre: 6 },
+  { cle: "courses", nom: "courses", description: "Calendrier, résultats, retours de course", lecture_seule: false, ordre: 7 },
+];
+
+export const NON_LUS_FICTIFS: Record<string, number> = { annonces: 2, general: 3, "bloc-m": 1, courses: 128 };
+
+const message = (n: number, canal: string, membre_id: string, auteur: string, auteur_role: string, texte: string, cree_le: string): Message => ({
+  id: `00000000-0000-0000-0002-0000000000${String(n).padStart(2, "0")}`,
+  canal,
+  membre_id,
+  auteur,
+  auteur_role,
+  texte,
+  cree_le,
+});
+
+const HUGO = "00000000-0000-0000-0000-0000000000a2";
+const MARTIN = "00000000-0000-0000-0000-0000000000c0";
+
+/** Fil fictif de # général : hier et aujourd'hui (AUJOURDHUI_FICTIF), un message de Caroline (UTILISATEUR_FICTIF). */
+export const MESSAGES_FICTIFS: Message[] = [
+  message(1, "general", HUGO, "Hugo", "membre", "Quelqu'un fait la sortie longue vélo samedi du côté de Rambouillet ?", "2027-01-10T17:20:00.000Z"),
+  message(2, "general", MARTIN, "Martin", "coach", "Pensez à bien vous hydrater, il va faire froid mais sec.", "2027-01-10T18:02:00.000Z"),
+  message(3, "general", "00000000-0000-0000-0000-000000000000", "Caroline", "membre", "Partante ! Départ 9 h ?", "2027-01-11T07:45:00.000Z"),
+  message(
+    4,
+    "general",
+    HUGO,
+    "Hugo",
+    "membre",
+    "Parfait, 9 h au parking de la gare. Prévoyez des gels et une couche coupe-vent : on annonce du vent de face sur le retour vers la vallée de Chevreuse.",
+    "2027-01-11T08:10:00.000Z",
+  ),
+];
+
+export const ANNONCES_FICTIVES: Message[] = [
+  message(5, "annonces", MARTIN, "Martin", "coach", "Nouvelle vidéo dans Ressources › Nutrition : que manger pendant une sortie longue.", "2027-01-11T06:30:00.000Z"),
+];
