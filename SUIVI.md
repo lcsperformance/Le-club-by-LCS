@@ -11,7 +11,7 @@ Tests : 615 tests automatiques (dont la sécurité de chaque table sur PostgreSQ
 - Webhook Stripe : création du compte, prénom et nom, résiliation, impayé, doublon remboursé, formule.
 
 **Espace membre** (barre d'onglets Accueil, Semaine, Ressources, Club, Avantages)
-- `/accueil` : salutation, phase, zones, carte « Bloc en cours » / « Fil rouge ».
+- `/accueil` : salutation, phase, zones, « Aujourd'hui » (séance du jour), « Bloc en cours » / « Fil rouge », « FAQ en visio », « Nouveau cette semaine ».
 - `/semaine` : semaine du programme (séances du jour, coches des séances faites), décompte, semaines précédentes et suivantes ; `/seance/[id]` : blocs avec zone, allure et FC, « Marquer comme faite », ressenti (RPE, douleur, commentaire).
 - `/saison` : objectifs, blocs S/M/L/XL, calendrier, J-xx.
 - `/tests` (4 tests de départ), `/zones` (3 sports, zones personnalisables), `/progres` (courbes), `/records`.
@@ -62,13 +62,8 @@ Points d'attention :
 
 ## Ce qui manque
 
-### Écarts avec la maquette (à coder, sans attendre Martin)
-1. **Accueil** : il affiche encore « Ton programme arrive bientôt ». Il manque les cartes de la maquette, maintenant possibles :
-   - « Aujourd'hui » : la séance du jour (programme) ;
-   - « FAQ en visio » : la prochaine FAQ (agenda) et « Poser une question » ;
-   - « Nouveau cette semaine » : le dernier contenu débloqué (Ressources).
-2. **Canal du Club** : le bandeau dit encore que la boîte à questions arrive « (bientôt) » ; il faut un lien vers `/club/questions`.
-3. Le composant `EcranBientot` n'est plus utilisé : à retirer.
+### Écarts avec la maquette
+Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FAQ en visio » et « Nouveau cette semaine » (23/11), le bandeau des canaux mène à la boîte à questions. Restent les contenus listés plus bas (vidéos des tests, plans, ressources).
 
 ### Demandes encore ouvertes
 4. **Application installable (PWA)** : manifeste, icônes, écran de démarrage, fonctionnement hors ligne minimal.
@@ -87,7 +82,6 @@ Points d'attention :
 
 ## Ordre conseillé
 
-1. Accueil complet et petits textes dépassés (1 à 3) : rapide, sans contenu de Martin.
-2. Application installable (4).
-3. Saisie du programme par Martin (6), puis ses plans et ses contenus (8 à 11).
-4. Stripe en mode réel vers la mi-décembre (5).
+1. Application installable (4).
+2. Saisie du programme par Martin (6), puis ses plans et ses contenus (8 à 11).
+3. Stripe en mode réel vers la mi-décembre (5).
