@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { AccueilAdmin } from "@/app/(espace)/admin/AccueilAdmin";
 import { EcranAgendaAdmin } from "@/app/(espace)/admin/agenda/EcranAgendaAdmin";
 import { FormulaireEvenement } from "@/app/(espace)/admin/agenda/FormulaireEvenement";
+import { GestionPartenaires } from "@/app/(espace)/admin/partenaires/GestionPartenaires";
 import { EcranQuestionsAdmin } from "@/app/(espace)/admin/questions/EcranQuestionsAdmin";
 import { EcranMembres } from "@/app/(espace)/admin/membres/EcranMembres";
 import { EcranAdminRessources } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
@@ -20,6 +21,7 @@ import {
   JOURNAL_FICTIF,
   MEMBRES_FICTIFS,
   OBJECTIFS_EN_COURS_FICTIFS,
+  PARTENAIRES_FICTIFS,
   QUESTIONS_FICTIVES,
   SEANCES_COACH_FICTIVES,
   THEMES_FICTIFS,
@@ -75,6 +77,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
     return <GestionThemes themes={THEMES_FICTIFS} contenusParRubrique={parRubrique} />;
   }
   if (ecran === "admin-ressources-commentaires") return <ModerationCommentaires commentaires={COMMENTAIRES_ADMIN_FICTIFS} />;
+  if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} />;
   if (ecran === "admin-questions") return <EcranQuestionsAdmin questions={QUESTIONS_FICTIVES} />;
   if (ecran === "admin-agenda") return <EcranAgendaAdmin evenements={EVENEMENTS_FICTIFS} maintenant="2027-01-18T10:00:00.000Z" />;
   if (ecran === "admin-agenda-nouveau") return <FormulaireEvenement />;

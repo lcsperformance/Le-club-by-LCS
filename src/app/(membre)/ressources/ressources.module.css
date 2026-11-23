@@ -505,3 +505,34 @@
 .publier:disabled {
   opacity: 0.6;
 }
+
+/* ===== Calculateur ===== */
+a.calculateur {
+  text-decoration: none;
+}
+
+.cadreCalculateur {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 1px rgba(244, 238, 255, 0.2);
+  background: #fff;
+}
+
+.barreSite {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--cendre);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+
+.calculateurPage {
+  display: block;
+  width: 100%;
+  height: min(620px, 70vh);
+  border: 0;
+  background: #fff;
+}

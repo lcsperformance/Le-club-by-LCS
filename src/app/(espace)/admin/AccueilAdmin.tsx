@@ -14,6 +14,7 @@ const LIENS = [
   },
   { href: "/admin/agenda", titre: "Agenda", texte: "FAQ en visio, webinaires et autres événements du Club, à l'heure de Paris." },
   { href: "/admin/questions", titre: "Boîte à questions", texte: "Les questions des membres pour préparer la FAQ en visio (sans votes)." },
+  { href: "/admin/partenaires", titre: "Partenaires", texte: "Les remises et codes promo de l'onglet Avantages." },
   { href: "/accueil", titre: "Voir l'espace membre", texte: "Parcourir l'app comme un athlète, avec la barre d'onglets." },
   { href: "/coach", titre: "Voir l'espace coach", texte: "L'historique des athlètes, en lecture seule." },
   { href: "/admin/composants", titre: "Vitrine des composants", texte: "Cartes, boutons, champs et pastilles de zone." },

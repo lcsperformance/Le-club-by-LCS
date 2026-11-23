@@ -10,6 +10,7 @@ import type { CommentaireAdmin, ContenuAdmin } from "@/lib/admin/ressources-serv
 import type { Evenement } from "@/lib/agenda";
 import type { AthleteCoach, SeanceCoach } from "@/lib/coach";
 import type { Canal, Message } from "@/lib/club";
+import type { Partenaire } from "@/lib/partenaires";
 import type { Question } from "@/lib/questions";
 import type { Commentaire, Ressource, Suivi, Theme } from "@/lib/ressources";
 import type { Objectif } from "@/lib/saison";
@@ -403,4 +404,11 @@ export const SEANCES_COACH_FICTIVES: SeanceCoach[] = [
     commentaire: "Gêne au mollet droit sur les lignes droites, qui a disparu après l'étirement mais qui revient quand j'accélère.",
   },
   { date: "2026-12-28", sport: null, titre: null, rpe: 3, douleur: false, commentaire: null },
+];
+
+/** Partenaires fictifs : les deux exemples, un avec lien, un masqué (vu seulement par l'admin). */
+export const PARTENAIRES_FICTIFS: Partenaire[] = [
+  { id: "00000000-0000-0000-0006-000000000001", nom: "Pyrène", remise: 15, description: "sur les produits Pyrène", code: "LECLUB15", lien: "https://pyrene.exemple.fr", ordre: 1, affiche: true, exemple: true },
+  { id: "00000000-0000-0000-0006-000000000002", nom: "Onatera", remise: 10, description: "sur les produits Onatera", code: "LECLUB10", lien: null, ordre: 2, affiche: true, exemple: true },
+  { id: "00000000-0000-0000-0006-000000000003", nom: "Atelier Vélo du Sud-Ouest", remise: 20, description: "sur l'entretien et le réglage de ton vélo de route", code: "CLUB-VELO-2027", lien: null, ordre: 3, affiche: false, exemple: false },
 ];

@@ -43,7 +43,7 @@ describe("écran Profil : niveau et profil", () => {
 });
 
 describe("écran Profil : raccourcis", () => {
-  it("propose, dans l'ordre de la maquette, Ma saison, Mes records, Mes progrès, Mes zones, Refaire mes tests", async () => {
+  it("propose, dans l'ordre de la maquette, Ma saison, Mes records, Mes progrès, le Calculateur, Mes zones, Refaire mes tests", async () => {
     const liens = await page.$$eval("main a[href]", (as) =>
       as.map((a) => [a.textContent?.trim(), a.getAttribute("href")]).filter(([, h]) => h !== "/accueil"),
     );
@@ -51,6 +51,7 @@ describe("écran Profil : raccourcis", () => {
       ["Ma saison", "/saison"],
       ["Mes records", "/records"],
       ["Mes progrès", "/progres"],
+      ["Calculateur LCS", "/ressources/calculateur"],
       ["Mes zones", "/zones"],
       ["Refaire mes tests", "/tests"],
     ]);

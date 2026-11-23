@@ -5,10 +5,12 @@ import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
+import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
 import { EcranCanal } from "@/app/(membre)/club/[canal]/EcranCanal";
 import { EcranAgenda } from "@/app/(membre)/club/agenda/EcranAgenda";
 import { EcranQuestions } from "@/app/(membre)/club/questions/EcranQuestions";
 import { EcranClub } from "@/app/(membre)/club/EcranClub";
+import { EcranCalculateur } from "@/app/(membre)/ressources/calculateur/EcranCalculateur";
 import { EcranContenu } from "@/app/(membre)/ressources/contenu/[id]/EcranContenu";
 import { EcranRessources } from "@/app/(membre)/ressources/EcranRessources";
 import { EcranTheme } from "@/app/(membre)/ressources/EcranTheme";
@@ -32,6 +34,7 @@ import {
   MESSAGES_FICTIFS,
   NON_LUS_FICTIFS,
   OBJECTIFS_FICTIFS,
+  PARTENAIRES_FICTIFS,
   QUESTIONS_FICTIVES,
   RECORDS_FICTIFS,
   RESSOURCES_FICTIVES,
@@ -225,6 +228,14 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           direct={false}
         />
       );
+    case "avantages":
+      return <EcranAvantages utilisateur={UTILISATEUR_FICTIF} partenaires={PARTENAIRES_FICTIFS.filter((p) => p.affiche)} />;
+    case "avantages-vide":
+      return <EcranAvantages utilisateur={UTILISATEUR_FICTIF} partenaires={[]} />;
+    case "calculateur":
+      return <EcranCalculateur integrable adresseCadre="about:blank" />;
+    case "calculateur-ouvrir":
+      return <EcranCalculateur integrable={false} />;
     case "club-questions":
       return <EcranQuestions utilisateur={UTILISATEUR_FICTIF} prochaine={EVENEMENTS_FICTIFS[0]} questions={QUESTIONS_FICTIVES} />;
     case "club-questions-vide":

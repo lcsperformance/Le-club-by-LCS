@@ -10,6 +10,7 @@ import type { Utilisateur } from "@/lib/auth";
 const LIENS = [
   { href: "/records", libelle: "Mes records" },
   { href: "/progres", libelle: "Mes progrès" },
+  { href: "/ressources/calculateur", libelle: "Calculateur LCS" },
   { href: "/zones", libelle: "Mes zones" },
   { href: "/tests", libelle: "Refaire mes tests" },
 ];
