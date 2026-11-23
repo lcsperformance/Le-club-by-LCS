@@ -27,7 +27,8 @@ beforeAll(async () => {
     `insert into public.tests (membre_id, date_test, ftp) values ($1, '2026-11-01', 250), ($2, '2026-11-02', 300);
      insert into public.zones (membre_id, sport, bornes) values ($1, 'velo', '[45, 57, 76, 91, 106, 120]'),
                                                               ($2, 'velo', '[45, 55, 76, 91, 106, 120]');
-     insert into public.objectifs (membre_id, bloc, date_objectif) values ($1, 'M', '2027-06-14'), ($2, 'XL', '2027-09-05');`
+     insert into public.objectifs (membre_id, bloc, date_objectif) values ($1, 'M', '2027-06-14'), ($2, 'XL', '2027-09-05');
+     insert into public.records (membre_id, epreuve, duree_secondes) values ($1, '10km', 2492), ($2, 'semi', 5530);`
       .replaceAll("$1", `'${A}'`).replaceAll("$2", `'${B}'`),
   );
 });
@@ -70,7 +71,7 @@ describe("fiche membre", () => {
   });
 });
 
-describe.each(["tests", "zones", "objectifs"])("table %s", (table) => {
+describe.each(["tests", "zones", "objectifs", "records"])("table %s", (table) => {
   it("chaque membre ne voit que ses propres lignes", async () => {
     const rowsA = await enTantQue<{ membre_id: string }>(A, `select membre_id from ${table}`);
     const rowsB = await enTantQue<{ membre_id: string }>(B, `select membre_id from ${table}`);
@@ -445,5 +446,88 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
       "select count(*)::int as n from seances s where not exists (select 1 from blocs_seance b where b.seance_id = s.id)",
     );
     expect(sansBloc.n).toBe(0);
+  });
+});
+
+describe("records", () => {
+  it("le coach et l'admin lisent les records des athlètes, sans pouvoir les modifier", async () => {
+    for (const qui of [COACH, ADMIN]) {
+      const rows = await enTantQue<{ membre_id: string }>(qui, "select membre_id from records order by membre_id");
+      expect(rows.map((r) => r.membre_id)).toEqual(expect.arrayContaining([A, B]));
+      expect(await enTantQue(qui, "update records set duree_secondes = 600 where membre_id = $1 returning id", [A])).toEqual([]);
+      expect(await enTantQue(qui, "delete from records where membre_id = $1 returning id", [A])).toEqual([]);
+    }
+  });
+
+  it("un seul record par membre et par épreuve, et une durée plausible", async () => {
+    await expect(enTantQue(A, "insert into records (epreuve, duree_secondes) values ('10km', 2400)")).rejects.toThrow(/duplicate key/);
+    await expect(enTantQue(A, "insert into records (epreuve, duree_secondes) values ('marathon', 10)")).rejects.toThrow(/check constraint/);
+    await expect(enTantQue(A, "insert into records (epreuve, duree_secondes) values ('100km', 30000)")).rejects.toThrow(/invalid input/);
+  });
+
+  it("le membre efface un record (tout est facultatif)", async () => {
+    expect(await enTantQue(A, "delete from records where epreuve = '10km' returning epreuve")).toEqual([{ epreuve: "10km" }]);
+  });
+});
+
+describe("ressentis de séance (données de santé)", () => {
+  const SEANCE = "de000000-0000-0000-0000-000000000203";
+
+  beforeAll(async () => {
+    await db.query(
+      `insert into seances (id, sport, titre, duree_minutes) values ($1, 'course', 'Séance retirée plus tard', 30);
+       insert into ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire)
+       values ($2, $1, '2027-01-11', 7, true, 'Genou'), ($3, $1, '2027-01-11', 3, false, null);`
+        .replaceAll("$1", "'de000000-0000-0000-0000-0000000009ff'")
+        .replaceAll("$2", `'${A}'`)
+        .replaceAll("$3", `'${B}'`),
+    );
+  });
+
+  it("le membre marque une séance faite, puis donne son ressenti", async () => {
+    await enTantQue(A, "insert into ressentis (seance_id, date_seance) values ($1, '2027-01-12')", [SEANCE]);
+    const [r] = await enTantQue<{ rpe: number }>(
+      A,
+      "update ressentis set rpe = 6, douleur = false, commentaire = 'Bien' where seance_id = $1 and date_seance = '2027-01-12' returning rpe",
+      [SEANCE],
+    );
+    expect(r.rpe).toBe(6);
+  });
+
+  it("une séance ne se marque qu'une fois par jour", async () => {
+    await expect(enTantQue(A, "insert into ressentis (seance_id, date_seance) values ($1, '2027-01-12')", [SEANCE])).rejects.toThrow(
+      /duplicate key/,
+    );
+  });
+
+  it("le membre ne change que son ressenti : ni la séance, ni la date, ni le membre", async () => {
+    for (const col of ["seance_id = null", "date_seance = '2027-01-01'", `membre_id = '${B}'`]) {
+      await expect(enTantQue(A, `update ressentis set ${col}`), col).rejects.toThrow(/permission denied/);
+    }
+  });
+
+  it("RPE de 1 à 10 et commentaire de 500 caractères au plus", async () => {
+    await expect(enTantQue(A, "update ressentis set rpe = 11")).rejects.toThrow(/check constraint/);
+    await expect(enTantQue(A, `update ressentis set commentaire = '${"x".repeat(501)}'`)).rejects.toThrow(/check constraint/);
+  });
+
+  it("le coach et l'admin lisent les ressentis en lecture seule", async () => {
+    for (const qui of [COACH, ADMIN]) {
+      const rows = await enTantQue<{ membre_id: string }>(qui, "select membre_id from ressentis");
+      expect(rows.map((r) => r.membre_id)).toEqual(expect.arrayContaining([A, B]));
+      expect(await enTantQue(qui, "update ressentis set rpe = 1 where membre_id = $1 returning id", [A])).toEqual([]);
+      expect(await enTantQue(qui, "delete from ressentis where membre_id = $1 returning id", [A])).toEqual([]);
+    }
+  });
+
+  it("un autre membre et un visiteur ne voient rien", async () => {
+    expect(await enTantQue(B, "select * from ressentis where membre_id = $1", [A])).toEqual([]);
+    await expect(enTantQue(null, "select * from ressentis")).rejects.toThrow(/permission denied/);
+  });
+
+  it("si une séance est retirée du programme, le ressenti reste dans l'historique du membre", async () => {
+    await db.query("delete from seances where id = 'de000000-0000-0000-0000-0000000009ff'");
+    const rows = await enTantQue<{ seance_id: string | null; rpe: number }>(A, "select seance_id, rpe from ressentis where rpe = 7");
+    expect(rows).toEqual([{ seance_id: null, rpe: 7 }]);
   });
 });

@@ -1,6 +1,7 @@
 /**
- * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones et les objectifs
- * de saison d'un autre membre.
+ * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones, les objectifs
+ * de saison, les records et les ressentis de séance (RPE, douleur, commentaire : données de santé)
+ * d'un autre membre.
  *
  * Alice (A) essaie toutes les manières d'atteindre les données de Bruno (B) avec les mêmes
  * droits qu'un vrai membre connecté (rôle « authenticated » de Supabase, sécurité par ligne active).
@@ -13,6 +14,9 @@ import { creerBaseDeTest, type BaseDeTest } from "./aide/base-de-test";
 const ALICE = "00000000-0000-0000-0000-0000000000a1";
 const BRUNO = "00000000-0000-0000-0000-0000000000b2";
 const OBJECTIF_BRUNO = "00000000-0000-0000-0000-0000000000f1";
+const RECORD_BRUNO = "00000000-0000-0000-0000-0000000000e1";
+const RESSENTI_BRUNO = "00000000-0000-0000-0000-0000000000d1";
+const SEANCE = "de000000-0000-0000-0000-000000000201";
 
 let base: BaseDeTest;
 let empreinteBruno: string;
@@ -25,7 +29,9 @@ async function donneesDeBruno(): Promise<string> {
     `select json_build_object(
        'tests', (select json_agg(t order by t.date_test) from tests t where t.membre_id = $1),
        'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1),
-       'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1)
+       'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1),
+       'records', (select json_agg(r order by r.epreuve) from records r where r.membre_id = $1),
+       'ressentis', (select json_agg(r order by r.date_seance) from ressentis r where r.membre_id = $1)
      ) as d`,
     [BRUNO],
   );
@@ -58,11 +64,22 @@ beforeAll(async () => {
      values ($2, $1, 'M', '2027-05-30'), (default, $1, 'S', '2027-09-12')`,
     [BRUNO, OBJECTIF_BRUNO],
   );
+  await base.db.query(
+    `insert into records (id, membre_id, epreuve, duree_secondes) values ($2, $1, '10km', 2492), (default, $1, 'tri_m', 9000)`,
+    [BRUNO, RECORD_BRUNO],
+  );
+  await base.db.query(
+    `insert into ressentis (id, membre_id, seance_id, date_seance, rpe, douleur, commentaire)
+     values ($2, $1, $3, '2027-01-11', 8, true, 'Douleur au genou droit'), (default, $1, $3, '2027-01-12', 4, false, null)`,
+    [BRUNO, RESSENTI_BRUNO, SEANCE],
+  );
   // Données d'Alice : une série de tests et une zone.
   await base.db.query(
     `insert into tests (membre_id, date_test, ftp) values ($1, '2026-11-02', 250);
      insert into zones (membre_id, sport, bornes) values ($1, 'natation', '[80, 87, 93, 97, 102, 108]');
-     insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');`.replaceAll(
+     insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');
+     insert into records (membre_id, epreuve, duree_secondes) values ($1, 'semi', 5530);
+     insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 6);`.replaceAll(
       "$1",
       `'${ALICE}'`,
     ),
@@ -106,6 +123,24 @@ const TABLES = [
                  values ('${OBJECTIF_BRUNO}', $1, 'XL', '2030-01-01')
                  on conflict (id) do update set date_objectif = excluded.date_objectif`,
   },
+  {
+    table: "records",
+    id: () => RECORD_BRUNO,
+    modification: "duree_secondes = 600",
+    insertion: `insert into records (membre_id, epreuve, duree_secondes) values ($1, 'marathon', 600)`,
+    ecrasement: `insert into records (membre_id, epreuve, duree_secondes) values ($1, '10km', 600)
+                 on conflict (membre_id, epreuve) do update set duree_secondes = excluded.duree_secondes`,
+  },
+  {
+    table: "ressentis",
+    id: () => RESSENTI_BRUNO,
+    modification: "rpe = 1, douleur = false, commentaire = 'Pirate'",
+    insertion: `insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-13', 1)`,
+    ecrasement: `insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 1)
+                 on conflict (membre_id, seance_id, date_seance) do update set rpe = excluded.rpe`,
+    // Le membre ne peut changer que son ressenti : la colonne membre_id lui est fermée.
+    transfert: /permission denied/,
+  },
 ] as const;
 
 describe.each(TABLES)("table $table : Alice face aux données de Bruno", (cas) => {
@@ -148,7 +183,7 @@ describe.each(TABLES)("table $table : Alice face aux données de Bruno", (cas) =
 
     it("transférer une de ses lignes à Bruno est refusé", async () => {
       await expect(alice(`update ${cas.table} set membre_id = $1 where membre_id = $2`, [BRUNO, ALICE])).rejects.toThrow(
-        /row-level security/,
+        "transfert" in cas ? cas.transfert : /row-level security/,
       );
       await brunoIntact();
     });
@@ -183,6 +218,16 @@ describe("contre-épreuve", () => {
     const tests = await base.enTantQue<{ ftp: number }>(BRUNO, "select ftp from tests order by date_test");
     const zones = await base.enTantQue<{ sport: string }>(BRUNO, "select sport from zones order by sport");
     expect(tests.map((t) => t.ftp)).toEqual([210, 218]);
+    const records = await base.enTantQue<{ duree_secondes: number }>(BRUNO, "select duree_secondes from records order by epreuve");
+    expect(records.map((r) => r.duree_secondes)).toEqual([2492, 9000]);
+    const ressentis = await base.enTantQue<{ rpe: number; commentaire: string | null }>(
+      BRUNO,
+      "select rpe, commentaire from ressentis order by date_seance",
+    );
+    expect(ressentis).toEqual([
+      { rpe: 8, commentaire: "Douleur au genou droit" },
+      { rpe: 4, commentaire: null },
+    ]);
     expect(zones.map((z) => z.sport).sort()).toEqual(["course", "velo"]);
   });
 

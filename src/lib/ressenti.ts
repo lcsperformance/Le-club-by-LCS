@@ -1,0 +1,35 @@
+/**
+ * Ressenti de séance (maquette) : « Marquer comme faite », puis RPE (1 à 10), douleur ou gêne, commentaire.
+ * Ce sont des DONNÉES DE SANTÉ (table `ressentis`) : jamais montrées aux autres membres.
+ */
+import { ajouterJours, estDateIso } from "./saison";
+
+export type Ressenti = { rpe: number | null; douleur: boolean; commentaire: string | null };
+
+export const LONGUEUR_MAX_COMMENTAIRE = 500;
+/** On peut noter une séance du jour ou des 14 jours passés, jamais une séance à venir. */
+export const JOURS_RATTRAPAGE = 14;
+
+/** Jour de la séance demandé dans l'adresse (?jour=AAAA-MM-JJ), sinon aujourd'hui. */
+export function jourDeLaSeance(valeur: unknown, aujourdhui: string): string {
+  return estDateIso(valeur) ? valeur : aujourdhui;
+}
+
+/** Peut-on marquer la séance de ce jour comme faite (ou donner son ressenti) ? */
+export function erreurJour(jour: unknown, aujourdhui: string): string | null {
+  if (!estDateIso(jour)) return "Cette séance est introuvable.";
+  if (jour > aujourdhui) return "Tu pourras marquer cette séance le jour J.";
+  if (jour < ajouterJours(aujourdhui, -JOURS_RATTRAPAGE)) return `On ne peut plus noter une séance de plus de ${JOURS_RATTRAPAGE} jours.`;
+  return null;
+}
+
+/** Lit le ressenti saisi : RPE obligatoire (1 à 10), douleur oui ou non, commentaire facultatif. */
+export function lireRessentiSaisi(saisie: unknown): { ressenti: Ressenti & { rpe: number } } | { erreur: string } {
+  const s = saisie && typeof saisie === "object" ? (saisie as Record<string, unknown>) : {};
+  const rpe = s.rpe;
+  if (typeof rpe !== "number" || !Number.isInteger(rpe) || rpe < 1 || rpe > 10) return { erreur: "Choisis ton RPE, de 1 à 10." };
+  if (typeof s.douleur !== "boolean") return { erreur: "Indique si tu as ressenti une douleur ou une gêne." };
+  const texte = typeof s.commentaire === "string" ? s.commentaire.trim() : "";
+  if (texte.length > LONGUEUR_MAX_COMMENTAIRE) return { erreur: `Ton commentaire dépasse ${LONGUEUR_MAX_COMMENTAIRE} caractères.` };
+  return { ressenti: { rpe, douleur: s.douleur, commentaire: texte || null } };
+}

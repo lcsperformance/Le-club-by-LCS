@@ -29,7 +29,8 @@ describe("Ma semaine", () => {
     await page.getByRole("button", { name: /^Vendredi 15 janvier$/ }).click();
     expect(await page.getByText("Jour de repos").isVisible()).toBe(true);
     await page.getByRole("button", { name: /^Mardi/ }).click();
-    expect(await page.getByRole("link", { name: /Course à pied/ }).getAttribute("href")).toMatch(/^\/seance\/[0-9a-f-]{36}$/);
+    expect(await page.getByRole("link", { name: /Course à pied/ }).getAttribute("href")).toMatch(/^\/seance\/[0-9a-f-]{36}\?jour=2027-01-12$/);
+    expect(await page.getByRole("img", { name: "Séance faite" }).count()).toBe(1);
     await page.close();
   });
 
@@ -71,6 +72,40 @@ describe("Séance", () => {
     expect(await page.getByText(/PDF|Télécharger|Imprimer/i).count()).toBe(0);
     await page.emulateMedia({ media: "print" });
     expect(await page.locator("[data-programme]").isVisible()).toBe(false);
+    await page.close();
+  });
+});
+
+describe("Séance : marquer comme faite et ressenti", () => {
+  it("pas encore faite : le bouton, sans le ressenti", async () => {
+    const page = await ouvrir("seance");
+    expect(await page.getByRole("button", { name: "Marquer comme faite" }).getAttribute("aria-pressed")).toBe("false");
+    expect(await page.getByText("Ressenti de la séance").count()).toBe(0);
+    await page.close();
+  });
+
+  it("faite : RPE, douleur et commentaire enregistrés, modifiables", async () => {
+    const page = await ouvrir("seance-faite");
+    expect(await page.getByRole("button", { name: "Séance faite ✓" }).getAttribute("aria-pressed")).toBe("true");
+    expect(await page.getByRole("button", { name: "RPE 7 sur 10" }).getAttribute("aria-pressed")).toBe("true");
+    expect(await page.getByRole("switch", { name: "Douleur ou gêne" }).getAttribute("aria-checked")).toBe("true");
+    expect(await page.getByLabel("Commentaire (facultatif)").inputValue()).toBe("Genou droit un peu raide sur la fin.");
+    expect(await page.getByRole("button", { name: "Ressenti enregistré" }).isVisible()).toBe(true);
+    expect(await page.getByText("Visible seulement par toi et ton coach.").isVisible()).toBe(true);
+
+    await page.getByRole("button", { name: "RPE 4 sur 10" }).click();
+    await page.getByRole("switch", { name: "Douleur ou gêne" }).click();
+    expect(await page.getByRole("button", { name: "RPE 4 sur 10" }).getAttribute("aria-pressed")).toBe("true");
+    expect(await page.getByRole("button", { name: "RPE 7 sur 10" }).getAttribute("aria-pressed")).toBe("false");
+    expect(await page.getByRole("switch", { name: "Douleur ou gêne" }).getAttribute("aria-checked")).toBe("false");
+    expect(await page.getByRole("button", { name: "Enregistrer mon ressenti" }).isVisible()).toBe(true);
+    await page.close();
+  });
+
+  it("séance à venir : on ne peut pas encore la marquer", async () => {
+    const page = await ouvrir("seance-a-venir");
+    expect(await page.getByText("Tu pourras marquer cette séance le jour J.").isVisible()).toBe(true);
+    expect(await page.getByRole("button", { name: "Marquer comme faite" }).count()).toBe(0);
     await page.close();
   });
 });

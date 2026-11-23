@@ -8,7 +8,7 @@ import { formatDuree, NOMS_SPORTS, type Seance } from "@/lib/programme";
 import { libelleJour, type Jour } from "@/lib/semaine";
 import styles from "./semaine.module.css";
 
-export type SeanceCarte = Pick<Seance, "id" | "sport" | "titre" | "dureeMinutes">;
+export type SeanceCarte = Pick<Seance, "id" | "sport" | "titre" | "dureeMinutes"> & { faite: boolean };
 
 /**
  * Bande des 7 jours (maquette) : le jour touché est mis en valeur, ses séances s'affichent dessous.
@@ -56,7 +56,7 @@ export function BandeJours({ jours, aujourdhui, seances }: { jours: Jour[]; aujo
         <ul className={styles.seances}>
           {duJour.map((s) => (
             <li key={s.id}>
-              <Carte href={`/seance/${s.id}`} className={styles.seance}>
+              <Carte href={`/seance/${s.id}?jour=${choisi}`} className={styles.seance}>
                 <IconeSport sport={s.sport} />
                 <span className={styles.seanceTexte}>
                   <span className={styles.seanceSport}>{NOMS_SPORTS[s.sport]}</span>
@@ -64,9 +64,17 @@ export function BandeJours({ jours, aujourdhui, seances }: { jours: Jour[]; aujo
                     {s.titre} · {formatDuree(s.dureeMinutes)}
                   </span>
                 </span>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--texte)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <path d="M9 5l7 7-7 7" />
-                </svg>
+                {s.faite ? (
+                  <span className={styles.coche} role="img" aria-label="Séance faite">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--fond)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <path d="M5 12l5 5 9-10" />
+                    </svg>
+                  </span>
+                ) : (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--texte)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                    <path d="M9 5l7 7-7 7" />
+                  </svg>
+                )}
               </Carte>
             </li>
           ))}

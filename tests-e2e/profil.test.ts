@@ -1,4 +1,4 @@
-/** Écran Profil (aperçu) : choix du niveau et du profil, raccourcis, écrans « bientôt ». */
+/** Écran Profil (aperçu) : choix du niveau et du profil, raccourcis vers Mes records et Mes progrès. */
 import { chromium, type Browser, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { BASE } from "./serveur";
@@ -61,16 +61,21 @@ describe("écran Profil : raccourcis", () => {
   });
 });
 
-describe("écrans « bientôt »", () => {
+describe("Mes records et Mes progrès (plus d'écran « bientôt »)", () => {
+  it("le Profil y mène", async () => {
+    expect(await page.getByRole("link", { name: "Mes records" }).getAttribute("href")).toBe("/records");
+    expect(await page.getByRole("link", { name: "Mes progrès" }).getAttribute("href")).toBe("/progres");
+  });
+
   it.each([
-    ["records", "Mes records"],
-    ["progres", "Mes progrès"],
-  ])("%s affiche son titre, « Bientôt disponible » et un retour au Profil", async (ecran, titre) => {
+    ["records", "Mes records", "Profil", "/profil"],
+    ["progres", "Mes progrès", "Mes zones", "/zones"],
+  ])("%s affiche son titre et son retour, comme la maquette", async (ecran, titre, retour, href) => {
     const p = await navigateur.newPage({ viewport: { width: 390, height: 844 } });
     await p.goto(`${BASE}/apercu-membre/${ecran}`, { waitUntil: "networkidle" });
     expect(await p.getByRole("heading", { level: 1 }).textContent()).toBe(titre);
-    expect(await p.getByText("Bientôt disponible").isVisible()).toBe(true);
-    expect(await p.getByRole("link", { name: "Profil" }).getAttribute("href")).toBe("/profil");
+    expect(await p.getByText("Bientôt disponible").count()).toBe(0);
+    expect(await p.getByRole("link", { name: retour, exact: true }).getAttribute("href")).toBe(href);
     await p.close();
   });
 });

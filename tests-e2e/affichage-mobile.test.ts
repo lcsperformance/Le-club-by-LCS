@@ -25,6 +25,11 @@ const ECRANS = [
   "/apercu-membre/profil",
   "/apercu-membre/records",
   "/apercu-membre/progres",
+  "/apercu-membre/progres-velo",
+  "/apercu-membre/progres-un-test",
+  "/apercu-membre/progres-sans-mesure",
+  "/apercu-membre/progres-sans-test",
+  "/apercu-membre/records-vide",
   "/apercu-membre/abonnement-termine",
   "/apercu-membre/profil-annuel",
   "/apercu-membre/acces-coupe",
@@ -39,6 +44,8 @@ const ECRANS = [
   "/apercu-membre/seance",
   "/apercu-membre/seance-verrouillee",
   "/apercu-membre/seance-renfo",
+  "/apercu-membre/seance-faite",
+  "/apercu-membre/seance-a-venir",
   "/bienvenue",
 ];
 

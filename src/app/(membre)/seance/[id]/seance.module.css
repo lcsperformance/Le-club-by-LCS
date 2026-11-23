@@ -108,3 +108,127 @@
   display: flex;
   color: var(--texte-doux);
 }
+
+/* « Marquer comme faite » : bouton accent ; une fois faite, bordure claire et coche. */
+.boutonFaite {
+  height: 56px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--accent);
+  color: var(--fond);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(222, 253, 98, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.boutonFaite[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px rgba(244, 238, 255, 0.5), 0 8px 28px rgba(222, 253, 98, 0.3);
+}
+
+.boutonFaite:disabled {
+  opacity: 0.7;
+}
+
+.ressenti {
+  display: grid;
+  gap: 12px;
+}
+
+.ressentiTitre {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ressentiAide {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--texte-doux);
+}
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.note {
+  height: 46px;
+  min-width: 0;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  color: var(--texte);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.note[aria-pressed="true"] {
+  background: var(--aurore);
+  color: var(--fond);
+  box-shadow: 0 8px 24px rgba(250, 148, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.douleur {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.interrupteur {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 52px;
+  height: 30px;
+  padding: 3px;
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.14);
+  transition: background 0.15s ease;
+}
+
+.interrupteur span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--texte);
+}
+
+.douleur[aria-checked="true"] .interrupteur {
+  justify-content: flex-end;
+  background: rgba(250, 148, 255, 0.45);
+}
+
+.douleur[aria-checked="true"] .interrupteur span {
+  background: var(--accent);
+}
+
+.confidentiel {
+  font-size: 12px;
+  text-align: center;
+  color: var(--texte-doux);
+}
+
+.succes {
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--accent);
+}
