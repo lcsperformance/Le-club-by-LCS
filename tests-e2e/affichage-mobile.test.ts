@@ -137,3 +137,23 @@ describe.each(LARGEURS)("téléphone de %i px de large", (largeur) => {
     }
   });
 });
+
+// iPad (portrait et paysage) : l'espace membre reste centré, rien ne déborde.
+const TABLETTES = [
+  [768, 1024],
+  [1024, 768],
+] as const;
+const ECRANS_TABLETTE = ECRANS.filter((e) => e.startsWith("/apercu-membre/")).slice(0, 12);
+
+describe.each(TABLETTES)("iPad de %i × %i px", (largeur, hauteur) => {
+  it.each(ECRANS_TABLETTE)("%s ne déborde pas", async (ecran) => {
+    const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur }, isMobile: true, hasTouch: true });
+    try {
+      await page.goto(BASE + ecran, { waitUntil: "networkidle" });
+      await page.waitForFunction(() => !document.body.innerText.includes("Chargement…"));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(largeur);
+    } finally {
+      await page.close();
+    }
+  });
+});
