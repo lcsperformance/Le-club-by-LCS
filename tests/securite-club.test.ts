@@ -24,6 +24,7 @@ beforeAll(async () => {
     "insert into auth.users (id, email) values ($1, 'alice@club.fr'), ($2, 'bruno@club.fr'), ($3, 'coach@club.fr'), ($4, 'admin@club.fr')",
     [ALICE, BRUNO, COACH, ADMIN],
   );
+  await base.abonnerTous();
   // Inscrits il y a une heure : les messages d'avant ne comptent pas comme non lus.
   await base.db.query("update membres set date_inscription = now() - interval '1 hour'");
   await base.db.query("update membres set prenom = 'Alice' where id = $1", [ALICE]);

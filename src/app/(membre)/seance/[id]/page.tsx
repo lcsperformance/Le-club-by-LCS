@@ -23,7 +23,7 @@ export default function PageSeance({ params, searchParams }: PageProps<"/seance/
 
 async function Contenu({ params, searchParams }: Pick<PageProps<"/seance/[id]">, "params" | "searchParams">) {
   const utilisateur = await exigerRole("membre", "admin");
-  const seance = await lireSeanceProgramme((await params).id);
+  const seance = await lireSeanceProgramme((await params).id, utilisateur);
   if (!seance) notFound();
   const aujourdhui = dateDuJourParis();
   const jour = jourDeLaSeance((await searchParams).jour, aujourdhui);

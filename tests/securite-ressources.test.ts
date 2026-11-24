@@ -24,6 +24,7 @@ const bruno = <T>(sql: string, params: unknown[] = []) => base.enTantQue<T>(BRUN
 beforeAll(async () => {
   base = await creerBaseDeTest("ressources");
   await base.db.query("insert into auth.users (id, email) values ($1, 'bruno@club.fr')", [BRUNO]);
+  await base.abonnerTous();
   await base.db.query("update membres set date_inscription = now() - interval '14 days' where id = $1", [BRUNO]);
   await base.db.query(
     `update ressources set fichier = '${FICHIER_SEMAINE_1}' where id = '${PDF_SEMAINE_1}';

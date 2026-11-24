@@ -1,10 +1,18 @@
 import "server-only";
 import type { Utilisateur } from "@/lib/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { lireSeance, lireSemaine, semaineDuProgramme, type SeancePrevue, type SemaineProgramme, type Seance } from "./programme";
 import type { Saison } from "./saison";
 
 const CHAMPS_SEANCE = "id, sport, titre, duree_minutes, blocs_seance(ordre, libelle, detail, zone)";
+
+/*
+ * Le programme n'est PAS lisible par les membres dans la base (migration 20261215000000) : seul ce
+ * fichier le lit, avec la clé secrète, et seulement après que la page a vérifié la personne
+ * (exigerRole) et calculé la semaine autorisée. Il ne renvoie jamais que la semaine demandée,
+ * au niveau et au profil du membre, ou une séance de son programme.
+ */
 
 /**
  * Séances de la semaine qui commence ce lundi, pour le niveau et le profil du membre.
@@ -17,7 +25,7 @@ export async function lireSemaineProgramme(
 ): Promise<{ semaine: SemaineProgramme; seances: SeancePrevue[] } | null> {
   const { niveau, profil } = utilisateur;
   if (!niveau || !profil) return null;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // Nombre de semaines du fil rouge écrites pour ce niveau et ce profil (elles tournent en boucle).
   let semainesFilRouge = 1;
@@ -48,10 +56,28 @@ export async function lireSemaineProgramme(
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Une séance et ses blocs, ou null si elle n'existe pas. */
-export async function lireSeanceProgramme(id: string): Promise<Seance | null> {
+/**
+ * Une séance et ses blocs, ou null si elle n'existe pas, ou si elle ne fait pas partie du programme
+ * du niveau et du profil du membre (le coach et l'admin voient toutes les séances).
+ */
+export async function lireSeanceProgramme(
+  id: string,
+  utilisateur: Pick<Utilisateur, "role" | "niveau" | "profil">,
+): Promise<Seance | null> {
   if (!UUID.test(id)) return null;
-  const supabase = await createClient();
+  const supabase = createAdminClient();
+  if (utilisateur.role === "membre") {
+    if (!utilisateur.niveau || !utilisateur.profil) return null;
+    const { data: prevue } = await supabase
+      .from("programme")
+      .select("id")
+      .eq("seance_id", id)
+      .eq("niveau", utilisateur.niveau)
+      .eq("profil", utilisateur.profil)
+      .limit(1)
+      .maybeSingle();
+    if (!prevue) return null;
+  }
   const { data, error } = await supabase.from("seances").select(CHAMPS_SEANCE).eq("id", id).maybeSingle();
   if (error) console.error("Lecture de la séance impossible", error.code, error.message);
   return lireSeance(data);

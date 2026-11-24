@@ -12,6 +12,7 @@ const en = <T>(qui: string | null, sql: string, params: unknown[] = []) => base.
 beforeAll(async () => {
   base = await creerBaseDeTest("partenaires");
   await base.db.query("insert into auth.users (id, email) values ($1, 'membre@club.fr'), ($2, 'coach@club.fr'), ($3, 'admin@club.fr')", [MEMBRE, COACH, ADMIN]);
+  await base.abonnerTous();
   await base.db.query("update membres set role = 'coach' where id = $1", [COACH]);
   await base.db.query("update membres set role = 'admin' where id = $1", [ADMIN]);
   await base.db.query("insert into partenaires (nom, remise, description, code, affiche) values ('Bientôt', 25, 'en préparation', 'SECRET25', false)");

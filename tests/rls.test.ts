@@ -21,6 +21,7 @@ beforeAll(async () => {
     "insert into auth.users (id, email) values ($1, 'a@club.fr'), ($2, 'b@club.fr'), ($3, 'coach@club.fr'), ($4, 'admin@club.fr')",
     [A, B, COACH, ADMIN],
   );
+  await base.abonnerTous();
   await db.query("update membres set role = 'coach' where id = $1", [COACH]);
   await db.query("update membres set role = 'admin' where id = $1", [ADMIN]);
   await db.query(
@@ -311,7 +312,9 @@ describe("abonnement Stripe", () => {
       "select statut_abonnement, abonnement_fin from membres where id = $1",
       [A],
     );
-    expect(m).toEqual({ statut_abonnement: "inactif", abonnement_fin: null });
+    // Abonnement de test donné par abonnerTous() : le membre lit sa propre date de fin.
+    expect(m.statut_abonnement).toBe("inactif");
+    expect(new Date(m.abonnement_fin!).getTime()).toBeGreaterThan(Date.now());
   });
 
   it.each([
@@ -405,9 +408,21 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
     }
   }
 
-  it.each(TABLES)("%s : tout membre connecté lit le programme", async (table) => {
-    const rows = await enTantQue<{ n: number }>(B, `select count(*)::int as n from ${table}`);
+  it.each(["programme", "blocs_seance"])("%s : seul le serveur le lit, jamais un membre, le coach ou l'admin directement", async (table) => {
+    for (const qui of [B, COACH, ADMIN]) {
+      await expect(enTantQue(qui, `select count(*) from ${table}`), qui).rejects.toThrow(/permission denied/);
+    }
+    const rows = (await enTantQueServeur(`select count(*)::int as n from ${table}`)) as { n: number }[];
     expect(rows[0].n).toBeGreaterThan(0);
+  });
+
+  it("seances : un membre ne lit que le titre, le sport et la durée, jamais le contenu", async () => {
+    const [s] = await enTantQue<{ titre: string }>(B, `select id, sport, titre, duree_minutes from seances where id = '${SEANCE_DEMO}'`);
+    expect(s.titre).toBeTruthy();
+    // Le contenu (étapes, zones, consignes) est dans blocs_seance, fermé aux membres.
+    await expect(enTantQue(B, "select s.titre, b.detail from seances s join blocs_seance b on b.seance_id = s.id")).rejects.toThrow(
+      /permission denied/,
+    );
   });
 
   it.each(TABLES)("%s : un visiteur non connecté n'a accès à rien", async (table) => {
@@ -457,11 +472,10 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
   });
 
   it("démonstration : une semaine 1 du fil rouge pour chaque niveau et chaque profil, une séance au moins chaque jour", async () => {
-    const rows = await enTantQue<{ niveau: string; profil: string; n: number }>(
-      A,
+    const rows = (await enTantQueServeur(
       `select niveau, profil, count(*)::int as n from programme
        where phase = 'fil_rouge' and semaine = 1 group by niveau, profil order by niveau, profil`,
-    );
+    )) as { niveau: string; profil: string; n: number }[];
     expect(rows).toEqual([
       { niveau: "finisher", profil: "extensif", n: 7 },
       { niveau: "finisher", profil: "intensif", n: 7 },
@@ -470,13 +484,11 @@ describe("programme d'entraînement (séances, blocs, rattachement)", () => {
       { niveau: "performer", profil: "extensif", n: 8 },
       { niveau: "performer", profil: "intensif", n: 8 },
     ]);
-    const [sansBloc] = await enTantQue<{ n: number }>(
-      A,
+    const [sansBloc] = (await enTantQueServeur(
       "select count(*)::int as n from seances s where not exists (select 1 from blocs_seance b where b.seance_id = s.id)",
-    );
+    )) as { n: number }[];
     expect(sansBloc.n).toBe(0);
-    const joursVides = await enTantQue<{ niveau: string; jour: number }>(
-      A,
+    const joursVides = await enTantQueServeur(
       `select n.niveau, j.jour from unnest(enum_range(null::niveau)) as n (niveau) cross join generate_series(1, 7) as j (jour)
        where not exists (select 1 from programme p where p.phase = 'fil_rouge' and p.semaine = 1 and p.niveau = n.niveau and p.jour = j.jour)`,
     );
