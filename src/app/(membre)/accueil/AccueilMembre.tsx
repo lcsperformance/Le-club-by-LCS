@@ -1,4 +1,5 @@
 import { CarteInstallation } from "@/components/CarteInstallation";
+import { CarteNotifications } from "@/components/CarteNotifications";
 import { IconeSport } from "@/components/IconeSport";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import { texteQuestionsFaq, type CarteAujourdhui } from "@/lib/accueil";
@@ -25,15 +26,20 @@ type Props = {
   nouveau: Pick<Ressource, "id" | "titre" | "type"> | null;
   /** Aperçus seulement : force la carte « Installer l'app » (sinon le téléphone décide). */
   installation?: "android" | "iphone";
+  /** Aperçus seulement : force la carte « Activer les notifications ». */
+  notifications?: "activer" | "installer-d-abord";
 };
 
 /** Contenu de l'accueil membre (maquette) : tests ou zones, aujourd'hui, bloc, FAQ en visio, nouveau cette semaine. */
-export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, seanceDuJour, faq, nouveau, installation }: Props) {
+export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, seanceDuJour, faq, nouveau, installation, notifications }: Props) {
   const saison = organiserSaison(objectifs, dateDuJourParis(aujourdhui));
   const bloc = carteAccueil(saison);
   return (
     <>
       <EnTeteAccueil utilisateur={utilisateur} aujourdhui={aujourdhui} phase={phaseCourte(saison)} />
+
+      {/* Proposée après la connexion ; la fenêtre du téléphone ne s'ouvre qu'au toucher de « Activer ». */}
+      <CarteNotifications apercu={notifications} />
 
       {testsFaits ? (
         <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>

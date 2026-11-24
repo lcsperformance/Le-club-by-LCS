@@ -44,3 +44,41 @@ self.addEventListener("fetch", (evenement) => {
     evenement.respondWith(fetch(demande).catch(() => caches.match("/hors-ligne.html")));
   }
 });
+
+/*
+ * Notifications du Club (annonces, rappel la veille d'une FAQ). Le serveur envoie
+ * { titre, corps, url, etiquette } ; rien n'est gardé sur l'appareil.
+ */
+self.addEventListener("push", (evenement) => {
+  let n = {};
+  try {
+    n = evenement.data ? evenement.data.json() : {};
+  } catch {
+    n = { corps: evenement.data ? evenement.data.text() : "" };
+  }
+  // Seules les adresses du Club peuvent être ouvertes depuis une notification.
+  const url = typeof n.url === "string" && n.url.startsWith("/") && !n.url.startsWith("//") ? n.url : "/accueil";
+  evenement.waitUntil(
+    self.registration.showNotification(n.titre || "Le Club", {
+      body: n.corps || "",
+      icon: "/icones/icone-192.png",
+      badge: "/icones/icone-192.png",
+      tag: n.etiquette || undefined,
+      lang: "fr",
+      data: { url },
+    }),
+  );
+});
+
+// Toucher la notification : ouvre la page (ou revient sur l'app déjà ouverte).
+self.addEventListener("notificationclick", (evenement) => {
+  evenement.notification.close();
+  const url = new URL((evenement.notification.data && evenement.notification.data.url) || "/accueil", self.location.origin).href;
+  evenement.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((fenetres) => {
+      const ouverte = fenetres.find((f) => f.url.startsWith(self.location.origin));
+      if (ouverte) return ouverte.navigate(url).then((f) => (f || ouverte).focus());
+      return self.clients.openWindow(url);
+    }),
+  );
+});

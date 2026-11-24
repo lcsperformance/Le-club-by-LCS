@@ -224,3 +224,33 @@ export function valeursFormulaire(e?: Evenement) {
     periode: e?.periode ?? "",
   };
 }
+
+// ---------------------------------------------------------------------------
+// Bandeau du prochain événement (en haut de l'espace membre).
+// ---------------------------------------------------------------------------
+
+/** Prochain événement daté, pas encore terminé (FAQ, webinaire, stage…). */
+export function prochainEvenement(evenements: Evenement[], maintenant: Date): Evenement | null {
+  const t = maintenant.toISOString();
+  return evenements.filter((e) => !e.dates_a_confirmer && (e.fin ?? e.debut) >= t).sort(parDebut)[0] ?? null;
+}
+
+const JOURS_COURTS = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."];
+const MOIS_COURTS = ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."];
+
+/**
+ * Quand, en peu de mots, pour le bandeau : « En ce moment », « Aujourd'hui · 19 h 30 »,
+ * « Demain · 19 h 30 », « Jeu. 14 janv. · 19 h 30 ».
+ */
+export function quandCourt(e: Pick<Evenement, "debut" | "fin">, maintenant: Date): string {
+  const t = maintenant.toISOString();
+  if (e.debut <= t && (e.fin ?? e.debut) >= t) return "En ce moment";
+  const jour = enHeureDeParis(e.debut).date;
+  const heure = formatHeureFr(new Date(e.debut));
+  const aujourdhui = dateDuJourParis(maintenant);
+  const demain = new Date(Date.parse(`${aujourdhui}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10);
+  if (jour === aujourdhui) return `Aujourd'hui · ${heure}`;
+  if (jour === demain) return `Demain · ${heure}`;
+  const d = new Date(`${jour}T12:00:00Z`);
+  return `${majuscule(JOURS_COURTS[d.getUTCDay()])} ${+jour.slice(8, 10)} ${MOIS_COURTS[+jour.slice(5, 7) - 1]} · ${heure}`;
+}

@@ -1,9 +1,12 @@
 "use server";
 
+import { after } from "next/server";
 import { aAccesEspace, utilisateurConnecte } from "@/lib/auth";
 import { lireMessage, lireMessageRecu, type Message } from "@/lib/club";
 import { lireQuestion } from "@/lib/questions";
 import { lireMessages, marquerCanalLu } from "@/lib/club-serveur";
+import { notificationAnnonce } from "@/lib/notifications";
+import { envoyerNotification } from "@/lib/notifications-serveur";
 import { createClient } from "@/lib/supabase/server";
 
 export type ResultatClub = { erreur?: string; message?: Message };
@@ -38,7 +41,12 @@ export async function envoyerMessage(canal: unknown, saisie: unknown): Promise<R
     return { erreur: IMPOSSIBLE };
   }
   await c.supabase.rpc("marquer_canal_lu", { c: canal });
-  return { message: lireMessageRecu(data) ?? undefined };
+  const message = lireMessageRecu(data) ?? undefined;
+  // Annonce : notification aux membres, après la réponse (l'auteur n'attend pas l'envoi).
+  if (canal === "annonces" && message) {
+    after(() => envoyerNotification("annonces", notificationAnnonce(message), c.u.id).then(() => undefined));
+  }
+  return { message };
 }
 
 /** Supprime un message : le sien, ou n'importe lequel pour l'admin (noté dans le journal). */

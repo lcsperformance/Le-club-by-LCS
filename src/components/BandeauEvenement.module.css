@@ -1,0 +1,49 @@
+/* Bandeau collé en haut de l'écran, en verre fumé, au-dessus du contenu qui défile. */
+.bandeau {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  min-width: 0;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  background: rgba(9, 10, 15, 0.72);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 0 rgba(250, 148, 255, 0.22);
+}
+.lien {
+  max-width: 480px;
+  min-width: 0;
+  overflow: hidden;
+  margin: 0 auto;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte);
+}
+.point {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(222, 253, 98, 0.8);
+}
+.titre {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.quand {
+  flex: none;
+  color: var(--accent);
+}
+.fleche {
+  flex: none;
+  opacity: 0.7;
+}

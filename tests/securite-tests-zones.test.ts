@@ -1,7 +1,8 @@
 /**
  * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones, les objectifs
  * de saison, les records, les ressentis de séance (RPE, douleur, commentaire : données de santé)
- * et le suivi des ressources (favoris, vu, téléchargé) d'un autre membre.
+ * le suivi des ressources (favoris, vu, téléchargé) et les appareils qui reçoivent les notifications
+ * d'un autre membre.
  *
  * Alice (A) essaie toutes les manières d'atteindre les données de Bruno (B) avec les mêmes
  * droits qu'un vrai membre connecté (rôle « authenticated » de Supabase, sécurité par ligne active).
@@ -20,6 +21,7 @@ const SEANCE = "de000000-0000-0000-0000-000000000201";
 const SUIVI_BRUNO = "00000000-0000-0000-0000-0000000000c1";
 const RESSOURCE = "de000000-0000-0000-0001-000000000001"; // débloquée dès la semaine 1
 const RESSOURCE_2 = "de000000-0000-0000-0001-000000000002";
+const APPAREIL_BRUNO = "00000000-0000-0000-0000-0000000000a9";
 
 let base: BaseDeTest;
 let empreinteBruno: string;
@@ -35,7 +37,8 @@ async function donneesDeBruno(): Promise<string> {
        'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1),
        'records', (select json_agg(r order by r.epreuve) from records r where r.membre_id = $1),
        'ressentis', (select json_agg(r order by r.date_seance) from ressentis r where r.membre_id = $1),
-       'suivi_ressources', (select json_agg(s order by s.ressource_id) from suivi_ressources s where s.membre_id = $1)
+       'suivi_ressources', (select json_agg(s order by s.ressource_id) from suivi_ressources s where s.membre_id = $1),
+       'appareils_notifications', (select json_agg(a order by a.endpoint) from appareils_notifications a where a.membre_id = $1)
      ) as d`,
     [BRUNO],
   );
@@ -81,6 +84,11 @@ beforeAll(async () => {
     `insert into suivi_ressources (id, membre_id, ressource_id, favori, consulte_le) values ($2, $1, $3, true, '2027-01-08T18:00:00Z')`,
     [BRUNO, SUIVI_BRUNO, RESSOURCE],
   );
+  await base.db.query(
+    `insert into appareils_notifications (id, membre_id, endpoint, p256dh, auth)
+     values ($2, $1, 'https://push.exemple.fr/bruno', 'cle-bruno', 'auth-bruno')`,
+    [BRUNO, APPAREIL_BRUNO],
+  );
   // Données d'Alice : une série de tests et une zone.
   await base.db.query(
     `insert into tests (membre_id, date_test, ftp) values ($1, '2026-11-02', 250);
@@ -88,7 +96,8 @@ beforeAll(async () => {
      insert into objectifs (membre_id, bloc, date_objectif) values ($1, 'L', '2027-06-20');
      insert into records (membre_id, epreuve, duree_secondes) values ($1, 'semi', 5530);
      insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 6);
-     insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE}', true);`.replaceAll(
+     insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE}', true);
+     insert into appareils_notifications (membre_id, endpoint, p256dh, auth) values ($1, 'https://push.exemple.fr/alice', 'cle-alice', 'auth-alice');`.replaceAll(
       "$1",
       `'${ALICE}'`,
     ),
@@ -160,6 +169,17 @@ const TABLES = [
     // Le membre ne change que favori et « vu / téléchargé » : la colonne membre_id lui est fermée.
     transfert: /permission denied/,
   },
+  {
+    table: "appareils_notifications",
+    id: () => APPAREIL_BRUNO,
+    modification: "endpoint = 'https://pirate.exemple.fr'",
+    insertion: `insert into appareils_notifications (membre_id, endpoint, p256dh, auth) values ($1, 'https://push.exemple.fr/pirate', 'x', 'y')`,
+    ecrasement: `insert into appareils_notifications (membre_id, endpoint, p256dh, auth) values ($1, 'https://push.exemple.fr/bruno', 'x', 'y')
+                 on conflict (endpoint) do update set p256dh = excluded.p256dh`,
+    // Aucune modification possible : un appareil s'ajoute ou se retire, jamais ne se modifie.
+    transfert: /permission denied/,
+    refus: /permission denied/,
+  },
 ] as const;
 
 describe.each(TABLES)("table $table : Alice face aux données de Bruno", (cas) => {
@@ -186,17 +206,16 @@ describe.each(TABLES)("table $table : Alice face aux données de Bruno", (cas) =
 
   describe("modification", () => {
     it("modifier les lignes de Bruno n'en touche aucune", async () => {
-      const touchees = await alice(`update ${cas.table} set ${cas.modification} where membre_id = $1 returning id`, [
-        BRUNO,
-      ]);
-      expect(touchees).toEqual([]);
+      const essai = alice(`update ${cas.table} set ${cas.modification} where membre_id = $1 returning id`, [BRUNO]);
+      if ("refus" in cas) await expect(essai).rejects.toThrow(cas.refus);
+      else expect(await essai).toEqual([]);
       await brunoIntact();
     });
 
     it("même en visant l'identifiant exact", async () => {
-      expect(await alice(`update ${cas.table} set ${cas.modification} where id = $1 returning id`, [cas.id()])).toEqual(
-        [],
-      );
+      const essai = alice(`update ${cas.table} set ${cas.modification} where id = $1 returning id`, [cas.id()]);
+      if ("refus" in cas) await expect(essai).rejects.toThrow(cas.refus);
+      else expect(await essai).toEqual([]);
       await brunoIntact();
     });
 
@@ -222,7 +241,7 @@ describe.each(TABLES)("table $table : Alice face aux données de Bruno", (cas) =
     });
 
     it("écraser une ligne existante de Bruno (« upsert ») est refusé", async () => {
-      await expect(alice(cas.ecrasement, [BRUNO])).rejects.toThrow(/row-level security/);
+      await expect(alice(cas.ecrasement, [BRUNO])).rejects.toThrow("refus" in cas ? cas.refus : /row-level security/);
       await brunoIntact();
     });
   });

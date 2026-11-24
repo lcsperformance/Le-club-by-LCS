@@ -1,0 +1,68 @@
+.ligne {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--texte);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.textes {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+.libelle {
+  font-size: 15px;
+  font-weight: 800;
+}
+.aide {
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: #a9a4c9;
+}
+.interrupteur {
+  flex: none;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: background 0.2s;
+}
+.pastille {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--texte);
+  transition: transform 0.2s;
+}
+.ligne[aria-checked="true"] .interrupteur {
+  background: var(--accent);
+  box-shadow: 0 4px 14px rgba(222, 253, 98, 0.35);
+}
+.ligne[aria-checked="true"] .pastille {
+  transform: translateX(20px);
+  background: var(--fond);
+}
+.appareil {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #a9a4c9;
+}
+.appareil:empty {
+  display: none;
+}
+.etat {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
