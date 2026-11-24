@@ -511,8 +511,8 @@ describe("ressentis de séance (données de santé)", () => {
   beforeAll(async () => {
     await db.query(
       `insert into seances (id, sport, titre, duree_minutes) values ($1, 'course', 'Séance retirée plus tard', 30);
-       insert into ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire)
-       values ($2, $1, '2027-01-11', 7, true, 'Genou'), ($3, $1, '2027-01-11', 3, false, null);`
+       insert into ressentis (membre_id, seance_id, date_seance, rpe, commentaire)
+       values ($2, $1, '2027-01-11', 7, 'Dur'), ($3, $1, '2027-01-11', 3, null);`
         .replaceAll("$1", "'de000000-0000-0000-0000-0000000009ff'")
         .replaceAll("$2", `'${A}'`)
         .replaceAll("$3", `'${B}'`),
@@ -523,7 +523,7 @@ describe("ressentis de séance (données de santé)", () => {
     await enTantQue(A, "insert into ressentis (seance_id, date_seance) values ($1, '2027-01-12')", [SEANCE]);
     const [r] = await enTantQue<{ rpe: number }>(
       A,
-      "update ressentis set rpe = 6, douleur = false, commentaire = 'Bien' where seance_id = $1 and date_seance = '2027-01-12' returning rpe",
+      "update ressentis set rpe = 6, commentaire = 'Bien' where seance_id = $1 and date_seance = '2027-01-12' returning rpe",
       [SEANCE],
     );
     expect(r.rpe).toBe(6);

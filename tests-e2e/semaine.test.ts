@@ -84,20 +84,19 @@ describe("Séance : marquer comme faite et ressenti", () => {
     await page.close();
   });
 
-  it("faite : RPE, douleur et commentaire enregistrés, modifiables", async () => {
+  it("faite : RPE et commentaire enregistrés, modifiables ; pas de case « douleur »", async () => {
     const page = await ouvrir("seance-faite");
     expect(await page.getByRole("button", { name: "Séance faite ✓" }).getAttribute("aria-pressed")).toBe("true");
     expect(await page.getByRole("button", { name: "RPE 7 sur 10" }).getAttribute("aria-pressed")).toBe("true");
-    expect(await page.getByRole("switch", { name: "Douleur ou gêne" }).getAttribute("aria-checked")).toBe("true");
-    expect(await page.getByLabel("Commentaire (facultatif)").inputValue()).toBe("Genou droit un peu raide sur la fin.");
+    expect(await page.getByRole("switch").count()).toBe(0);
+    expect(await page.getByLabel("Commentaire (facultatif)").inputValue()).toBe("Dur sur la fin, mais allure tenue.");
+    expect(await page.getByLabel("Commentaire (facultatif)").getAttribute("placeholder")).toBe("Ton ressenti sur la séance");
     expect(await page.getByRole("button", { name: "Ressenti enregistré" }).isVisible()).toBe(true);
     expect(await page.getByText("Visible seulement par toi et les coachs.").isVisible()).toBe(true);
 
     await page.getByRole("button", { name: "RPE 4 sur 10" }).click();
-    await page.getByRole("switch", { name: "Douleur ou gêne" }).click();
     expect(await page.getByRole("button", { name: "RPE 4 sur 10" }).getAttribute("aria-pressed")).toBe("true");
     expect(await page.getByRole("button", { name: "RPE 7 sur 10" }).getAttribute("aria-pressed")).toBe("false");
-    expect(await page.getByRole("switch", { name: "Douleur ou gêne" }).getAttribute("aria-checked")).toBe("false");
     expect(await page.getByRole("button", { name: "Enregistrer mon ressenti" }).isVisible()).toBe(true);
     await page.close();
   });

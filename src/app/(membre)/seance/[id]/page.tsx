@@ -54,13 +54,13 @@ async function Contenu({ params, searchParams }: Pick<PageProps<"/seance/[id]">,
   // Ressenti du membre pour cette séance ce jour-là (données de santé : la sécurité par ligne ne renvoie que les siens).
   const { data: r } = await supabase
     .from("ressentis")
-    .select("rpe, douleur, commentaire")
+    .select("rpe, commentaire")
     .eq("membre_id", utilisateur.id)
     .eq("seance_id", seance.id)
     .eq("date_seance", jour)
     .maybeSingle();
   const ressenti: Ressenti | null = r
-    ? { rpe: typeof r.rpe === "number" ? r.rpe : null, douleur: r.douleur === true, commentaire: typeof r.commentaire === "string" ? r.commentaire : null }
+    ? { rpe: typeof r.rpe === "number" ? r.rpe : null, commentaire: typeof r.commentaire === "string" ? r.commentaire : null }
     : null;
 
   return (

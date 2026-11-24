@@ -9,14 +9,13 @@ import styles from "./seance.module.css";
 const NOTES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 /**
- * « Marquer comme faite », puis le ressenti (maquette) : RPE de 1 à 10, douleur ou gêne, commentaire.
+ * « Marquer comme faite », puis le ressenti : RPE de 1 à 10 et commentaire.
  * ressenti : null tant que la séance n'est pas marquée faite ce jour-là.
  * interdit : raison pour laquelle on ne peut pas encore (ou plus) marquer la séance, sinon null.
  */
 export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: string; jour: string; ressenti: Ressenti | null; interdit: string | null }) {
   const [faite, setFaite] = useState(ressenti !== null);
   const [rpe, setRpe] = useState<number | null>(ressenti?.rpe ?? null);
-  const [douleur, setDouleur] = useState(ressenti?.douleur ?? false);
   const [commentaire, setCommentaire] = useState(ressenti?.commentaire ?? "");
   const [enregistre, setEnregistre] = useState(ressenti?.rpe != null);
   const [message, setMessage] = useState<{ texte: string; erreur: boolean } | null>(null);
@@ -34,10 +33,6 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
           <div>
             <dt>RPE</dt>
             <dd>{ressenti.rpe ? `${ressenti.rpe}/10` : "Non noté"}</dd>
-          </div>
-          <div>
-            <dt>Douleur ou gêne</dt>
-            <dd>{ressenti.douleur ? "Oui" : "Non"}</dd>
           </div>
           {ressenti.commentaire && (
             <div>
@@ -62,7 +57,6 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
         setMessage({ texte: r.erreur, erreur: true });
       } else if (!voulu) {
         setRpe(null);
-        setDouleur(false);
         setCommentaire("");
         setEnregistre(false);
       }
@@ -76,7 +70,7 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
 
   function enregistrer(e: FormEvent) {
     e.preventDefault();
-    const saisie = { rpe, douleur, commentaire };
+    const saisie = { rpe, commentaire };
     // Même vérification que le serveur, pour répondre tout de suite.
     const lu = lireRessentiSaisi(saisie);
     if ("erreur" in lu) {
@@ -125,25 +119,10 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
                 </button>
               ))}
             </div>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={douleur}
-              className={styles.douleur}
-              onClick={() => {
-                setDouleur((d) => !d);
-                modifie();
-              }}
-            >
-              <span>Douleur ou gêne</span>
-              <span className={styles.interrupteur} aria-hidden>
-                <span />
-              </span>
-            </button>
             <Champ
               libelle="Commentaire (facultatif)"
               name="commentaire"
-              placeholder="Une sensation, un souci…"
+              placeholder="Ton ressenti sur la séance"
               value={commentaire}
               maxLength={LONGUEUR_MAX_COMMENTAIRE}
               onChange={(e) => {

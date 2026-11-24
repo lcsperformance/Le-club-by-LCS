@@ -49,7 +49,7 @@ describe("Espace coach : fiche d'un athlète", () => {
     expect(await page.getByRole("link", { name: /Caroline Dupont/ }).getAttribute("aria-current")).toBe("page");
     const lignes = page.getByRole("region", { name: "Séances faites" }).getByRole("listitem");
     expect(await lignes.count()).toBe(5);
-    expect(await lignes.first().innerText()).toMatch(/Dim\. 10 janv\.[\s\S]*Course[\s\S]*Sortie longue[\s\S]*6[\s\S]*Non[\s\S]*Jambes un peu lourdes/);
+    expect(await lignes.first().innerText()).toMatch(/Dim\. 10 janv\.[\s\S]*Course[\s\S]*Sortie longue[\s\S]*6[\s\S]*Jambes un peu lourdes/);
     expect(await lignes.last().innerText()).toMatch(/Lun\. 28 déc\. 2026[\s\S]*Séance retirée du programme/);
     // Aucune modification, aucun message privé.
     expect(await page.locator("main input:not([type=checkbox]):not([type=hidden]):not([name=recherche]), main textarea, main select").count()).toBe(0);
@@ -57,14 +57,9 @@ describe("Espace coach : fiche d'un athlète", () => {
     await page.close();
   });
 
-  it("filtre « Douleurs »", async () => {
+  it("plus de case ni de filtre « Douleurs »", async () => {
     const page = await ouvrir("coach-fiche");
-    await page.getByRole("button", { name: "Douleurs (1)" }).click();
-    const lignes = page.getByRole("region", { name: "Séances faites" }).getByRole("listitem");
-    expect(await lignes.count()).toBe(1);
-    expect(await lignes.first().innerText()).toContain("Gêne au mollet droit");
-    await page.getByRole("button", { name: "Toutes (5)" }).click();
-    expect(await lignes.count()).toBe(5);
+    expect(await page.getByText(/douleur/i).count()).toBe(0);
     await page.close();
   });
 

@@ -215,7 +215,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
         <EcranSeance
           seance={SEANCE_COURSE_FICTIVE}
           tests={TEST_FICTIF}
-          suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, douleur: true, commentaire: "Genou droit un peu raide sur la fin." }, interdit: null }}
+          suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, commentaire: "Dur sur la fin, mais allure tenue." }, interdit: null }}
         />
       );
     case "seance-ancienne":
@@ -225,7 +225,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           tests={TEST_FICTIF}
           suivi={{
             jour: "2026-11-17",
-            ressenti: { rpe: 6, douleur: false, commentaire: "Bonnes sensations, un peu de vent de face sur le retour." },
+            ressenti: { rpe: 6, commentaire: "Bonnes sensations, un peu de vent de face sur le retour." },
             interdit: "On ne peut plus noter une séance de plus de 14 jours.",
           }}
         />

@@ -13,7 +13,7 @@ import styles from "./seance.module.css";
 /**
  * Séance ouverte (maquette) : sport, titre, durée, puis chaque bloc avec sa zone et l'allure du membre.
  * tests : derniers tests du membre (null : allures verrouillées) ; bornesPerso, bornesFc : ses zones personnalisées (sport de la séance, cardio).
- * suivi : jour de la séance et ressenti du membre (« Marquer comme faite », RPE, douleur, commentaire).
+ * suivi : jour de la séance et ressenti du membre (« Marquer comme faite », RPE, commentaire).
  * Le programme reste dans l'app : ni export, ni PDF, ni impression (data-programme).
  */
 export function EcranSeance({

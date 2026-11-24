@@ -394,20 +394,19 @@ export const ATHLETES_FICTIFS: AthleteCoach[] = [
   athlete(5, "Élodie", "Moreau", "challenger", false),
 ];
 
-/** Séances fictives de Caroline (aujourd'hui = 11/01/2027), dont une avec douleur et une séance retirée. */
+/** Séances fictives de Caroline (aujourd'hui = 11/01/2027), dont une séance retirée. */
 export const SEANCES_COACH_FICTIVES: SeanceCoach[] = [
-  { date: "2027-01-10", sport: "course", titre: "Sortie longue", rpe: 6, douleur: false, commentaire: "Jambes un peu lourdes sur la fin." },
-  { date: "2027-01-09", sport: "velo", titre: "Sortie longue", rpe: 5, douleur: false, commentaire: null },
-  { date: "2027-01-07", sport: "velo", titre: "Sweet spot", rpe: 8, douleur: false, commentaire: "Dur sur le 3e intervalle." },
+  { date: "2027-01-10", sport: "course", titre: "Sortie longue", rpe: 6, commentaire: "Jambes un peu lourdes sur la fin." },
+  { date: "2027-01-09", sport: "velo", titre: "Sortie longue", rpe: 5, commentaire: null },
+  { date: "2027-01-07", sport: "velo", titre: "Sweet spot", rpe: 8, commentaire: "Dur sur le 3e intervalle." },
   {
     date: "2027-01-05",
     sport: "course",
     titre: "Footing endurance",
     rpe: 5,
-    douleur: true,
-    commentaire: "Gêne au mollet droit sur les lignes droites, qui a disparu après l'étirement mais qui revient quand j'accélère.",
+    commentaire: "Bonnes sensations sur les lignes droites, un peu de vent de face au retour, allure régulière du début à la fin.",
   },
-  { date: "2026-12-28", sport: null, titre: null, rpe: 3, douleur: false, commentaire: null },
+  { date: "2026-12-28", sport: null, titre: null, rpe: 3, commentaire: null },
 ];
 
 /** Partenaires fictifs : les deux exemples, un avec lien, un masqué (vu seulement par l'admin). */

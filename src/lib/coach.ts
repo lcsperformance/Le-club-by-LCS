@@ -15,13 +15,12 @@ export type AthleteCoach = {
   acces_en_cours: boolean;
 };
 
-/** Séance faite par l'athlète, avec son ressenti (données de santé, lecture seule). */
+/** Séance faite par l'athlète, avec son ressenti (RPE, commentaire ; lecture seule). */
 export type SeanceCoach = {
   date: string;
   sport: string | null;
   titre: string | null;
   rpe: number | null;
-  douleur: boolean;
   commentaire: string | null;
 };
 
@@ -61,11 +60,9 @@ export function dateSeance(iso: string, aujourdhui: string): string {
 /** Couleur du RPE : effort léger (1-4), moyen (5-7) ou fort (8-10). */
 export const niveauRpe = (rpe: number | null) => (rpe === null ? "aucun" : rpe <= 4 ? "leger" : rpe <= 7 ? "moyen" : "fort");
 
-export type FiltreSeances = "toutes" | "douleurs";
-
-/** Séances de la plus récente à la plus ancienne, toutes ou seulement celles avec douleur. */
-export function filtrerSeances(seances: SeanceCoach[], filtre: FiltreSeances): SeanceCoach[] {
-  return seances.filter((s) => filtre === "toutes" || s.douleur).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+/** Séances de la plus récente à la plus ancienne. */
+export function trierSeances(seances: SeanceCoach[]): SeanceCoach[] {
+  return [...seances].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
 const NOMS_SPORTS: Record<string, string> = { natation: "Natation", velo: "Vélo", course: "Course", renfo: "Renfo" };

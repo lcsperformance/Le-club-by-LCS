@@ -1,6 +1,6 @@
 /**
  * PREUVE : un membre ne peut ni lire ni modifier les tests, les bornes de zones, les objectifs
- * de saison, les records, les ressentis de séance (RPE, douleur, commentaire : données de santé)
+ * de saison, les records, les ressentis de séance (RPE, commentaire)
  * le suivi des ressources (favoris, vu, téléchargé) et les appareils qui reçoivent les notifications
  * d'un autre membre.
  *
@@ -76,8 +76,8 @@ beforeAll(async () => {
     [BRUNO, RECORD_BRUNO],
   );
   await base.db.query(
-    `insert into ressentis (id, membre_id, seance_id, date_seance, rpe, douleur, commentaire)
-     values ($2, $1, $3, '2027-01-11', 8, true, 'Douleur au genou droit'), (default, $1, $3, '2027-01-12', 4, false, null)`,
+    `insert into ressentis (id, membre_id, seance_id, date_seance, rpe, commentaire)
+     values ($2, $1, $3, '2027-01-11', 8, 'Séance difficile'), (default, $1, $3, '2027-01-12', 4, null)`,
     [BRUNO, RESSENTI_BRUNO, SEANCE],
   );
   await base.db.query(
@@ -152,7 +152,7 @@ const TABLES = [
   {
     table: "ressentis",
     id: () => RESSENTI_BRUNO,
-    modification: "rpe = 1, douleur = false, commentaire = 'Pirate'",
+    modification: "rpe = 1, commentaire = 'Pirate'",
     insertion: `insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-13', 1)`,
     ecrasement: `insert into ressentis (membre_id, seance_id, date_seance, rpe) values ($1, '${SEANCE}', '2027-01-11', 1)
                  on conflict (membre_id, seance_id, date_seance) do update set rpe = excluded.rpe`,
@@ -263,7 +263,7 @@ describe("contre-épreuve", () => {
       "select rpe, commentaire from ressentis order by date_seance",
     );
     expect(ressentis).toEqual([
-      { rpe: 8, commentaire: "Douleur au genou droit" },
+      { rpe: 8, commentaire: "Séance difficile" },
       { rpe: 4, commentaire: null },
     ]);
     expect(zones.map((z) => z.sport).sort()).toEqual(["course", "velo"]);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { dateSeance, filtrerAthletes, filtrerSeances, initialeAthlete, niveauRpe, nomAthlete, nomSport, objectifsAVenir, type AthleteCoach, type SeanceCoach } from "@/lib/coach";
+import { dateSeance, filtrerAthletes, trierSeances, initialeAthlete, niveauRpe, nomAthlete, nomSport, objectifsAVenir, type AthleteCoach, type SeanceCoach } from "@/lib/coach";
 
 const a = (id: string, prenom: string | null, nom: string | null, acces_en_cours = true): AthleteCoach => ({
   id,
@@ -35,7 +35,7 @@ describe("athlètes", () => {
 });
 
 describe("séances", () => {
-  const s = (date: string, douleur = false): SeanceCoach => ({ date, sport: "course", titre: "Footing", rpe: 5, douleur, commentaire: null });
+  const s = (date: string): SeanceCoach => ({ date, sport: "course", titre: "Footing", rpe: 5, commentaire: null });
 
   it("date courte à la française, avec l'année si ce n'est pas celle en cours", () => {
     expect(dateSeance("2027-01-10", "2027-01-11")).toBe("Dim. 10 janv.");
@@ -47,10 +47,10 @@ describe("séances", () => {
     expect(niveauRpe(null)).toBe("aucun");
   });
 
-  it("toutes ou seulement les douleurs, de la plus récente à la plus ancienne", () => {
-    const liste = [s("2027-01-05", true), s("2027-01-10"), s("2027-01-07", true)];
-    expect(filtrerSeances(liste, "toutes").map((x) => x.date)).toEqual(["2027-01-10", "2027-01-07", "2027-01-05"]);
-    expect(filtrerSeances(liste, "douleurs").map((x) => x.date)).toEqual(["2027-01-07", "2027-01-05"]);
+  it("de la plus récente à la plus ancienne, sans toucher à la liste reçue", () => {
+    const liste = [s("2027-01-05"), s("2027-01-10"), s("2027-01-07")];
+    expect(trierSeances(liste).map((x) => x.date)).toEqual(["2027-01-10", "2027-01-07", "2027-01-05"]);
+    expect(liste[0].date).toBe("2027-01-05");
   });
 
   it("nom du sport, ou un tiret pour une séance retirée", () => {
