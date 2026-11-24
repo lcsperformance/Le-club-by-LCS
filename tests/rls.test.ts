@@ -21,6 +21,7 @@ beforeAll(async () => {
     "insert into auth.users (id, email) values ($1, 'a@club.fr'), ($2, 'b@club.fr'), ($3, 'coach@club.fr'), ($4, 'admin@club.fr')",
     [A, B, COACH, ADMIN],
   );
+  await base.abonnerTous();
   await db.query("update membres set role = 'coach' where id = $1", [COACH]);
   await db.query("update membres set role = 'admin' where id = $1", [ADMIN]);
   await db.query(
@@ -311,7 +312,9 @@ describe("abonnement Stripe", () => {
       "select statut_abonnement, abonnement_fin from membres where id = $1",
       [A],
     );
-    expect(m).toEqual({ statut_abonnement: "inactif", abonnement_fin: null });
+    // Abonnement de test donné par abonnerTous() : le membre lit sa propre date de fin.
+    expect(m.statut_abonnement).toBe("inactif");
+    expect(new Date(m.abonnement_fin!).getTime()).toBeGreaterThan(Date.now());
   });
 
   it.each([

@@ -14,6 +14,11 @@ export type BaseDeTest = {
   db: Client;
   /** Exécute une requête en tant que membre connecté (null = visiteur non connecté). */
   enTantQue: <T>(uid: string | null, sql: string, params?: unknown[]) => Promise<T[]>;
+  /**
+   * Donne un abonnement en cours (un an) à tous les membres qui n'en ont pas : la base ne leur ouvre
+   * le contenu du Club (messages, ressources, agenda…) que pendant leur accès (acces_actif).
+   */
+  abonnerTous: () => Promise<void>;
   fermer: () => Promise<void>;
 };
 
@@ -55,5 +60,9 @@ export async function creerBaseDeTest(nom: string): Promise<BaseDeTest> {
     await admin.end();
   }
 
-  return { db, enTantQue, fermer };
+  async function abonnerTous() {
+    await db.query("update membres set abonnement_fin = now() + interval '1 year' where role = 'membre' and abonnement_fin is null");
+  }
+
+  return { db, enTantQue, abonnerTous, fermer };
 }

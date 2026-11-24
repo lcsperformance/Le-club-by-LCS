@@ -19,6 +19,7 @@ beforeAll(async () => {
     "insert into auth.users (id, email) values ($1, 'membre@club.fr'), ($2, 'coach@club.fr'), ($3, 'admin@club.fr')",
     [MEMBRE, COACH, ADMIN],
   );
+  await base.abonnerTous();
   await base.db.query("update membres set role = 'coach' where id = $1", [COACH]);
   await base.db.query("update membres set role = 'admin', prenom = 'Pauline' where id = $1", [ADMIN]);
 });
