@@ -22,14 +22,14 @@ async function Contenu() {
   const supabase = await createClient();
   const [{ data: test }, { data: reglages }] = await Promise.all([
     supabase.from("tests").select("ftp, pma_5min").eq("membre_id", utilisateur.id).order("date_test", { ascending: false }).limit(1).maybeSingle(),
-    supabase.from("membres").select("notif_annonces, notif_faq").eq("id", utilisateur.id).maybeSingle(),
+    supabase.from("membres").select("notif_annonces, notif_faq, notif_evenements").eq("id", utilisateur.id).maybeSingle(),
   ]);
   return (
     <EcranProfil
       utilisateur={utilisateur}
       maintenant={new Date()}
       suggestion={profilSuggere(test)}
-      notifications={{ annonces: reglages?.notif_annonces !== false, faq: reglages?.notif_faq !== false }}
+      notifications={{ annonces: reglages?.notif_annonces !== false, faq: reglages?.notif_faq !== false, evenements: reglages?.notif_evenements !== false }}
     />
   );
 }

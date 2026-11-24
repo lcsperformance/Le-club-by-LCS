@@ -49,13 +49,15 @@ export async function appareilEnregistre(endpoint: unknown): Promise<boolean> {
   return !!data;
 }
 
-/** Réglage du Profil : annonces ou rappels FAQ, oui ou non. */
+/** Réglage du Profil : annonces, rappels FAQ ou nouveaux événements, oui ou non. */
 export async function enregistrerReglage(champ: unknown, valeur: unknown): Promise<ResultatNotifications> {
   const u = await utilisateurConnecte();
   if (!u) return { erreur: SESSION };
-  if ((champ !== "notif_annonces" && champ !== "notif_faq") || typeof valeur !== "boolean") return { erreur: "Ce réglage n'existe pas." };
+  if (!["notif_annonces", "notif_faq", "notif_evenements"].includes(champ as string) || typeof valeur !== "boolean") {
+    return { erreur: "Ce réglage n'existe pas." };
+  }
   const supabase = await createClient();
-  const { error } = await supabase.from("membres").update({ [champ]: valeur }).eq("id", u.id);
+  const { error } = await supabase.from("membres").update({ [champ as string]: valeur }).eq("id", u.id);
   if (error) {
     console.error("Enregistrement du réglage impossible", error.code, error.message);
     return { erreur: IMPOSSIBLE };

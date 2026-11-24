@@ -85,8 +85,8 @@ describe("appareils_notifications", () => {
 
 describe("réglages du Profil (membres.notif_annonces, notif_faq)", () => {
   it("activés par défaut", async () => {
-    expect(await en(ALICE, "select notif_annonces, notif_faq from membres where id = $1", [ALICE])).toEqual([
-      { notif_annonces: true, notif_faq: true },
+    expect(await en(ALICE, "select notif_annonces, notif_faq, notif_evenements from membres where id = $1", [ALICE])).toEqual([
+      { notif_annonces: true, notif_faq: true, notif_evenements: true },
     ]);
   });
 
@@ -95,6 +95,15 @@ describe("réglages du Profil (membres.notif_annonces, notif_faq)", () => {
     expect(await en(ALICE, "update membres set notif_faq = false where id = $1 returning id", [BRUNO])).toEqual([]);
     const { rows } = await base.db.query("select notif_faq from membres where id = $1", [BRUNO]);
     expect(rows[0].notif_faq).toBe(true);
+  });
+});
+
+describe("réglage « Nouveaux événements »", () => {
+  it("Alice coupe le sien, pas celui de Bruno", async () => {
+    expect(await en(ALICE, "update membres set notif_evenements = false where id = $1 returning notif_evenements", [ALICE])).toEqual([
+      { notif_evenements: false },
+    ]);
+    expect(await en(ALICE, "update membres set notif_evenements = false where id = $1 returning id", [BRUNO])).toEqual([]);
   });
 });
 

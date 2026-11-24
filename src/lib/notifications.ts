@@ -1,5 +1,5 @@
 /**
- * Notifications du Club : annonces et rappel la veille d'une FAQ en visio. Règles testables, sans navigateur ni base.
+ * Notifications du Club : annonces, rappel la veille d'une FAQ en visio, nouvel événement ou date modifiée (hors FAQ). Règles testables, sans navigateur ni base.
  *
  * - La demande d'autorisation n'est JAMAIS faite à l'ouverture d'une page : une carte sur l'accueil
  *   (après la connexion) propose « Activer » ; la fenêtre du téléphone ne s'ouvre qu'au toucher du bouton.
@@ -8,10 +8,10 @@
  * - Envoi : src/lib/notifications-serveur.ts ; rappels : route /api/rappels-faq (tâche Vercel du soir).
  */
 import { aAcces } from "./abonnement/etat";
-import { enHeureDeParis, type Evenement } from "./agenda";
+import { enHeureDeParis, quandCourt, quandEvenement, type Evenement } from "./agenda";
 import { dateDuJourParis, formatHeureFr } from "./dates";
 
-export type TypeNotification = "annonces" | "faq";
+export type TypeNotification = "annonces" | "faq" | "evenements";
 
 /** Ce qu'affiche le téléphone, et la page ouverte quand on touche la notification. */
 export type Notification = { titre: string; corps: string; url: string; etiquette: string };
@@ -97,6 +97,7 @@ export type MembreNotifiable = {
   acces_coupe: boolean;
   notif_annonces: boolean;
   notif_faq: boolean;
+  notif_evenements: boolean;
 };
 
 /**
@@ -106,7 +107,41 @@ export type MembreNotifiable = {
 export function destinataires(membres: MembreNotifiable[], type: TypeNotification, maintenant: Date, auteurId?: string): string[] {
   return membres
     .filter((m) => m.id !== auteurId)
-    .filter((m) => (type === "annonces" ? m.notif_annonces : m.notif_faq))
+    .filter((m) => (type === "annonces" ? m.notif_annonces : type === "faq" ? m.notif_faq : m.notif_evenements))
     .filter((m) => aAcces(m, maintenant))
     .map((m) => m.id);
+}
+
+// ---------------------------------------------------------------------------
+// Agenda : nouvel événement, ou date modifiée (jamais pour les FAQ : elles reviennent chaque semaine
+// et ont déjà leur rappel la veille).
+// ---------------------------------------------------------------------------
+
+type DatesEvenement = Pick<Evenement, "type" | "debut" | "fin" | "dates_a_confirmer" | "periode">;
+
+/** Faut-il prévenir les membres ? « nouveau » à la création, « date » si la date change, sinon rien. */
+export function changementAgenda(avant: DatesEvenement | null, apres: DatesEvenement): "nouveau" | "date" | null {
+  if (apres.type === "faq") return null;
+  if (!avant) return "nouveau";
+  const memeInstant = (a: string | null, b: string | null) => (a && b ? Date.parse(a) === Date.parse(b) : a === b);
+  const inchange =
+    memeInstant(avant.debut, apres.debut) &&
+    memeInstant(avant.fin, apres.fin) &&
+    avant.dates_a_confirmer === apres.dates_a_confirmer &&
+    (avant.periode ?? null) === (apres.periode ?? null);
+  return inchange ? null : "date";
+}
+
+/** « Nouvel événement : Webinaire » / « Date modifiée : Stage » + quand ; ouvre l'agenda. */
+export function notificationEvenement(
+  e: Pick<Evenement, "id" | "titre" | "debut" | "fin" | "dates_a_confirmer" | "periode">,
+  nature: "nouveau" | "date",
+  maintenant: Date,
+): Notification {
+  return {
+    titre: `${nature === "nouveau" ? "Nouvel événement" : "Date modifiée"} : ${raccourcir(e.titre, 60)}`,
+    corps: e.dates_a_confirmer ? quandEvenement(e) : quandCourt(e, maintenant),
+    url: "/club/agenda",
+    etiquette: `evenement-${e.id}`,
+  };
 }

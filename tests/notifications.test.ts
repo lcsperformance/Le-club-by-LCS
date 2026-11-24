@@ -10,6 +10,8 @@ import {
   lireAppareil,
   notificationAnnonce,
   notificationRappelFaq,
+  changementAgenda,
+  notificationEvenement,
   type MembreNotifiable,
 } from "@/lib/notifications";
 
@@ -109,7 +111,7 @@ describe("FAQ à rappeler la veille au soir", () => {
 describe("destinataires", () => {
   const maintenant = new Date("2027-01-13T17:00:00Z");
   const m = (id: string, autres: Partial<MembreNotifiable> = {}): MembreNotifiable => ({
-    id, role: "membre", abonnement_fin: "2027-02-01T00:00:00Z", acces_offert_jusqua: null, acces_coupe: false, notif_annonces: true, notif_faq: true, ...autres,
+    id, role: "membre", abonnement_fin: "2027-02-01T00:00:00Z", acces_offert_jusqua: null, acces_coupe: false, notif_annonces: true, notif_faq: true, notif_evenements: true, ...autres,
   });
 
   it("membres à jour qui ont gardé ce réglage, équipe comprise, jamais l'auteur", () => {
@@ -123,6 +125,7 @@ describe("destinataires", () => {
     ];
     expect(destinataires(membres, "annonces", maintenant, "martin")).toEqual(["a", "offert"]);
     expect(destinataires(membres, "faq", maintenant)).toEqual(["a", "sansAnnonces", "offert", "martin"]);
+    expect(destinataires([m("a"), m("b", { notif_evenements: false })], "evenements", maintenant, "admin")).toEqual(["a"]);
   });
 });
 
@@ -140,5 +143,39 @@ describe("tâche du soir et petit programme", () => {
     expect(sw).toContain('addEventListener("push"');
     expect(sw).toContain('addEventListener("notificationclick"');
     expect(sw).toContain('n.url.startsWith("/") && !n.url.startsWith("//")');
+  });
+});
+
+describe("agenda : nouvel événement ou date modifiée (hors FAQ)", () => {
+  const webinaire = { type: "webinaire" as const, debut: "2027-01-21T19:00:00.000Z", fin: "2027-01-21T20:00:00.000Z", dates_a_confirmer: false, periode: null };
+
+  it("création : on prévient, sauf pour une FAQ (récurrente, rappelée la veille)", () => {
+    expect(changementAgenda(null, webinaire)).toBe("nouveau");
+    expect(changementAgenda(null, { ...webinaire, type: "faq" })).toBeNull();
+  });
+
+  it("modification : seulement si la date ou l'heure change", () => {
+    expect(changementAgenda(webinaire, { ...webinaire })).toBeNull();
+    // Même instant écrit autrement (la base renvoie « +00:00 ») : pas de changement.
+    expect(changementAgenda({ ...webinaire, debut: "2027-01-21T19:00:00+00:00" }, webinaire)).toBeNull();
+    expect(changementAgenda(webinaire, { ...webinaire, debut: "2027-01-28T19:00:00.000Z" })).toBe("date");
+    expect(changementAgenda(webinaire, { ...webinaire, fin: "2027-01-21T20:30:00.000Z" })).toBe("date");
+    expect(changementAgenda({ ...webinaire, dates_a_confirmer: true, periode: "Printemps" }, webinaire)).toBe("date");
+    expect(changementAgenda(webinaire, { ...webinaire, debut: "2027-01-28T19:00:00.000Z", type: "faq" })).toBeNull();
+  });
+
+  it("le message : nouvel événement ou date modifiée, quand, ouvre l'agenda", () => {
+    const maintenant = new Date("2027-01-11T09:00:00Z");
+    const e = { id: "e1", titre: "Webinaire : bien démarrer sa saison", ...webinaire };
+    expect(notificationEvenement(e, "nouveau", maintenant)).toEqual({
+      titre: "Nouvel événement : Webinaire : bien démarrer sa saison",
+      corps: "Jeu. 21 janv. · 20 h 00",
+      url: "/club/agenda",
+      etiquette: "evenement-e1",
+    });
+    expect(notificationEvenement({ ...e, titre: "Stage vélo", dates_a_confirmer: true, periode: "Printemps" }, "date", maintenant)).toMatchObject({
+      titre: "Date modifiée : Stage vélo",
+      corps: "Printemps · dates à venir",
+    });
   });
 });

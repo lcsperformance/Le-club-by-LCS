@@ -30,7 +30,7 @@ export async function envoyerNotification(type: TypeNotification, notification: 
   const admin = createAdminClient();
   const { data: membres, error } = await admin
     .from("membres")
-    .select("id, role, abonnement_fin, acces_offert_jusqua, acces_coupe, notif_annonces, notif_faq");
+    .select("id, role, abonnement_fin, acces_offert_jusqua, acces_coupe, notif_annonces, notif_faq, notif_evenements");
   if (error) {
     console.error("Notifications : lecture des membres impossible", error.code, error.message);
     return 0;

@@ -46,15 +46,15 @@ export function EcranProfil({
   utilisateur,
   maintenant,
   suggestion,
-  notifications = { annonces: true, faq: true },
+  notifications = { annonces: true, faq: true, evenements: true },
   appareilApercu,
 }: {
   utilisateur: Utilisateur;
   maintenant: Date;
   /** Profil suggéré d'après les tests vélo. */
   suggestion?: SuggestionProfil;
-  /** Réglages Notifications du membre (annonces, rappel FAQ). */
-  notifications?: { annonces: boolean; faq: boolean };
+  /** Réglages Notifications du membre (annonces, rappel FAQ, nouveaux événements). */
+  notifications?: { annonces: boolean; faq: boolean; evenements: boolean };
   /** Aperçus seulement : état de l'appareil imposé. */
   appareilApercu?: EtatAppareil;
 }) {

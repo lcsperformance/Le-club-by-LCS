@@ -81,7 +81,7 @@ Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FA
 
 - App installable aussi sur **iPad** (écrans de démarrage portrait et paysage).
 - **Bandeau du prochain événement** en haut de l'espace membre.
-- **Notifications** (annonces, rappel la veille des FAQ). Migration `20261208000000_notifications.sql`. **À faire dans Vercel** : `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_CONTACT`, `CRON_SECRET` (voir `.env.example`). À essayer en vrai sur un iPhone (app installée, iOS 16.4+) et un Android.
+- **Notifications** (annonces, rappel la veille des FAQ). Migration `20261208000000_notifications.sql`. Clés `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_CONTACT`, `CRON_SECRET` **enregistrées dans Vercel le 24/11** (production). Notification aussi à la création d'un événement ou à un changement de date (hors FAQ), réglage « Nouveaux événements » (migration `20261209000000_notif_evenements.sql`). À essayer en vrai sur un iPhone (app installée, iOS 16.4+) et un Android.
 
 ### Contenus à fournir
 8. **Programme** : les vrais plans de Martin (fil rouge et blocs S/M/L/XL, par niveau et profil) ; toutes les séances actuelles sont des démos (`de000000-…`).

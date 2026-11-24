@@ -134,7 +134,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
           suggestion={profilSuggere(TEST_FICTIF)}
-          notifications={{ annonces: true, faq: false }}
+          notifications={{ annonces: true, faq: false, evenements: true }}
           appareilApercu={{ priseEnCharge: true, permission: "granted", abonne: true, apple: false, installee: true }}
         />
       );

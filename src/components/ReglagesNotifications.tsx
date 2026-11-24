@@ -6,11 +6,11 @@ import { BoutonSecondaire, Carte } from "@/components/ui";
 import { activerSurCetAppareil, desactiverSurCetAppareil, etatAppareil, type EtatAppareil } from "@/lib/notifications-navigateur";
 import styles from "./ReglagesNotifications.module.css";
 
-type Reglages = { annonces: boolean; faq: boolean };
-type Champ = "notif_annonces" | "notif_faq";
+type Reglages = { annonces: boolean; faq: boolean; evenements: boolean };
+type Champ = "notif_annonces" | "notif_faq" | "notif_evenements";
 
 /**
- * Profil > Notifications : deux interrupteurs (annonces, rappel FAQ), enregistrés dès qu'on les touche,
+ * Profil > Notifications : trois interrupteurs (annonces, rappel FAQ, nouveaux événements), enregistrés dès qu'on les touche,
  * et l'état de cet appareil (activer ou désactiver ici). Aucune demande d'autorisation sans toucher un bouton.
  */
 export function ReglagesNotifications({ reglages, apercu }: { reglages: Reglages; apercu?: EtatAppareil }) {
@@ -54,6 +54,12 @@ export function ReglagesNotifications({ reglages, apercu }: { reglages: Reglages
 
       <Interrupteur libelle="Annonces du Club" aide="À chaque annonce de Martin ou de l'équipe." actif={valeurs.annonces} onChange={() => basculer("notif_annonces", "annonces")} />
       <Interrupteur libelle="Rappel des FAQ en visio" aide="La veille au soir de chaque FAQ." actif={valeurs.faq} onChange={() => basculer("notif_faq", "faq")} />
+      <Interrupteur
+        libelle="Nouveaux événements"
+        aide="Webinaire, stage… ajouté à l'agenda, ou date modifiée."
+        actif={valeurs.evenements}
+        onChange={() => basculer("notif_evenements", "evenements")}
+      />
 
       <p className={styles.appareil}>{texteAppareil(appareil)}</p>
       {appareil?.priseEnCharge && appareil.permission !== "denied" && !(appareil.apple && !appareil.installee) && (
