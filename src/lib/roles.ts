@@ -14,7 +14,18 @@ export function cheminAccueil(role: Role): string {
 }
 
 /** Pages accessibles sans être connecté. */
-const CHEMINS_PUBLICS = ["/connexion", "/mot-de-passe-oublie", "/auth/confirm", "/bienvenue", "/api/stripe/webhook", "/api/rappels-faq"];
+const CHEMINS_PUBLICS = [
+  "/connexion",
+  "/mot-de-passe-oublie",
+  "/auth/confirm",
+  "/bienvenue",
+  "/api/stripe/webhook",
+  "/api/rappels-faq",
+  // Pages légales : lisibles avant tout achat.
+  "/mentions-legales",
+  "/cgv",
+  "/confidentialite",
+];
 
 /**
  * Pages d'aperçu avec des données fictives, pour les tests automatiques d'affichage.

@@ -4,6 +4,7 @@ import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { aAcces, type StatutAbonnement } from "@/lib/abonnement/etat";
 import type { Formule } from "@/lib/abonnement/formules";
+import { doitAccepter } from "@/lib/legal";
 import { estSessionDeReinitialisation } from "@/lib/reinitialisation";
 import type { Niveau, Profil } from "@/lib/profils";
 import { cheminAccueil, type Role } from "@/lib/roles";
@@ -18,6 +19,8 @@ export type Utilisateur = {
   role: Role;
   /** Admin présenté comme « Coach » aux membres (Coach + admin). */
   afficheCoach: boolean;
+  /** Version des CGV et de la politique acceptées (null : jamais acceptées). */
+  conditionsAcceptees: string | null;
   /** Choisis par le membre ; null tant qu'il ne l'a pas fait. */
   niveau: Niveau | null;
   profil: Profil | null;
@@ -51,7 +54,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
 
   const { data: membre } = await supabase
     .from("membres")
-    .select("email, prenom, nom, role, affiche_coach, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe, date_inscription")
+    .select("email, prenom, nom, role, affiche_coach, conditions_version, niveau, profil, statut_abonnement, abonnement_fin, annulation_prevue, formule, stripe_customer_id, acces_offert_jusqua, acces_coupe, date_inscription")
     .eq("id", id)
     .maybeSingle();
   if (!membre) return null;
@@ -63,6 +66,7 @@ export const utilisateurConnecte = cache(async function utilisateurConnecte(): P
     nom: (membre.nom as string | null) ?? null,
     role: membre.role as Role,
     afficheCoach: membre.affiche_coach === true,
+    conditionsAcceptees: (membre.conditions_version as string | null) ?? null,
     niveau: (membre.niveau as Niveau | null) ?? null,
     profil: (membre.profil as Profil | null) ?? null,
     dateInscription: (membre.date_inscription as string | null) ?? null,
@@ -105,6 +109,8 @@ export async function exigerRole(...autorises: Role[]): Promise<Utilisateur> {
   const utilisateur = await utilisateurConnecte();
   if (!utilisateur) redirect("/connexion");
   if (!autorises.includes(utilisateur.role)) redirect(cheminAccueil(utilisateur.role));
+  // Première connexion (ou nouvelle version des textes) : accepter les CGV et la politique de confidentialité.
+  if (doitAccepter(utilisateur)) redirect("/conditions");
   if (!aAccesEspace(utilisateur)) redirect("/abonnement");
   return utilisateur;
 }

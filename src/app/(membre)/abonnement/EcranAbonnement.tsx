@@ -1,3 +1,4 @@
+import { LiensLegaux } from "@/components/legal/LiensLegaux";
 import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
 import { ChoixFormule, type LiensPaiement } from "@/components/ChoixFormule";
@@ -51,6 +52,7 @@ export function EcranAbonnement({
           Se déconnecter
         </button>
       </form>
+      <LiensLegaux />
     </>
   );
 }

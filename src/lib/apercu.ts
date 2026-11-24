@@ -1,5 +1,6 @@
 import "server-only";
 import type { CompteEquipe } from "./admin/equipe";
+import { VERSION_TEXTES } from "./legal";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
@@ -31,6 +32,7 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   nom: "Dupont",
   role: "membre",
   afficheCoach: false,
+  conditionsAcceptees: VERSION_TEXTES,
   niveau: null,
   profil: null,
   dateInscription: "2026-11-02T10:00:00.000Z",
