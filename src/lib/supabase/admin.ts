@@ -5,8 +5,9 @@ import { getSupabaseEnv } from "./env";
 
 /**
  * Connexion Supabase avec la clé SECRÈTE : contourne la sécurité par ligne.
- * Réservée au serveur, pour les traitements sans membre connecté (webhook Stripe).
- * Ne jamais l'utiliser pour répondre à une demande d'un membre.
+ * Réservée au serveur : traitements sans membre connecté (webhook Stripe, notifications, tâche du soir),
+ * suppression d'un compte, et lecture du programme (src/lib/programme-serveur.ts, qui ne renvoie que
+ * la semaine ou la séance autorisée). Ne jamais renvoyer à un membre ce qu'elle lit sans ce filtre.
  */
 export function createAdminClient() {
   const { url } = getSupabaseEnv();
