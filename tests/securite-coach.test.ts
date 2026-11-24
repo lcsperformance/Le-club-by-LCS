@@ -115,3 +115,97 @@ describe("nom de famille", () => {
     await expect(en(ACTIF, `update membres set nom = '${"x".repeat(61)}' where id = $1`, [ACTIF])).rejects.toThrow(/check constraint/);
   });
 });
+
+describe("l'encadrement (coach et admin) ne modifie aucune donnée d'un athlète", () => {
+  const RESSOURCE = "de000000-0000-0000-0001-000000000001"; // débloquée dès la semaine 1
+
+  /** Toutes les données de l'athlète, lues sans la sécurité. */
+  const empreinte = async () =>
+    JSON.stringify(
+      (
+        await base.db.query(
+          `select json_build_object(
+             'fiche', (select row_to_json(m) from membres m where m.id = $1),
+             'tests', (select json_agg(t order by t.date_test) from tests t where t.membre_id = $1),
+             'zones', (select json_agg(z order by z.sport) from zones z where z.membre_id = $1),
+             'records', (select json_agg(r order by r.epreuve) from records r where r.membre_id = $1),
+             'objectifs', (select json_agg(o order by o.date_objectif) from objectifs o where o.membre_id = $1),
+             'ressentis', (select json_agg(r order by r.date_seance) from ressentis r where r.membre_id = $1),
+             'suivi', (select json_agg(s order by s.ressource_id) from suivi_ressources s where s.membre_id = $1)
+           ) as d`,
+          [ACTIF],
+        )
+      ).rows[0].d,
+    );
+  let avant: string;
+
+  beforeAll(async () => {
+    await base.db.query(
+      `insert into tests (membre_id, date_test, ftp, fc_seuil) values ($1, '2027-01-04', 230, 170);
+       insert into zones (membre_id, sport, bornes) values ($1, 'velo', '[45, 57, 76, 91, 106, 120]');
+       insert into records (membre_id, epreuve, duree_secondes) values ($1, '10km', 2500);
+       insert into suivi_ressources (membre_id, ressource_id, favori) values ($1, '${RESSOURCE}', true);`.replaceAll("$1", `'${ACTIF}'`),
+    );
+    avant = await empreinte();
+  });
+
+  const MODIFICATIONS = [
+    ["tests", "ftp = 999"],
+    ["zones", "bornes = '[30, 40, 50, 60, 70, 80]'"],
+    ["records", "duree_secondes = 600"],
+    ["objectifs", "bloc = 'S'"],
+    ["ressentis", "rpe = 1, commentaire = 'Modifié par le coach'"],
+    ["suivi_ressources", "favori = false"],
+  ] as const;
+
+  const ECRASEMENTS = [
+    `insert into tests (membre_id, date_test, ftp) values ('${ACTIF}', '2027-01-04', 999)
+       on conflict (membre_id, date_test) do update set ftp = excluded.ftp`,
+    `insert into zones (membre_id, sport, bornes) values ('${ACTIF}', 'velo', '[30, 40, 50, 60, 70, 80]')
+       on conflict (membre_id, sport) do update set bornes = excluded.bornes`,
+    `insert into records (membre_id, epreuve, duree_secondes) values ('${ACTIF}', '10km', 600)
+       on conflict (membre_id, epreuve) do update set duree_secondes = excluded.duree_secondes`,
+    `insert into zones (membre_id, sport, bornes) values ('${ACTIF}', 'course', '[65, 78, 88, 95, 102, 110]')`,
+    `insert into suivi_ressources (membre_id, ressource_id, favori) values ('${ACTIF}', '${RESSOURCE}', false)
+       on conflict (membre_id, ressource_id) do update set favori = excluded.favori`,
+  ];
+
+  describe.each([
+    ["le coach", COACH],
+    ["l'admin", ADMIN],
+  ])("%s", (_, qui) => {
+    it.each(MODIFICATIONS)("modifier %s ne touche aucune ligne", async (table, changement) => {
+      let touchees: unknown[] = [];
+      try {
+        touchees = await en(qui, `update ${table} set ${changement} where membre_id = $1 returning membre_id`, [ACTIF]);
+      } catch (e) {
+        // Colonne fermée par la base : refus encore plus net.
+        expect(String(e)).toMatch(/permission denied/);
+      }
+      expect(touchees).toEqual([]);
+      expect(await empreinte()).toBe(avant);
+    });
+
+    it.each(MODIFICATIONS.map(([t]) => t))("supprimer dans %s n'efface rien", async (table) => {
+      expect(await en(qui, `delete from ${table} where membre_id = $1 returning membre_id`, [ACTIF])).toEqual([]);
+      expect(await empreinte()).toBe(avant);
+    });
+
+    it("ajouter ou écraser au nom de l'athlète est refusé", async () => {
+      for (const sql of ECRASEMENTS) await expect(en(qui, sql), sql).rejects.toThrow(/row-level security|permission denied/);
+      expect(await empreinte()).toBe(avant);
+    });
+
+    it("changer le niveau, le profil ou le prénom de l'athlète ne touche aucune ligne", async () => {
+      expect(
+        await en(qui, "update membres set niveau = 'finisher', profil = 'extensif', prenom = 'Pirate' where id = $1 returning id", [ACTIF]),
+      ).toEqual([]);
+      expect(await empreinte()).toBe(avant);
+    });
+  });
+
+  it("contre-épreuve : l'encadrement lit bien ces données (la sécurité ne bloque pas tout)", async () => {
+    expect(await en(COACH, "select ftp from tests where membre_id = $1", [ACTIF])).toEqual([{ ftp: 230 }]);
+    expect(await en(ADMIN, "select duree_secondes from records where membre_id = $1", [ACTIF])).toEqual([{ duree_secondes: 2500 }]);
+  });
+});
