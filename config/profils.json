@@ -8,11 +8,11 @@
   "profils": {
     "extensif": {
       "libelle": "Extensif",
-      "description": "Tu encaisses bien le volume : le plan insiste sur l'endurance."
+      "description": "Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse."
     },
     "intensif": {
       "libelle": "Intensif",
-      "description": "Tu réponds bien aux séances dures : le plan insiste sur l'intensité."
+      "description": "Tu es à l'aise dans les efforts courts et intenses. Ton plan te fait travailler l'endurance pour tenir plus longtemps."
     }
   }
 }

@@ -22,14 +22,14 @@ afterAll(async () => {
 describe("écran Profil : niveau et profil", () => {
   it("affiche les 3 niveaux et les 2 profils avec leurs textes", async () => {
     for (const n of ["Finisher", "Challenger", "Performer"]) expect(await page.getByRole("button", { name: n }).isVisible()).toBe(true);
-    expect(await page.getByText("Tu encaisses bien le volume : le plan insiste sur l'endurance.").isVisible()).toBe(true);
-    expect(await page.getByText("Tu réponds bien aux séances dures : le plan insiste sur l'intensité.").isVisible()).toBe(true);
+    expect(await page.getByText("Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse.").isVisible()).toBe(true);
+    expect(await page.getByText("Tu es à l'aise dans les efforts courts et intenses. Ton plan te fait travailler l'endurance pour tenir plus longtemps.").isVisible()).toBe(true);
   });
 
   it("montre les choix déjà faits", async () => {
     expect(await presse("Challenger")).toBe("true");
     expect(await presse("Finisher")).toBe("false");
-    expect(await presse("Extensif Tu encaisses bien le volume : le plan insiste sur l'endurance.")).toBe("true");
+    expect(await presse("Extensif Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse.")).toBe("true");
   });
 
   it("toucher un autre niveau tente de l'enregistrer ; en cas d'échec (ici, pas de session), le choix précédent revient", async () => {
