@@ -340,6 +340,13 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return <EcranProgres sport="cardio" points={[]} testsFaits />;
     case "progres-sans-test":
       return <EcranProgres sport="course" points={[]} testsFaits={false} />;
+    case "zones-cardio-personnalisation":
+      return (
+        <>
+          <EnTeteZones />
+          <AffichageZones sport="cardio" test={TEST_FICTIF} bornesEnregistrees={[65, 80, 90, 94, 100, 106]} personnalisationOuverte />
+        </>
+      );
     case "zones-personnalisation":
       return (
         <>

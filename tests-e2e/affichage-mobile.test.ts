@@ -41,6 +41,8 @@ const ECRANS = [
   "/apercu-membre/zones-course",
   "/apercu-membre/zones-velo",
   "/apercu-membre/zones-natation",
+  "/apercu-membre/zones-cardio",
+  "/apercu-membre/zones-cardio-personnalisation",
   "/apercu-membre/zones-personnalisation",
   "/apercu-membre/profil",
   "/apercu-membre/records",

@@ -50,6 +50,17 @@ describe("cibles recalculées avec les bornes personnalisées", () => {
     // La FC garde les valeurs du Club.
     expect(z[2].frequenceCardiaque).toBe(calculerZones("course", tests)[2].frequenceCardiaque);
   });
+
+  it("les zones cardio personnalisées changent la FC sous la course et le vélo, pas la natation", () => {
+    const tests = { allure_seuil_course: 270, ftp: 220, vitesse_critique_natation: 105, fc_seuil: 168 };
+    const fcPerso: Bornes = [65, 80, 90, 94, 100, 106];
+    // Z2 : 168 × 80 % = 134,4 → 134 ; 168 × 90 % = 151,2 → 151
+    expect(calculerZones("course", tests, CONFIG_ZONES, null, fcPerso)[1].frequenceCardiaque).toBe("FC 134–151 bpm");
+    expect(calculerZones("velo", tests, CONFIG_ZONES, null, fcPerso)[1].frequenceCardiaque).toBe("FC 134–151 bpm");
+    expect(calculerZones("natation", tests, CONFIG_ZONES, null, fcPerso)[1].frequenceCardiaque).toBeNull();
+    // Et l'onglet Cardio lui-même, avec ces bornes.
+    expect(calculerZones("cardio", tests, CONFIG_ZONES, fcPerso)[1].cible).toBe("134–151 bpm");
+  });
 });
 
 describe("vérification côté serveur", () => {

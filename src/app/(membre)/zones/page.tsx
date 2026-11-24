@@ -4,7 +4,7 @@ import { Chargement } from "@/components/Chargement";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { CONFIG_ZONES, sportDepuisAdresse } from "@/lib/zones";
+import { bornesDuClub, sportDepuisAdresse } from "@/lib/zones";
 import { bornesPersoApplicables } from "@/lib/zones-perso";
 import { AffichageZones } from "./AffichageZones";
 import { EnTeteZones } from "./EnTeteZones";
@@ -45,18 +45,20 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
     );
   }
 
-  const { data: perso } = await supabase
+  // Zones personnalisées du sport affiché, et zones cardio (ligne FC sous la course et le vélo).
+  const { data: persos } = await supabase
     .from("zones")
-    .select("bornes")
+    .select("sport, bornes")
     .eq("membre_id", utilisateur.id)
-    .eq("sport", sport)
-    .maybeSingle();
+    .in("sport", sport === "cardio" ? ["cardio"] : [sport, "cardio"]);
+  const enregistrees = (s: string) => persos?.find((p) => p.sport === s)?.bornes;
 
   return (
     <AffichageZones
       sport={sport}
       test={test}
-      bornesEnregistrees={bornesPersoApplicables(perso?.bornes, CONFIG_ZONES[sport])}
+      bornesEnregistrees={bornesPersoApplicables(enregistrees(sport), bornesDuClub(sport))}
+      bornesFc={bornesPersoApplicables(enregistrees("cardio"), bornesDuClub("cardio"))}
       niveau={utilisateur.niveau}
       profil={utilisateur.profil}
     />

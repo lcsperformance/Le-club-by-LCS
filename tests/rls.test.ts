@@ -234,6 +234,13 @@ describe("zones personnalisées : bornes cohérentes", () => {
     await enTantQue(A, "delete from zones where sport = 'natation'");
   });
 
+  it("accepte des zones cardio personnalisées", async () => {
+    await enTantQue(A, "insert into zones (sport, bornes) values ('cardio', '[65, 80, 90, 94, 100, 106]'::jsonb)");
+    const lignes = await enTantQue(B, "select * from zones where sport = 'cardio'");
+    expect(lignes).toHaveLength(0);
+    await enTantQue(A, "delete from zones where sport = 'cardio'");
+  });
+
   it.each([
     ["des bornes qui ne montent pas", "[80, 93, 87, 97, 102, 108]"],
     ["deux bornes égales", "[80, 87, 87, 97, 102, 108]"],

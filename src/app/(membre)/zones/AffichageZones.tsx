@@ -13,6 +13,7 @@ export function AffichageZones({
   sport,
   test,
   bornesEnregistrees = null,
+  bornesFc = null,
   personnalisationOuverte = false,
   niveau = null,
   profil = null,
@@ -20,6 +21,8 @@ export function AffichageZones({
   sport: Sport;
   test: Tests & { date_test: string };
   bornesEnregistrees?: Bornes | null;
+  /** Zones cardio personnalisées (ligne FC sous la course et le vélo), ou null. */
+  bornesFc?: Bornes | null;
   personnalisationOuverte?: boolean;
   /** Choix du membre, proposés juste après le calcul des zones. */
   niveau?: Niveau | null;
@@ -46,6 +49,7 @@ export function AffichageZones({
         sport={sport}
         test={test}
         bornesEnregistrees={bornesEnregistrees}
+        bornesFc={bornesFc}
         personnalisationOuverte={personnalisationOuverte}
       />
 
