@@ -12,8 +12,13 @@ export const SPORTS = [
   { cle: "course", libelle: "Course" },
   { cle: "velo", libelle: "Vélo" },
   { cle: "natation", libelle: "Natation" },
+  { cle: "cardio", libelle: "Cardio" },
 ] as const;
 export type Sport = (typeof SPORTS)[number]["cle"];
+
+/** Bornes du Club pour un sport (« cardio » = ligne frequence_cardiaque de config/zones.json). */
+export const bornesDuClub = (sport: Sport, config: ConfigZones = CONFIG_ZONES): Bornes =>
+  sport === "cardio" ? config.frequence_cardiaque : config[sport];
 
 /** Configuration validée au chargement : une erreur bloque la compilation. */
 export const CONFIG_ZONES = validerConfig(configBrute);
@@ -32,7 +37,7 @@ export type LigneZone = {
   pourcentages: string;
   /** Allure ou puissance cible, ou null si le test manque. */
   cible: string | null;
-  /** Fréquence cardiaque (course et vélo), ou null. */
+  /** Fréquence cardiaque sous l'allure ou la puissance (course et vélo), ou null. */
   frequenceCardiaque: string | null;
 };
 
@@ -58,6 +63,10 @@ function cible(sport: Sport, tests: Tests, bas: number, haut: number): string | 
       const f = tests.ftp;
       return f ? `${Math.round(wattsA(f, bas))}–${Math.round(wattsA(f, haut))} W` : null;
     }
+    case "cardio": {
+      const fc = tests.fc_seuil;
+      return fc ? `${Math.round(frequenceA(fc, bas))}–${Math.round(frequenceA(fc, haut))} bpm` : null;
+    }
   }
 }
 
@@ -68,15 +77,17 @@ export function calculerZones(
   config: ConfigZones = CONFIG_ZONES,
   /** Bornes personnalisées par le membre ; sinon celles du Club. */
   bornesPerso?: Bornes | null,
+  /** Zones cardio personnalisées par le membre (ligne FC sous la course et le vélo) ; sinon celles du Club. */
+  bornesFcPerso?: Bornes | null,
 ): LigneZone[] {
-  const bornes = bornesPerso ?? config[sport];
-  const bornesFc = config.frequence_cardiaque;
+  const bornes = bornesPerso ?? bornesDuClub(sport, config);
+  const bornesFc = bornesFcPerso ?? config.frequence_cardiaque;
   const fc = tests.fc_seuil;
 
   return ([1, 2, 3, 4, 5] as const).map((zone) => {
     const bas = bornes[zone - 1];
     const haut = bornes[zone];
-    const avecFc = sport !== "natation" && fc;
+    const avecFc = (sport === "course" || sport === "velo") && fc;
     return {
       zone,
       nom: config.noms[zone - 1],

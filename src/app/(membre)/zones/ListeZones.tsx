@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { BoutonSecondaire, Carte, Compteur, PastilleZone } from "@/components/ui";
 import type { Bornes } from "@/lib/config-zones";
-import { calculerZones, CONFIG_ZONES, SPORTS, type Sport, type Tests } from "@/lib/zones";
+import { bornesDuClub, calculerZones, CONFIG_ZONES, SPORTS, type Sport, type Tests } from "@/lib/zones";
 import { limitesDebut, memesBornes, type Zone } from "@/lib/zones-perso";
 import { enregistrerZones } from "./actions";
 import styles from "./zones.module.css";
@@ -14,20 +14,22 @@ type Props = {
   test: Tests;
   /** Bornes personnalisées enregistrées pour ce sport, ou null (valeurs du Club). */
   bornesEnregistrees: Bornes | null;
+  /** Zones cardio personnalisées (ligne FC sous la course et le vélo), ou null. */
+  bornesFc?: Bornes | null;
   /** Ouvre directement le mode personnalisation (aperçus de test). */
   personnalisationOuverte?: boolean;
 };
 
 /** Les 5 zones d'un sport, avec le mode « Personnaliser mes zones » de la maquette. */
-export function ListeZones({ sport, test, bornesEnregistrees, personnalisationOuverte = false }: Props) {
+export function ListeZones({ sport, test, bornesEnregistrees, bornesFc = null, personnalisationOuverte = false }: Props) {
   const router = useRouter();
-  const club = CONFIG_ZONES[sport];
+  const club = bornesDuClub(sport);
   const [bornes, setBornes] = useState<Bornes>(bornesEnregistrees ?? club);
   const [edition, setEdition] = useState(personnalisationOuverte);
   const [erreur, setErreur] = useState<string | null>(null);
   const [enCours, demarrer] = useTransition();
 
-  const zones = calculerZones(sport, test, CONFIG_ZONES, bornes);
+  const zones = calculerZones(sport, test, CONFIG_ZONES, bornes, bornesFc);
   const personnalisees = !memesBornes(bornes, club);
   const libelleSport = SPORTS.find((s) => s.cle === sport)!.libelle;
 

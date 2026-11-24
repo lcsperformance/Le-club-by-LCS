@@ -12,7 +12,7 @@ import styles from "./seance.module.css";
 
 /**
  * Séance ouverte (maquette) : sport, titre, durée, puis chaque bloc avec sa zone et l'allure du membre.
- * tests : derniers tests du membre (null : allures verrouillées) ; bornesPerso : ses zones personnalisées.
+ * tests : derniers tests du membre (null : allures verrouillées) ; bornesPerso, bornesFc : ses zones personnalisées (sport de la séance, cardio).
  * suivi : jour de la séance et ressenti du membre (« Marquer comme faite », RPE, douleur, commentaire).
  * Le programme reste dans l'app : ni export, ni PDF, ni impression (data-programme).
  */
@@ -20,14 +20,16 @@ export function EcranSeance({
   seance,
   tests,
   bornesPerso = null,
+  bornesFc = null,
   suivi,
 }: {
   seance: Seance;
   tests: Tests | null;
   bornesPerso?: Bornes | null;
+  bornesFc?: Bornes | null;
   suivi?: { jour: string; ressenti: Ressenti | null; interdit: string | null };
 }) {
-  const blocs = seance.blocs.map((b) => ({ ...b, cible: cibleDuBloc(seance.sport, b.zone, tests, bornesPerso) }));
+  const blocs = seance.blocs.map((b) => ({ ...b, cible: cibleDuBloc(seance.sport, b.zone, tests, bornesPerso, bornesFc) }));
   const verrouillee = blocs.some((b) => b.cible.type === "verrouillee");
   return (
     <div data-programme style={{ display: "grid", gap: 16 }}>

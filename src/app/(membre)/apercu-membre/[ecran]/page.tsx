@@ -50,6 +50,7 @@ import {
 } from "@/lib/apercu";
 import { carteAujourdhui, nouveauCetteSemaine } from "@/lib/accueil";
 import { cartesThemes, favoris, sousRubriques, themeParCle, vueContenu } from "@/lib/ressources";
+import { profilSuggere } from "@/lib/profil-suggere";
 import { valeursDeDepart } from "@/lib/tests-depart";
 import { SPORTS } from "@/lib/zones";
 
@@ -111,11 +112,19 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
         </>
       );
+    case "tests-pma":
+      return (
+        <>
+          <EnTeteTests />
+          <FormulaireTests valeursInitiales={valeursDeDepart(TEST_FICTIF)} facultativesFaites={["pma_5min"]} />
+        </>
+      );
     case "profil":
       return (
         <EcranProfil
           utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
+          suggestion={profilSuggere(TEST_FICTIF)}
         />
       );
     case "abonnement-termine":
@@ -147,6 +156,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
             abonnement: { ...UTILISATEUR_FICTIF.abonnement, formule: "annuelle", fin: "2027-11-10T10:00:00.000Z" },
           }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
+          suggestion={profilSuggere(null)}
         />
       );
     case "saison-vide":
@@ -340,6 +350,13 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return <EcranProgres sport="cardio" points={[]} testsFaits />;
     case "progres-sans-test":
       return <EcranProgres sport="course" points={[]} testsFaits={false} />;
+    case "zones-cardio-personnalisation":
+      return (
+        <>
+          <EnTeteZones />
+          <AffichageZones sport="cardio" test={TEST_FICTIF} bornesEnregistrees={[65, 80, 90, 94, 100, 106]} personnalisationOuverte />
+        </>
+      );
     case "zones-personnalisation":
       return (
         <>

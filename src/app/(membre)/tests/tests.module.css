@@ -5,3 +5,23 @@
   font-size: 13px;
   color: #a9a4c9;
 }
+.aide {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #a9a4c9;
+}
+.case {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.case input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+  flex: none;
+}

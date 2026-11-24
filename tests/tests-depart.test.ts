@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { dateDuJourParis } from "@/lib/dates";
 import { pasSuivant } from "@/components/ui/Compteur";
-import { formatMinSec, lireValeurs, MESURES, VALEURS_PAR_DEFAUT, valeursDeDepart } from "@/lib/tests-depart";
+import { facultativesFaites, formatMinSec, lireValeurs, MESURES, VALEURS_PAR_DEFAUT, valeursDeDepart } from "@/lib/tests-depart";
 
 const mesure = (cle: string) => MESURES.find((m) => m.cle === cle)!;
 
@@ -20,7 +20,7 @@ describe("affichage", () => {
   });
 
   it("affiche les valeurs par défaut de la maquette", () => {
-    expect(MESURES.map((m) => m.afficher(m.defaut))).toEqual(["4:30 /km", "220 W", "1:45 /100 m", "168 bpm"]);
+    expect(MESURES.map((m) => m.afficher(m.defaut))).toEqual(["4:30 /km", "220 W", "270 W", "1:45 /100 m", "168 bpm"]);
   });
 });
 
@@ -51,8 +51,30 @@ describe("valeurs de départ", () => {
 describe("vérification côté serveur", () => {
   it("accepte des valeurs correctes", () => {
     expect(lireValeurs(formulaire(valide))).toEqual({
-      valeurs: { allure_seuil_course: 270, ftp: 220, vitesse_critique_natation: 105, fc_seuil: 168 },
+      valeurs: { allure_seuil_course: 270, ftp: 220, pma_5min: null, vitesse_critique_natation: 105, fc_seuil: 168 },
     });
+  });
+
+  it("la puissance max sur 5 min est facultative : enregistrée si elle est donnée", () => {
+    const r = lireValeurs(formulaire({ ...valide, pma_5min: "265" }));
+    expect("valeurs" in r && r.valeurs.pma_5min).toBe(265);
+    const vide = lireValeurs(formulaire({ ...valide, pma_5min: "" }));
+    expect("valeurs" in vide && vide.valeurs.pma_5min).toBeNull();
+  });
+
+  it("refuse une puissance max sur 5 min impossible", () => {
+    const r = lireValeurs(formulaire({ ...valide, pma_5min: "5000" }));
+    expect("erreur" in r && r.erreur).toMatch(/Vélo/);
+  });
+
+  it("les quatre mesures de la maquette restent obligatoires", () => {
+    expect(MESURES.filter((m) => !m.facultative).map((m) => m.cle)).toEqual(["allure_seuil_course", "ftp", "vitesse_critique_natation", "fc_seuil"]);
+  });
+
+  it("coche d'avance le test facultatif s'il figurait au dernier test", () => {
+    expect(facultativesFaites({ ftp: 220, pma_5min: 260 })).toEqual(["pma_5min"]);
+    expect(facultativesFaites({ ftp: 220, pma_5min: null })).toEqual([]);
+    expect(facultativesFaites(null)).toEqual([]);
   });
 
   it.each([

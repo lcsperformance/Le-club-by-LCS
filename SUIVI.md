@@ -74,6 +74,11 @@ Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FA
 6. **Saisie du programme par Martin** : aucun écran pour l'instant (la démo est écrite par migration) ; à prévoir dans l'admin, ou par import d'un tableur.
 7. ~~Canaux bloc-s et bloc-xl~~ : ajoutés le 23/11.
 
+### Fait le 24/11
+- Mes zones : onglet **Cardio** (zones en bpm), personnalisable ; s'applique aussi à la FC sous la course, le vélo et les séances. Migration `20261206000000_zones_cardio.sql` **à appliquer en ligne**.
+- Textes des profils : le plan travaille l'inverse du profil (extensif → intensité, intensif → endurance).
+- Test facultatif **puissance max sur 5 min** et profil suggéré (FTP ÷ PMA 5 min). Migration `20261207000000_test_pma_5min.sql` **à appliquer en ligne**. Seuils provisoires (85 % / 80 %) **à valider par Martin** dans `config/profils.json`.
+
 ### Contenus à fournir
 8. **Programme** : les vrais plans de Martin (fil rouge et blocs S/M/L/XL, par niveau et profil) ; toutes les séances actuelles sont des démos (`de000000-…`).
 9. **Ressources** : 3 contenus sur 17 ont déjà leur vidéo ou leur PDF ; les autres affichent « bientôt disponible ».

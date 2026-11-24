@@ -22,14 +22,20 @@ afterAll(async () => {
 describe("écran Profil : niveau et profil", () => {
   it("affiche les 3 niveaux et les 2 profils avec leurs textes", async () => {
     for (const n of ["Finisher", "Challenger", "Performer"]) expect(await page.getByRole("button", { name: n }).isVisible()).toBe(true);
-    expect(await page.getByText("Tu encaisses bien le volume : le plan insiste sur l'endurance.").isVisible()).toBe(true);
-    expect(await page.getByText("Tu réponds bien aux séances dures : le plan insiste sur l'intensité.").isVisible()).toBe(true);
+    expect(await page.getByText("Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse.").isVisible()).toBe(true);
+    expect(await page.getByText("Tu es à l'aise dans les efforts courts et intenses. Ton plan te fait travailler l'endurance pour tenir plus longtemps.").isVisible()).toBe(true);
   });
 
   it("montre les choix déjà faits", async () => {
     expect(await presse("Challenger")).toBe("true");
     expect(await presse("Finisher")).toBe("false");
-    expect(await presse("Extensif Tu encaisses bien le volume : le plan insiste sur l'endurance.")).toBe("true");
+    expect(await presse("Extensif Suggéré Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse.")).toBe("true");
+  });
+
+  it("suggère un profil d'après les tests vélo (FTP 220 W, puissance max 5 min 250 W)", async () => {
+    expect(
+      await page.getByText("D'après tes tests vélo (FTP à 88 % de ta puissance max sur 5 min), tu sembles plutôt extensif.").isVisible(),
+    ).toBe(true);
   });
 
   it("toucher un autre niveau tente de l'enregistrer ; en cas d'échec (ici, pas de session), le choix précédent revient", async () => {

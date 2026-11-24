@@ -7,7 +7,7 @@ import { dateDuJourParis } from "@/lib/dates";
 import { lireSeanceProgramme } from "@/lib/programme-serveur";
 import { erreurJour, jourDeLaSeance, type Ressenti } from "@/lib/ressenti";
 import { createClient } from "@/lib/supabase/server";
-import { CONFIG_ZONES } from "@/lib/zones";
+import { bornesDuClub } from "@/lib/zones";
 import { bornesPersoApplicables } from "@/lib/zones-perso";
 import { EcranSeance } from "./EcranSeance";
 
@@ -37,15 +37,18 @@ async function Contenu({ params, searchParams }: Pick<PageProps<"/seance/[id]">,
     .limit(1)
     .maybeSingle();
 
+  // Zones personnalisées du sport de la séance et zones cardio (FC sous la cible).
   let bornesPerso = null;
+  let bornesFc = null;
   if (seance.sport !== "renfo") {
-    const { data: perso } = await supabase
+    const { data: persos } = await supabase
       .from("zones")
-      .select("bornes")
+      .select("sport, bornes")
       .eq("membre_id", utilisateur.id)
-      .eq("sport", seance.sport)
-      .maybeSingle();
-    bornesPerso = bornesPersoApplicables(perso?.bornes, CONFIG_ZONES[seance.sport]);
+      .in("sport", [seance.sport, "cardio"]);
+    const enregistrees = (s: string) => persos?.find((p) => p.sport === s)?.bornes;
+    bornesPerso = bornesPersoApplicables(enregistrees(seance.sport), bornesDuClub(seance.sport));
+    bornesFc = bornesPersoApplicables(enregistrees("cardio"), bornesDuClub("cardio"));
   }
 
   // Ressenti du membre pour cette séance ce jour-là (données de santé : la sécurité par ligne ne renvoie que les siens).
@@ -61,6 +64,6 @@ async function Contenu({ params, searchParams }: Pick<PageProps<"/seance/[id]">,
     : null;
 
   return (
-    <EcranSeance seance={seance} tests={tests} bornesPerso={bornesPerso} suivi={{ jour, ressenti, interdit: erreurJour(jour, aujourdhui) }} />
+    <EcranSeance seance={seance} tests={tests} bornesPerso={bornesPerso} bornesFc={bornesFc} suivi={{ jour, ressenti, interdit: erreurJour(jour, aujourdhui) }} />
   );
 }

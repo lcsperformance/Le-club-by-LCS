@@ -96,9 +96,16 @@ export type CibleBloc =
   | { type: "verrouillee" };
 
 /** Allure, puissance et FC d'une zone pour ce sport, à partir des tests (et des zones personnalisées). */
-export function cibleDuBloc(sport: SportSeance, zone: BlocSeance["zone"], tests: Tests | null, bornesPerso?: Bornes | null): CibleBloc {
+export function cibleDuBloc(
+  sport: SportSeance,
+  zone: BlocSeance["zone"],
+  tests: Tests | null,
+  bornesPerso?: Bornes | null,
+  /** Zones cardio personnalisées du membre (FC affichée sous la cible). */
+  bornesFcPerso?: Bornes | null,
+): CibleBloc {
   if (!zone || sport === "renfo") return { type: "sans-zone" };
   if (!tests) return { type: "verrouillee" };
-  const ligne = calculerZones(sport as Sport, tests, undefined, bornesPerso)[zone - 1];
+  const ligne = calculerZones(sport as Sport, tests, undefined, bornesPerso, bornesFcPerso)[zone - 1];
   return ligne.cible ? { type: "cible", cible: ligne.cible, frequenceCardiaque: ligne.frequenceCardiaque } : { type: "verrouillee" };
 }

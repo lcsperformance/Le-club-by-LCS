@@ -14,6 +14,12 @@ const TRACES: Record<CleMesure, React.ReactNode> = {
       <path d="M6 16l4-8h5l3 8M10 8l5 8M13 6h3" />
     </>
   ),
+  pma_5min: (
+    <>
+      <circle cx="12" cy="13" r="8" />
+      <path d="M12 9v4l2.5 2.5M10 2h4" />
+    </>
+  ),
   vitesse_critique_natation: (
     <>
       <path d="M2 16c2 0 2-1.5 4-1.5S8 16 10 16s2-1.5 4-1.5S16 16 18 16s2-1.5 4-1.5" />

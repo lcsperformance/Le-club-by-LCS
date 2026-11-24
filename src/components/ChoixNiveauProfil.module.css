@@ -76,3 +76,27 @@
   font-weight: 700;
   color: var(--accent);
 }
+.suggestion {
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(222, 253, 98, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(222, 253, 98, 0.25);
+}
+.suggestion strong {
+  color: var(--accent);
+}
+.suggere {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  vertical-align: 2px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(222, 253, 98, 0.18);
+  color: var(--accent);
+}

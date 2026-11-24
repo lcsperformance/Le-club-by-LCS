@@ -234,6 +234,13 @@ describe("zones personnalisées : bornes cohérentes", () => {
     await enTantQue(A, "delete from zones where sport = 'natation'");
   });
 
+  it("accepte des zones cardio personnalisées", async () => {
+    await enTantQue(A, "insert into zones (sport, bornes) values ('cardio', '[65, 80, 90, 94, 100, 106]'::jsonb)");
+    const lignes = await enTantQue(B, "select * from zones where sport = 'cardio'");
+    expect(lignes).toHaveLength(0);
+    await enTantQue(A, "delete from zones where sport = 'cardio'");
+  });
+
   it.each([
     ["des bornes qui ne montent pas", "[80, 93, 87, 97, 102, 108]"],
     ["deux bornes égales", "[80, 87, 87, 97, 102, 108]"],
@@ -243,6 +250,24 @@ describe("zones personnalisées : bornes cohérentes", () => {
     ["l'ancien format", '[{"nom":"Z1","min":0,"max":140}]'],
   ])("refuse %s", async (_, bornes) => {
     await expect(essayer(bornes)).rejects.toThrow(/zones_bornes_valides/);
+  });
+});
+
+describe("test facultatif de puissance max sur 5 min", () => {
+  it("s'enregistre avec les autres mesures, ou vide", async () => {
+    await enTantQue(A, "insert into tests (date_test, ftp, pma_5min) values ('2027-03-01', 220, 260)");
+    await enTantQue(A, "insert into tests (date_test, ftp) values ('2027-03-02', 220)");
+    const lignes = await enTantQue<{ pma_5min: number | null }>(
+      A,
+      "select pma_5min from tests where date_test in ('2027-03-01', '2027-03-02') order by date_test",
+    );
+    expect(lignes.map((l) => l.pma_5min)).toEqual([260, null]);
+    expect(await enTantQue(B, "select pma_5min from tests where date_test = '2027-03-01'")).toHaveLength(0);
+    await enTantQue(A, "delete from tests where date_test in ('2027-03-01', '2027-03-02')");
+  });
+
+  it("refuse une valeur impossible", async () => {
+    await expect(enTantQue(A, "insert into tests (date_test, ftp, pma_5min) values ('2027-03-03', 220, 5000)")).rejects.toThrow(/pma_5min/);
   });
 });
 

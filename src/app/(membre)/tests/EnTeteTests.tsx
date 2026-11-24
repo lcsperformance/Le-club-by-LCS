@@ -15,7 +15,7 @@ export function EnTeteTests() {
           Tes tests de départ
         </h1>
         <p style={{ fontSize: 15, color: "#a9a4c9", marginTop: 8, lineHeight: 1.45 }}>
-          Quatre mesures à faire en autonomie, à ton rythme. Note ton résultat : l&apos;app calcule tes zones et tes
+          Quatre mesures à faire en autonomie, à ton rythme, plus une facultative. Note ton résultat : l&apos;app calcule tes zones et tes
           allures.
         </p>
       </header>

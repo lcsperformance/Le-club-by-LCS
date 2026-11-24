@@ -73,6 +73,18 @@ describe("zones calculées avec les valeurs par défaut de la maquette", () => {
     expect(z.every((l) => l.frequenceCardiaque === null)).toBe(true);
   });
 
+  it("cardio : zones en bpm d'après la FC seuil, sans ligne FC en plus", () => {
+    const z = calculerZones("cardio", tests);
+    // 168 × [65, 81, 89, 94, 100, 106] % → 109, 136, 150, 158, 168, 178
+    expect(z.map((l) => l.cible)).toEqual(["109–136 bpm", "136–150 bpm", "150–158 bpm", "158–168 bpm", "168–178 bpm"]);
+    expect(z[1].pourcentages).toBe("81 – 89 %");
+    expect(z.every((l) => l.frequenceCardiaque === null)).toBe(true);
+  });
+
+  it("cardio sans FC seuil : pas de cible", () => {
+    expect(calculerZones("cardio", { ...tests, fc_seuil: null }).every((l) => l.cible === null)).toBe(true);
+  });
+
   it("sans test pour un sport, pas de cible (mais les autres restent)", () => {
     const z = calculerZones("velo", { ...tests, ftp: null });
     expect(z[0].cible).toBeNull();
@@ -81,8 +93,9 @@ describe("zones calculées avec les valeurs par défaut de la maquette", () => {
 });
 
 describe("onglet dans l'adresse", () => {
-  it("accepte course, velo, natation et revient à course sinon", () => {
+  it("accepte course, velo, natation, cardio et revient à course sinon", () => {
     expect(sportDepuisAdresse("velo")).toBe("velo");
+    expect(sportDepuisAdresse("cardio")).toBe("cardio");
     expect(sportDepuisAdresse("natation")).toBe("natation");
     expect(sportDepuisAdresse("ski")).toBe("course");
     expect(sportDepuisAdresse(undefined)).toBe("course");

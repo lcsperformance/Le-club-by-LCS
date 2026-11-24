@@ -7,10 +7,10 @@ describe("fichier config/profils.json", () => {
   it("contient les 3 niveaux et les 2 profils avec les textes demandés", () => {
     expect(Object.values(CONFIG_PROFILS.niveaux).map((n) => n.libelle)).toEqual(["Finisher", "Challenger", "Performer"]);
     expect(CONFIG_PROFILS.profils.extensif.description).toBe(
-      "Tu encaisses bien le volume : le plan insiste sur l'endurance.",
+      "Tu tiens facilement la durée. Ton plan te fait travailler l'intensité pour gagner en vitesse.",
     );
     expect(CONFIG_PROFILS.profils.intensif.description).toBe(
-      "Tu réponds bien aux séances dures : le plan insiste sur l'intensité.",
+      "Tu es à l'aise dans les efforts courts et intenses. Ton plan te fait travailler l'endurance pour tenir plus longtemps.",
     );
   });
 
