@@ -30,7 +30,7 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
   const supabase = await createClient();
   const { data: test } = await supabase
     .from("tests")
-    .select("date_test, allure_seuil_course, ftp, vitesse_critique_natation, fc_seuil")
+    .select("date_test, allure_seuil_course, ftp, pma_5min, vitesse_critique_natation, fc_seuil")
     .eq("membre_id", utilisateur.id)
     .order("date_test", { ascending: false })
     .limit(1)

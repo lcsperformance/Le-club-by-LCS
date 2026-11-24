@@ -6,6 +6,7 @@ import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
 import { initiale } from "@/components/IdentiteMembre";
 import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
+import type { SuggestionProfil } from "@/lib/profil-suggere";
 
 const LIENS = [
   { href: "/records", libelle: "Mes records" },
@@ -39,7 +40,16 @@ function LienCarte({ href, libelle }: { href: string; libelle: string }) {
 }
 
 /** Écran Profil (maquette) : identité, niveau, profil, raccourcis et déconnexion. */
-export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisateur; maintenant: Date }) {
+export function EcranProfil({
+  utilisateur,
+  maintenant,
+  suggestion,
+}: {
+  utilisateur: Utilisateur;
+  maintenant: Date;
+  /** Profil suggéré d'après les tests vélo. */
+  suggestion?: SuggestionProfil;
+}) {
   return (
     <>
       <Link href="/accueil" style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 15, fontWeight: 700, minHeight: 44 }}>
@@ -87,6 +97,7 @@ export function EcranProfil({ utilisateur, maintenant }: { utilisateur: Utilisat
         niveau={utilisateur.niveau}
         profil={utilisateur.profil}
         ecran="profil"
+        suggestion={suggestion}
         entreLesDeux={<LienCarte href="/saison" libelle="Ma saison" />}
       />
 

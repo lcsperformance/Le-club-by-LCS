@@ -4,6 +4,7 @@ import { BoutonPrincipal } from "@/components/ui";
 import type { Bornes } from "@/lib/config-zones";
 import type { Niveau, Profil } from "@/lib/profils";
 import { formatDateFr } from "@/lib/dates";
+import { profilSuggere } from "@/lib/profil-suggere";
 import { SPORTS, type Sport, type Tests } from "@/lib/zones";
 import { ListeZones } from "./ListeZones";
 import styles from "./zones.module.css";
@@ -19,7 +20,7 @@ export function AffichageZones({
   profil = null,
 }: {
   sport: Sport;
-  test: Tests & { date_test: string };
+  test: Tests & { date_test: string; pma_5min?: number | null };
   bornesEnregistrees?: Bornes | null;
   /** Zones cardio personnalisées (ligne FC sous la course et le vélo), ou null. */
   bornesFc?: Bornes | null;
@@ -53,7 +54,7 @@ export function AffichageZones({
         personnalisationOuverte={personnalisationOuverte}
       />
 
-      <ChoixNiveauProfil niveau={niveau} profil={profil} ecran="zones" />
+      <ChoixNiveauProfil niveau={niveau} profil={profil} ecran="zones" suggestion={profilSuggere(test)} />
 
       <BoutonPrincipal href={sport === "course" ? "/progres" : `/progres?sport=${sport}`}>Voir mon évolution</BoutonPrincipal>
 

@@ -1,9 +1,15 @@
 {
   "_explication": "Textes des niveaux et des profils proposés au membre (écrans « Mes zones » et « Profil »). Ne changer que les textes entre guillemets après « libelle » et « description » ; ne pas renommer les clés (finisher, challenger, performer, extensif, intensif).",
   "niveaux": {
-    "finisher": { "libelle": "Finisher" },
-    "challenger": { "libelle": "Challenger" },
-    "performer": { "libelle": "Performer" }
+    "finisher": {
+      "libelle": "Finisher"
+    },
+    "challenger": {
+      "libelle": "Challenger"
+    },
+    "performer": {
+      "libelle": "Performer"
+    }
   },
   "profils": {
     "extensif": {
@@ -14,5 +20,10 @@
       "libelle": "Intensif",
       "description": "Tu es à l'aise dans les efforts courts et intenses. Ton plan te fait travailler l'endurance pour tenir plus longtemps."
     }
+  },
+  "suggestion": {
+    "_explication": "Profil suggéré au membre d'après ses tests vélo : FTP divisée par la puissance max sur 5 min, en %. À partir de « extensif_a_partir_de » : plutôt extensif ; sous « intensif_en_dessous_de » : plutôt intensif ; entre les deux : profil équilibré. Valeurs provisoires, à ajuster par Martin (nombres entiers entre 50 et 100).",
+    "extensif_a_partir_de": 85,
+    "intensif_en_dessous_de": 80
   }
 }

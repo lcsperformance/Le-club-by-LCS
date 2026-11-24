@@ -39,6 +39,8 @@ export const TEST_FICTIF = {
   date_test: "2026-11-19",
   allure_seuil_course: 270,
   ftp: 220,
+  /** 220 / 250 = 88 % : profil suggéré « extensif ». */
+  pma_5min: 250,
   vitesse_critique_natation: 105,
   fc_seuil: 168,
 };

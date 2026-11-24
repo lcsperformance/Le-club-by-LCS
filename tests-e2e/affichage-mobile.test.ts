@@ -38,6 +38,7 @@ const ECRANS = [
   "/apercu-membre/accueil-installer-android",
   "/apercu-membre/accueil-installer-iphone",
   "/apercu-membre/tests",
+  "/apercu-membre/tests-pma",
   "/apercu-membre/zones-course",
   "/apercu-membre/zones-velo",
   "/apercu-membre/zones-natation",

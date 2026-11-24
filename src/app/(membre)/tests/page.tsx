@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { exigerRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
-import { valeursDeDepart } from "@/lib/tests-depart";
+import { facultativesFaites, valeursDeDepart } from "@/lib/tests-depart";
 import { EnTeteTests } from "./EnTeteTests";
 import { FormulaireTests } from "./FormulaireTests";
 
@@ -27,11 +27,11 @@ async function Formulaire() {
   const supabase = await createClient();
   const { data: dernier } = await supabase
     .from("tests")
-    .select("allure_seuil_course, ftp, vitesse_critique_natation, fc_seuil")
+    .select("allure_seuil_course, ftp, pma_5min, vitesse_critique_natation, fc_seuil")
     .eq("membre_id", utilisateur.id)
     .order("date_test", { ascending: false })
     .limit(1)
     .maybeSingle();
 
-  return <FormulaireTests valeursInitiales={valeursDeDepart(dernier)} />;
+  return <FormulaireTests valeursInitiales={valeursDeDepart(dernier)} facultativesFaites={facultativesFaites(dernier)} />;
 }
