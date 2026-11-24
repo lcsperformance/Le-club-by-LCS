@@ -1,5 +1,7 @@
 # Où on en est — revue du 23/11/2026
 
+> Avant l'ouverture : liste de vérifications à la main dans [`VERIFICATIONS-AVANT-OUVERTURE.md`](VERIFICATIONS-AVANT-OUVERTURE.md).
+
 Tout ce qui suit est en ligne (`main`, PR n°40 comprise ; Stripe en **mode test**). Vérifications GitHub vertes.
 Tests : 615 tests automatiques (dont la sécurité de chaque table sur PostgreSQL) et 322 vérifications dans un navigateur (chaque écran à 320, 360 et 390 px).
 
