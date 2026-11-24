@@ -91,7 +91,7 @@ export function EcranProfil({
             {utilisateur.prenom ?? "Mon profil"}
           </h1>
           <p style={{ fontSize: 14, color: "#a9a4c9", marginTop: 4, overflowWrap: "anywhere" }}>{utilisateur.email}</p>
-          <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{STATUT[utilisateur.role]}</p>
+          <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{utilisateur.afficheCoach ? STATUT.coach : STATUT[utilisateur.role]}</p>
         </div>
       </header>
 

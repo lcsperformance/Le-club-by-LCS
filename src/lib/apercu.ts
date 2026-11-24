@@ -1,4 +1,5 @@
 import "server-only";
+import type { CompteEquipe } from "./admin/equipe";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
@@ -29,6 +30,7 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   prenom: "Caroline",
   nom: "Dupont",
   role: "membre",
+  afficheCoach: false,
   niveau: null,
   profil: null,
   dateInscription: "2026-11-02T10:00:00.000Z",
@@ -414,4 +416,12 @@ export const PARTENAIRES_FICTIFS: Partenaire[] = [
   { id: "00000000-0000-0000-0006-000000000001", nom: "Pyrène", remise: 15, description: "sur les produits Pyrène", code: "LECLUB15", lien: "https://pyrene.exemple.fr", ordre: 1, affiche: true, exemple: true },
   { id: "00000000-0000-0000-0006-000000000002", nom: "Onatera", remise: 10, description: "sur les produits Onatera", code: "LECLUB10", lien: null, ordre: 2, affiche: true, exemple: true },
   { id: "00000000-0000-0000-0006-000000000003", nom: "Atelier Vélo du Sud-Ouest", remise: 20, description: "sur l'entretien et le réglage de ton vélo de route", code: "CLUB-VELO-2027", lien: null, ordre: 3, affiche: false, exemple: false },
+];
+
+/** Comptes fictifs de l'écran Équipe : un coach, un coach + admin, un admin, des membres. */
+export const COMPTES_EQUIPE_FICTIFS: CompteEquipe[] = [
+  { id: "00000000-0000-0000-0005-000000000001", email: "martin@lcsperformance.fr", prenom: "Martin", nom: null, role: "admin", affiche_coach: true },
+  { id: "00000000-0000-0000-0005-000000000002", email: "julie.coach@exemple.fr", prenom: "Julie", nom: "Bernard", role: "coach", affiche_coach: false },
+  { id: UTILISATEUR_FICTIF.id, email: UTILISATEUR_FICTIF.email, prenom: "Caroline", nom: "Dupont", role: "admin", affiche_coach: false },
+  { id: "00000000-0000-0000-0005-000000000004", email: "thomas@exemple.fr", prenom: "Thomas", nom: "Petit", role: "membre", affiche_coach: false },
 ];

@@ -8,6 +8,11 @@ const LIENS = [
     texte: "Abonnements, niveaux et ancienneté ; ouvrir ou couper un accès, renvoyer l'e-mail d'accès.",
   },
   {
+    href: "/admin/equipe",
+    titre: "Équipe",
+    texte: "Coachs et admins : donner à un compte le rôle Coach, Coach + admin ou Admin.",
+  },
+  {
     href: "/admin/ressources",
     titre: "Ressources",
     texte: "Thèmes, sous-rubriques, PDF et vidéos, semaine de déblocage ; modération des commentaires.",

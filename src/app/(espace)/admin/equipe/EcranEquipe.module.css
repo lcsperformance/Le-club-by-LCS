@@ -1,0 +1,75 @@
+.legende ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--texte-doux);
+}
+.legende strong {
+  color: var(--texte);
+}
+.liste {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.compte {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.identite {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+.nom {
+  font-size: 16px;
+  font-weight: 800;
+}
+.moi {
+  font-weight: 600;
+  color: var(--texte-doux);
+}
+.email {
+  font-size: 13px;
+  color: var(--texte-doux);
+  overflow-wrap: anywhere;
+}
+.choix {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texte-doux);
+}
+.choix select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--texte);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+.choix option {
+  background: var(--cendre, #0c1321);
+  color: var(--texte);
+}
+.info {
+  flex-basis: 100%;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.vide {
+  font-size: 14px;
+  color: var(--texte-doux);
+}
