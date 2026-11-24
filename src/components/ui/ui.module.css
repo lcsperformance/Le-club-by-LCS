@@ -1,5 +1,9 @@
 /* ===== Carte en verre fumé ===== */
-.carte {
+/*
+ * Style de base de la carte, sans priorité (:where) : la classe d'un écran posée sur une Carte
+ * (display: flex, padding…) l'emporte toujours, quel que soit l'ordre de chargement des styles.
+ */
+:where(.carte) {
   position: relative;
   display: block;
   border-radius: 20px;

@@ -28,12 +28,28 @@ export const ECRANS_DEMARRAGE: readonly (readonly [number, number, number])[] = 
   [375, 812, 3], [414, 896, 3], [414, 896, 2], [375, 667, 2], [414, 736, 3], [320, 568, 2],
 ];
 
-/** Images de démarrage pour Safari, chacune réservée à sa taille d'écran (en portrait). */
+/**
+ * Écrans de démarrage iPad (largeur et hauteur en points en portrait, densité), en portrait ET en paysage.
+ * Même liste que scripts/icones.mjs (ECRANS_IPAD).
+ */
+export const ECRANS_IPAD: readonly (readonly [number, number, number])[] = [
+  [1032, 1376, 2], [1024, 1366, 2], [834, 1210, 2], [834, 1194, 2], [834, 1112, 2],
+  [820, 1180, 2], [810, 1080, 2], [768, 1024, 2], [744, 1133, 2],
+];
+
+/** Images de démarrage pour Safari, chacune réservée à sa taille d'écran et à son sens. */
 export function imagesDemarrage(): { url: string; media: string }[] {
-  return ECRANS_DEMARRAGE.map(([l, h, d]) => ({
-    url: `/demarrage/demarrage-${l * d}x${h * d}.png`,
-    media: `(device-width: ${l}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${d}) and (orientation: portrait)`,
-  }));
+  const ecran = (l: number, h: number, d: number) => `(device-width: ${l}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${d})`;
+  return [
+    ...ECRANS_DEMARRAGE.map(([l, h, d]) => ({
+      url: `/demarrage/demarrage-${l * d}x${h * d}.png`,
+      media: `${ecran(l, h, d)} and (orientation: portrait)`,
+    })),
+    ...ECRANS_IPAD.flatMap(([l, h, d]) => [
+      { url: `/demarrage/demarrage-${l * d}x${h * d}.png`, media: `${ecran(l, h, d)} and (orientation: portrait)` },
+      { url: `/demarrage/demarrage-${h * d}x${l * d}.png`, media: `${ecran(l, h, d)} and (orientation: landscape)` },
+    ]),
+  ];
 }
 
 /** iPhone ou iPad (les iPad récents se présentent comme un Mac tactile). */

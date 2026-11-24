@@ -3,10 +3,12 @@ import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
 import { ChampPrenom } from "@/components/ChampPrenom";
 import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
+import { ReglagesNotifications } from "@/components/ReglagesNotifications";
 import { initiale } from "@/components/IdentiteMembre";
 import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 import type { SuggestionProfil } from "@/lib/profil-suggere";
+import type { EtatAppareil } from "@/lib/notifications-navigateur";
 
 const LIENS = [
   { href: "/records", libelle: "Mes records" },
@@ -44,11 +46,17 @@ export function EcranProfil({
   utilisateur,
   maintenant,
   suggestion,
+  notifications = { annonces: true, faq: true, evenements: true },
+  appareilApercu,
 }: {
   utilisateur: Utilisateur;
   maintenant: Date;
   /** Profil suggéré d'après les tests vélo. */
   suggestion?: SuggestionProfil;
+  /** Réglages Notifications du membre (annonces, rappel FAQ, nouveaux événements). */
+  notifications?: { annonces: boolean; faq: boolean; evenements: boolean };
+  /** Aperçus seulement : état de l'appareil imposé. */
+  appareilApercu?: EtatAppareil;
 }) {
   return (
     <>
@@ -100,6 +108,8 @@ export function EcranProfil({
         suggestion={suggestion}
         entreLesDeux={<LienCarte href="/saison" libelle="Ma saison" />}
       />
+
+      <ReglagesNotifications reglages={notifications} apercu={appareilApercu} />
 
       {LIENS.map((l) => (
         <LienCarte key={l.href} {...l} />

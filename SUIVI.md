@@ -79,6 +79,10 @@ Plus aucun écart de structure : l'accueil a ses cartes « Aujourd'hui », « FA
 - Textes des profils : le plan travaille l'inverse du profil (extensif → intensité, intensif → endurance).
 - Test facultatif **puissance max sur 5 min** et profil suggéré (FTP ÷ PMA 5 min). Migration `20261207000000_test_pma_5min.sql` **à appliquer en ligne**. Seuils provisoires (85 % / 80 %) **à valider par Martin** dans `config/profils.json`.
 
+- App installable aussi sur **iPad** (écrans de démarrage portrait et paysage).
+- **Bandeau du prochain événement** en haut de l'espace membre.
+- **Notifications** (annonces, rappel la veille des FAQ). Migration `20261208000000_notifications.sql`. Clés `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_CONTACT`, `CRON_SECRET` **enregistrées dans Vercel le 24/11** (production). Notification aussi à la création d'un événement ou à un changement de date (hors FAQ), réglage « Nouveaux événements » (migration `20261209000000_notif_evenements.sql`). À essayer en vrai sur un iPhone (app installée, iOS 16.4+) et un Android.
+
 ### Contenus à fournir
 8. **Programme** : les vrais plans de Martin (fil rouge et blocs S/M/L/XL, par niveau et profil) ; toutes les séances actuelles sont des démos (`de000000-…`).
 9. **Ressources** : 3 contenus sur 17 ont déjà leur vidéo ou leur PDF ; les autres affichent « bientôt disponible ».

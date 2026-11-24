@@ -2,6 +2,7 @@
 import { chromium, type Browser, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { BASE } from "./serveur";
+import { imagesDemarrage } from "../src/lib/installation";
 
 let navigateur: Browser;
 
@@ -35,7 +36,9 @@ describe("Application installable", () => {
     await page.goto(`${BASE}/connexion`);
     expect(await page.locator('link[rel="manifest"]').getAttribute("href")).toBe("/manifest.webmanifest");
     expect(await page.locator('link[rel="apple-touch-icon"]').count()).toBeGreaterThan(0);
-    expect(await page.locator('link[rel="apple-touch-startup-image"]').count()).toBe(12);
+    // 12 iPhone + 9 iPad en portrait et en paysage.
+    expect(await page.locator('link[rel="apple-touch-startup-image"]').count()).toBe(imagesDemarrage().length);
+    expect(imagesDemarrage()).toHaveLength(30);
     expect(await page.locator('meta[name="apple-mobile-web-app-title"]').getAttribute("content")).toBe("Le Club");
     await page.close();
   });

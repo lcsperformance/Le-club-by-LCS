@@ -29,6 +29,7 @@ const ECRANS = [
   "/apercu-espace/admin-ressources-themes",
   "/apercu-espace/admin-ressources-commentaires",
   "/apercu-membre/accueil",
+  "/apercu-membre/bandeau-titre-long",
   "/apercu-membre/accueil-tests-faits",
   "/apercu-membre/accueil-sans-prenom",
   "/apercu-membre/accueil-seance-faite",
@@ -37,6 +38,8 @@ const ECRANS = [
   "/apercu-membre/accueil-a-venir",
   "/apercu-membre/accueil-installer-android",
   "/apercu-membre/accueil-installer-iphone",
+  "/apercu-membre/accueil-notifications",
+  "/apercu-membre/accueil-notifications-iphone",
   "/apercu-membre/tests",
   "/apercu-membre/tests-pma",
   "/apercu-membre/zones-course",
@@ -132,6 +135,26 @@ describe.each(LARGEURS)("téléphone de %i px de large", (largeur) => {
       expect(mesure.largeurPage, `la page dépasse de l'écran ; en cause : ${mesure.fautifs.join(", ")}`).toBeLessThanOrEqual(
         largeur,
       );
+    } finally {
+      await page.close();
+    }
+  });
+});
+
+// iPad (portrait et paysage) : l'espace membre reste centré, rien ne déborde.
+const TABLETTES = [
+  [768, 1024],
+  [1024, 768],
+] as const;
+const ECRANS_TABLETTE = ECRANS.filter((e) => e.startsWith("/apercu-membre/")).slice(0, 12);
+
+describe.each(TABLETTES)("iPad de %i × %i px", (largeur, hauteur) => {
+  it.each(ECRANS_TABLETTE)("%s ne déborde pas", async (ecran) => {
+    const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur }, isMobile: true, hasTouch: true });
+    try {
+      await page.goto(BASE + ecran, { waitUntil: "networkidle" });
+      await page.waitForFunction(() => !document.body.innerText.includes("Chargement…"));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(largeur);
     } finally {
       await page.close();
     }

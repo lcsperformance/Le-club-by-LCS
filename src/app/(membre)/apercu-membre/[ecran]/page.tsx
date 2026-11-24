@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
+import { BandeauEvenement } from "@/components/BandeauEvenement";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
@@ -69,16 +70,21 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
   switch (ecran) {
     case "accueil":
       return (
-        <AccueilMembre
-          utilisateur={UTILISATEUR_FICTIF}
-          testsFaits={false}
-          objectifs={[]}
-          aujourdhui={new Date()}
-          seanceDuJour={carteAujourdhui(null, 1, AUJOURDHUI_FICTIF, [])}
-          faq={{ evenement: null, questions: 0 }}
-          nouveau={null}
-        />
+        <>
+          <BandeauEvenement toujours evenement={EVENEMENTS_FICTIFS[0]} quand="Demain · 19 h 30" />
+          <AccueilMembre
+            utilisateur={UTILISATEUR_FICTIF}
+            testsFaits={false}
+            objectifs={[]}
+            aujourdhui={new Date()}
+            seanceDuJour={carteAujourdhui(null, 1, AUJOURDHUI_FICTIF, [])}
+            faq={{ evenement: null, questions: 0 }}
+            nouveau={null}
+          />
+        </>
       );
+    case "bandeau-titre-long":
+      return <BandeauEvenement toujours evenement={EVENEMENTS_FICTIFS[1]} quand="Jeu. 21 janv. · 20 h 00" />;
     case "accueil-sans-prenom":
     case "accueil-tests-faits":
     case "accueil-seance-faite":
@@ -86,7 +92,9 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     case "accueil-repos":
     case "accueil-a-venir":
     case "accueil-installer-android":
-    case "accueil-installer-iphone": {
+    case "accueil-installer-iphone":
+    case "accueil-notifications":
+    case "accueil-notifications-iphone": {
       // Lundi 11/01/2027 : natation au programme ; le jeudi a deux séances, le vendredi est un jour de repos.
       const jour = ecran === "accueil-deux-seances" ? 4 : ecran === "accueil-repos" ? 5 : 1;
       const faites = ecran === "accueil-seance-faite" ? [SEMAINE_FICTIVE[0].seance.id] : [];
@@ -102,6 +110,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           faq={calme ? { evenement: null, questions: 0 } : { evenement: EVENEMENTS_FICTIFS[0], questions: 3 }}
           nouveau={calme ? null : nouveauCetteSemaine(THEMES_FICTIFS, RESSOURCES_FICTIVES, SEMAINE_RESSOURCES_FICTIVE)}
           installation={ecran === "accueil-installer-android" ? "android" : ecran === "accueil-installer-iphone" ? "iphone" : undefined}
+          notifications={ecran === "accueil-notifications" ? "activer" : ecran === "accueil-notifications-iphone" ? "installer-d-abord" : undefined}
         />
       );
     }
@@ -125,6 +134,8 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           utilisateur={{ ...UTILISATEUR_FICTIF, niveau: "challenger", profil: "extensif" }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
           suggestion={profilSuggere(TEST_FICTIF)}
+          notifications={{ annonces: true, faq: false, evenements: true }}
+          appareilApercu={{ priseEnCharge: true, permission: "granted", abonne: true, apple: false, installee: true }}
         />
       );
     case "abonnement-termine":
@@ -157,6 +168,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           }}
           maintenant={new Date("2027-01-10T10:00:00Z")}
           suggestion={profilSuggere(null)}
+          appareilApercu={{ priseEnCharge: false, permission: null, abonne: false, apple: true, installee: false }}
         />
       );
     case "saison-vide":

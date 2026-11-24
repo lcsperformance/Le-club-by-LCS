@@ -6,6 +6,7 @@ import manifest from "@/app/manifest";
 import {
   carteInstallation,
   ECRANS_DEMARRAGE,
+  ECRANS_IPAD,
   estAppareilApple,
   FICHIERS_HORS_LIGNE,
   imagesDemarrage,
@@ -49,9 +50,23 @@ describe("fiche de l'app", () => {
 });
 
 describe("écrans de démarrage iPhone", () => {
+  it("iPad : une image en portrait et une en paysage pour chaque écran", () => {
+    const images = imagesDemarrage().slice(ECRANS_DEMARRAGE.length);
+    expect(images).toHaveLength(ECRANS_IPAD.length * 2);
+    for (const [i, [l, h, d]] of ECRANS_IPAD.entries()) {
+      const [portrait, paysage] = [images[2 * i], images[2 * i + 1]];
+      expect(taillePng(`public${portrait.url}`)).toEqual([l * d, h * d]);
+      expect(taillePng(`public${paysage.url}`)).toEqual([h * d, l * d]);
+      expect(portrait.media).toContain(`(device-width: ${l}px) and (device-height: ${h}px)`);
+      expect(portrait.media).toContain("(orientation: portrait)");
+      expect(paysage.media).toContain("(orientation: landscape)");
+    }
+    const script = lire("scripts/icones.mjs").replace(/\s/g, "");
+    for (const [l, h, d] of ECRANS_IPAD) expect(script).toContain(`[${l},${h},${d}]`);
+  });
+
   it("une image à la bonne taille pour chaque écran, réservée à cet écran", () => {
-    const images = imagesDemarrage();
-    expect(images).toHaveLength(ECRANS_DEMARRAGE.length);
+    const images = imagesDemarrage().slice(0, ECRANS_DEMARRAGE.length);
     for (const [i, [l, h, d]] of ECRANS_DEMARRAGE.entries()) {
       expect(taillePng(`public${images[i].url}`)).toEqual([l * d, h * d]);
       expect(images[i].media).toContain(`(device-width: ${l}px) and (device-height: ${h}px) and (-webkit-device-pixel-ratio: ${d})`);
