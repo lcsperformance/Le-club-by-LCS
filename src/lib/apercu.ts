@@ -1,4 +1,6 @@
 import "server-only";
+import type { CompteEquipe } from "./admin/equipe";
+import { VERSION_TEXTES } from "./legal";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import type { LigneJournal, MembreAdmin } from "@/lib/admin/membres";
@@ -29,6 +31,8 @@ export const UTILISATEUR_FICTIF: Utilisateur = {
   prenom: "Caroline",
   nom: "Dupont",
   role: "membre",
+  afficheCoach: false,
+  conditionsAcceptees: VERSION_TEXTES,
   niveau: null,
   profil: null,
   dateInscription: "2026-11-02T10:00:00.000Z",
@@ -394,20 +398,19 @@ export const ATHLETES_FICTIFS: AthleteCoach[] = [
   athlete(5, "Élodie", "Moreau", "challenger", false),
 ];
 
-/** Séances fictives de Caroline (aujourd'hui = 11/01/2027), dont une avec douleur et une séance retirée. */
+/** Séances fictives de Caroline (aujourd'hui = 11/01/2027), dont une séance retirée. */
 export const SEANCES_COACH_FICTIVES: SeanceCoach[] = [
-  { date: "2027-01-10", sport: "course", titre: "Sortie longue", rpe: 6, douleur: false, commentaire: "Jambes un peu lourdes sur la fin." },
-  { date: "2027-01-09", sport: "velo", titre: "Sortie longue", rpe: 5, douleur: false, commentaire: null },
-  { date: "2027-01-07", sport: "velo", titre: "Sweet spot", rpe: 8, douleur: false, commentaire: "Dur sur le 3e intervalle." },
+  { date: "2027-01-10", sport: "course", titre: "Sortie longue", rpe: 6, commentaire: "Jambes un peu lourdes sur la fin." },
+  { date: "2027-01-09", sport: "velo", titre: "Sortie longue", rpe: 5, commentaire: null },
+  { date: "2027-01-07", sport: "velo", titre: "Sweet spot", rpe: 8, commentaire: "Dur sur le 3e intervalle." },
   {
     date: "2027-01-05",
     sport: "course",
     titre: "Footing endurance",
     rpe: 5,
-    douleur: true,
-    commentaire: "Gêne au mollet droit sur les lignes droites, qui a disparu après l'étirement mais qui revient quand j'accélère.",
+    commentaire: "Bonnes sensations sur les lignes droites, un peu de vent de face au retour, allure régulière du début à la fin.",
   },
-  { date: "2026-12-28", sport: null, titre: null, rpe: 3, douleur: false, commentaire: null },
+  { date: "2026-12-28", sport: null, titre: null, rpe: 3, commentaire: null },
 ];
 
 /** Partenaires fictifs : les deux exemples, un avec lien, un masqué (vu seulement par l'admin). */
@@ -415,4 +418,12 @@ export const PARTENAIRES_FICTIFS: Partenaire[] = [
   { id: "00000000-0000-0000-0006-000000000001", nom: "Pyrène", remise: 15, description: "sur les produits Pyrène", code: "LECLUB15", lien: "https://pyrene.exemple.fr", ordre: 1, affiche: true, exemple: true },
   { id: "00000000-0000-0000-0006-000000000002", nom: "Onatera", remise: 10, description: "sur les produits Onatera", code: "LECLUB10", lien: null, ordre: 2, affiche: true, exemple: true },
   { id: "00000000-0000-0000-0006-000000000003", nom: "Atelier Vélo du Sud-Ouest", remise: 20, description: "sur l'entretien et le réglage de ton vélo de route", code: "CLUB-VELO-2027", lien: null, ordre: 3, affiche: false, exemple: false },
+];
+
+/** Comptes fictifs de l'écran Équipe : un coach, un coach + admin, un admin, des membres. */
+export const COMPTES_EQUIPE_FICTIFS: CompteEquipe[] = [
+  { id: "00000000-0000-0000-0005-000000000001", email: "martin@lcsperformance.fr", prenom: "Martin", nom: null, role: "admin", affiche_coach: true },
+  { id: "00000000-0000-0000-0005-000000000002", email: "julie.coach@exemple.fr", prenom: "Julie", nom: "Bernard", role: "coach", affiche_coach: false },
+  { id: UTILISATEUR_FICTIF.id, email: UTILISATEUR_FICTIF.email, prenom: "Caroline", nom: "Dupont", role: "admin", affiche_coach: false },
+  { id: "00000000-0000-0000-0005-000000000004", email: "thomas@exemple.fr", prenom: "Thomas", nom: "Petit", role: "membre", affiche_coach: false },
 ];

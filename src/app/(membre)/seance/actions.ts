@@ -43,7 +43,7 @@ export async function marquerSeance(seanceId: unknown, jour: unknown, faite: unk
   return error ? echec("Séance faite : annulation impossible", error) : {};
 }
 
-/** Enregistre le ressenti (RPE, douleur, commentaire) ; la séance est marquée faite au passage. */
+/** Enregistre le ressenti (RPE, commentaire) ; la séance est marquée faite au passage. */
 export async function enregistrerRessenti(seanceId: unknown, jour: unknown, saisie: unknown): Promise<ResultatRessenti> {
   const v = await verifier(seanceId, jour);
   if ("erreur" in v) return { erreur: v.erreur };

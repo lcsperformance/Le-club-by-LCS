@@ -49,7 +49,7 @@ describe("écran Profil : niveau et profil", () => {
 });
 
 describe("écran Profil : raccourcis", () => {
-  it("propose, dans l'ordre de la maquette, Ma saison, Mes records, Mes progrès, le Calculateur, Mes zones, Refaire mes tests", async () => {
+  it("propose, dans l'ordre de la maquette, Ma saison, Mes records, Mes progrès, le Calculateur, Mes zones, Refaire mes tests, puis mes données et les pages légales", async () => {
     const liens = await page.$$eval("main a[href]", (as) =>
       as.map((a) => [a.textContent?.trim(), a.getAttribute("href")]).filter(([, h]) => h !== "/accueil"),
     );
@@ -60,6 +60,10 @@ describe("écran Profil : raccourcis", () => {
       ["Calculateur LCS", "/ressources/calculateur"],
       ["Mes zones", "/zones"],
       ["Refaire mes tests", "/tests"],
+      ["Télécharger mes données", "/profil/donnees"],
+      ["Mentions légales", "/mentions-legales"],
+      ["Conditions générales de vente", "/cgv"],
+      ["Politique de confidentialité", "/confidentialite"],
     ]);
   });
 

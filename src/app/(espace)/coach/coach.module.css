@@ -168,32 +168,6 @@
   color: var(--texte-doux);
 }
 
-.filtres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.filtre {
-  height: 40px;
-  padding: 0 16px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: inset 0 0 0 1px rgba(244, 238, 255, 0.3);
-  color: var(--texte);
-  font: inherit;
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.filtre[aria-pressed="true"] {
-  background: var(--accent);
-  color: var(--fond);
-  box-shadow: 0 6px 18px rgba(222, 253, 98, 0.35);
-}
-
 /* ===== Tableau des séances : tableau sur ordinateur, cartes sur téléphone ===== */
 .tableau {
   padding: 0;
@@ -241,7 +215,7 @@
 @container (min-width: 620px) {
   .ligne,
   .enteteTableau {
-    grid-template-columns: 92px 64px minmax(100px, 1fr) 40px 76px minmax(150px, 1.6fr);
+    grid-template-columns: 92px 64px minmax(100px, 1fr) 40px minmax(150px, 1.6fr);
     gap: 4px 10px;
     align-items: center;
     padding: 14px 16px;
@@ -297,15 +271,6 @@
 .rpe[data-niveau="fort"] {
   background: var(--aurore);
   color: var(--fond);
-}
-
-.douleur {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--fond);
-  font-size: 12px;
-  font-weight: 800;
 }
 
 .non {

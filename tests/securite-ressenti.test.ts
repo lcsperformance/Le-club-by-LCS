@@ -1,6 +1,6 @@
 /**
- * PREUVE : un membre ne peut pas lire le RPE, la douleur ni le commentaire d'un autre membre
- * (données de santé). Table attendue : ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire).
+ * PREUVE : un membre ne peut pas lire le RPE ni le commentaire d'un autre membre.
+ * Table attendue : ressentis (membre_id, seance_id, date_seance, rpe, commentaire).
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { creerBaseDeTest, type BaseDeTest } from "./aide/base-de-test";
@@ -16,8 +16,8 @@ beforeAll(async () => {
   base = await creerBaseDeTest("ressenti");
   await base.db.query("insert into auth.users (id, email) values ($1, 'alice@club.fr'), ($2, 'bruno@club.fr')", [ALICE, BRUNO]);
   await base.db.query(
-    `insert into ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire)
-     values ($1, $2, '2027-01-11', 8, true, 'Douleur au genou droit')`,
+    `insert into ressentis (membre_id, seance_id, date_seance, rpe, commentaire)
+     values ($1, $2, '2027-01-11', 8, 'Sortie au genou près du lac')`,
     [BRUNO, SEANCE],
   );
 });
@@ -26,15 +26,15 @@ afterAll(async () => {
   await base?.fermer();
 });
 
-describe("ressenti de séance (RPE, douleur, commentaire)", () => {
+describe("ressenti de séance (RPE, commentaire)", () => {
   it("Alice ne voit aucune ligne de Bruno, même en la visant directement", async () => {
     expect(await alice("select * from ressentis")).toEqual([]);
-    expect(await alice("select rpe, douleur, commentaire from ressentis where membre_id = $1", [BRUNO])).toEqual([]);
+    expect(await alice("select rpe, commentaire from ressentis where membre_id = $1", [BRUNO])).toEqual([]);
     expect(await alice("select count(*)::int as n from ressentis")).toEqual([{ n: 0 }]);
   });
 
   it("Alice ne peut pas deviner les valeurs de Bruno par un filtre", async () => {
-    expect(await alice("select 1 from ressentis where rpe = 8 or douleur or commentaire ilike '%genou%'")).toEqual([]);
+    expect(await alice("select 1 from ressentis where rpe = 8 or commentaire ilike '%genou%'")).toEqual([]);
   });
 
   it("un visiteur non connecté n'a accès à rien", async () => {

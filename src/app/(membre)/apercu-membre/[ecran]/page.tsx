@@ -4,6 +4,8 @@ import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { BandeauEvenement } from "@/components/BandeauEvenement";
+import { EcranAuth } from "@/components/EcranAuth";
+import { FormulaireConditions } from "@/app/conditions/FormulaireConditions";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
@@ -157,6 +159,22 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           maintenant={new Date("2027-01-10T10:00:00Z")}
         />
       );
+    case "profil-suppression":
+      return (
+        <EcranProfil
+          utilisateur={UTILISATEUR_FICTIF}
+          maintenant={new Date("2027-01-10T10:00:00Z")}
+          suggestion={profilSuggere(null)}
+          appareilApercu={{ priseEnCharge: false, permission: null, abonne: false, apple: false, installee: false }}
+          suppressionOuverte
+        />
+      );
+    case "conditions":
+      return (
+        <EcranAuth titre="Avant de commencer">
+          <FormulaireConditions nouvelleVersion={false} />
+        </EcranAuth>
+      );
     case "profil-annuel":
       return (
         <EcranProfil
@@ -215,7 +233,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
         <EcranSeance
           seance={SEANCE_COURSE_FICTIVE}
           tests={TEST_FICTIF}
-          suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, douleur: true, commentaire: "Genou droit un peu raide sur la fin." }, interdit: null }}
+          suivi={{ jour: AUJOURDHUI_FICTIF, ressenti: { rpe: 7, commentaire: "Dur sur la fin, mais allure tenue." }, interdit: null }}
         />
       );
     case "seance-ancienne":
@@ -225,7 +243,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           tests={TEST_FICTIF}
           suivi={{
             jour: "2026-11-17",
-            ressenti: { rpe: 6, douleur: false, commentaire: "Bonnes sensations, un peu de vent de face sur le retour." },
+            ressenti: { rpe: 6, commentaire: "Bonnes sensations, un peu de vent de face sur le retour." },
             interdit: "On ne peut plus noter une séance de plus de 14 jours.",
           }}
         />

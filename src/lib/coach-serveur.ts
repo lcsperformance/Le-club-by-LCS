@@ -15,7 +15,7 @@ export async function lireSeancesAthlete(membreId: string): Promise<SeanceCoach[
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("ressentis")
-    .select("date_seance, rpe, douleur, commentaire, seances(sport, titre)")
+    .select("date_seance, rpe, commentaire, seances(sport, titre)")
     .eq("membre_id", membreId)
     .order("date_seance", { ascending: false })
     .limit(300);
@@ -28,7 +28,6 @@ export async function lireSeancesAthlete(membreId: string): Promise<SeanceCoach[
       sport: seance?.sport ?? null,
       titre: seance?.titre ?? null,
       rpe: typeof r.rpe === "number" ? r.rpe : null,
-      douleur: r.douleur === true,
       commentaire: (r.commentaire as string | null) ?? null,
     };
   });

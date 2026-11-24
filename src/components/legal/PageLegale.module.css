@@ -1,0 +1,83 @@
+.page {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 22px 20px 48px;
+}
+.page h1 {
+  font-size: 26px;
+  line-height: 1.15;
+}
+.retour {
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.version {
+  font-size: 13px;
+  color: var(--texte-doux);
+}
+/* Les éléments d'une grille ne doivent pas l'élargir (le tableau défile dans son cadre). */
+.page > *,
+.texte > * {
+  min-width: 0;
+}
+.texte {
+  display: grid;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.texte h2 {
+  margin-top: 14px;
+  font-family: var(--police-texte), sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  font-stretch: normal;
+}
+.texte ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 20px;
+}
+.texte table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.texte th,
+.texte td {
+  padding: 8px 6px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.tableau {
+  overflow-x: auto;
+}
+@media (max-width: 400px) {
+  .texte table {
+    font-size: 13px;
+  }
+  .texte th,
+  .texte td {
+    padding: 6px 4px;
+  }
+}
+.aCompleter {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(222, 253, 98, 0.2);
+  color: var(--accent);
+  font-weight: 700;
+}
+.autres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 18px;
+  font-size: 14px;
+}

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { EcranAuth } from "@/components/EcranAuth";
+import { LiensLegaux } from "@/components/legal/LiensLegaux";
 import { utilisateurConnecte } from "@/lib/auth";
 import { cheminAccueil } from "@/lib/roles";
 import { FormulaireConnexion } from "./FormulaireConnexion";
@@ -11,6 +12,7 @@ export const metadata: Metadata = { title: "Connexion · Le Club by LCS" };
 const MESSAGES: Record<string, string> = {
   "lien-invalide": "Ce lien n'est plus valable. Redemande un e-mail depuis « Mot de passe oublié ».",
   deconnecte: "Tu es déconnecté·e. À bientôt !",
+  "compte-supprime": "Ton compte et tes données ont été supprimés. Merci d'avoir fait partie du Club !",
 };
 
 export default function PageConnexion({ searchParams }: PageProps<"/connexion">) {
@@ -21,6 +23,7 @@ export default function PageConnexion({ searchParams }: PageProps<"/connexion">)
         <Message searchParams={searchParams} />
       </Suspense>
       <FormulaireConnexion />
+      <LiensLegaux />
     </EcranAuth>
   );
 }

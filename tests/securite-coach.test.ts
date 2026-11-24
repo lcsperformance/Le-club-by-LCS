@@ -2,7 +2,7 @@
  * PREUVE : espace coach en lecture seule.
  * - Le coach ne lit plus la fiche entière des membres (e-mail, Stripe, abonnement) : seulement, par
  *   coach_athletes(), prénom, nom, niveau, profil, date d'inscription et « accès en cours ».
- * - Il lit les objectifs et les séances (RPE, douleur, commentaire) des athlètes, sans rien pouvoir modifier.
+ * - Il lit les objectifs et les séances (RPE, commentaire) des athlètes, sans rien pouvoir modifier.
  * - Un membre n'a pas accès à cette liste ; l'admin garde la fiche entière.
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -35,8 +35,8 @@ beforeAll(async () => {
      update membres set role = 'coach' where id = '${COACH}';
      update membres set role = 'admin' where id = '${ADMIN}';
      insert into objectifs (membre_id, bloc, date_objectif) values ('${ACTIF}', 'L', '2027-05-30');
-     insert into ressentis (membre_id, seance_id, date_seance, rpe, douleur, commentaire)
-       values ('${ACTIF}', '${SEANCE}', '2027-01-05', 5, true, 'Gêne au mollet droit');`,
+     insert into ressentis (membre_id, seance_id, date_seance, rpe, commentaire)
+       values ('${ACTIF}', '${SEANCE}', '2027-01-05', 5, 'Jambes lourdes');`,
   );
 });
 
@@ -75,11 +75,11 @@ describe("liste des athlètes", () => {
 });
 
 describe("fiche en lecture seule", () => {
-  it("le coach lit les objectifs et les séances avec RPE, douleur et commentaire", async () => {
+  it("le coach lit les objectifs et les séances avec RPE et commentaire", async () => {
     expect(await en(COACH, "select bloc from objectifs where membre_id = $1", [ACTIF])).toEqual([{ bloc: "L" }]);
     expect(
-      await en(COACH, "select r.rpe, r.douleur, r.commentaire, s.titre from ressentis r join seances s on s.id = r.seance_id where r.membre_id = $1", [ACTIF]),
-    ).toEqual([{ rpe: 5, douleur: true, commentaire: "Gêne au mollet droit", titre: "Footing endurance" }]);
+      await en(COACH, "select r.rpe, r.commentaire, s.titre from ressentis r join seances s on s.id = r.seance_id where r.membre_id = $1", [ACTIF]),
+    ).toEqual([{ rpe: 5, commentaire: "Jambes lourdes", titre: "Footing endurance" }]);
   });
 
   it("le coach ne peut rien modifier, ajouter ni supprimer", async () => {
@@ -97,7 +97,7 @@ describe("fiche en lecture seule", () => {
       await expect(en(COACH, sql), sql).rejects.toThrow(/row-level security/);
     }
     // Rien n'a changé pour l'athlète.
-    expect(await en(ACTIF, "select rpe, douleur from ressentis")).toEqual([{ rpe: 5, douleur: true }]);
+    expect(await en(ACTIF, "select rpe, commentaire from ressentis")).toEqual([{ rpe: 5, commentaire: "Jambes lourdes" }]);
     expect(await en(ACTIF, "select niveau from membres")).toEqual([{ niveau: "challenger" }]);
   });
 

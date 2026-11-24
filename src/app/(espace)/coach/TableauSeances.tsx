@@ -1,32 +1,18 @@
-"use client";
-
-import { useState } from "react";
 import { Carte } from "@/components/ui";
-import { dateSeance, filtrerSeances, niveauRpe, nomSport, type FiltreSeances, type SeanceCoach } from "@/lib/coach";
+import { dateSeance, niveauRpe, nomSport, trierSeances, type SeanceCoach } from "@/lib/coach";
 import styles from "./coach.module.css";
 
-/** Séances de l'athlète avec RPE, douleur et commentaire (lecture seule), filtre « Toutes » / « Douleurs ». */
+/** Séances de l'athlète avec RPE et commentaire (lecture seule), de la plus récente à la plus ancienne. */
 export function TableauSeances({ seances, aujourdhui }: { seances: SeanceCoach[]; aujourdhui: string }) {
-  const [filtre, setFiltre] = useState<FiltreSeances>("toutes");
-  const liste = filtrerSeances(seances, filtre);
-  const nbDouleurs = seances.filter((s) => s.douleur).length;
+  const liste = trierSeances(seances);
   return (
     <>
-      <div className={styles.filtres} role="group" aria-label="Filtrer les séances">
-        <button type="button" className={styles.filtre} aria-pressed={filtre === "toutes"} onClick={() => setFiltre("toutes")}>
-          Toutes ({seances.length})
-        </button>
-        <button type="button" className={styles.filtre} aria-pressed={filtre === "douleurs"} onClick={() => setFiltre("douleurs")}>
-          Douleurs ({nbDouleurs})
-        </button>
-      </div>
       <Carte as="section" className={styles.tableau} aria-label="Séances faites">
         <div className={styles.enteteTableau} aria-hidden>
           <span>Date</span>
           <span>Sport</span>
           <span>Séance</span>
           <span>RPE</span>
-          <span>Douleur</span>
           <span>Commentaire</span>
         </div>
         {liste.length ? (
@@ -55,10 +41,6 @@ export function TableauSeances({ seances, aujourdhui }: { seances: SeanceCoach[]
                     </span>
                   )}
                 </span>
-                <span className={styles.cellule}>
-                  <span className={styles.libelle}>Douleur</span>
-                  {s.douleur ? <span className={styles.douleur}>Douleur</span> : <span className={styles.non}>Non</span>}
-                </span>
                 <span className={`${styles.cellule} ${styles.commentaire}`}>
                   <span className={styles.libelle}>Commentaire</span>
                   {s.commentaire ?? <span className={styles.non}>—</span>}
@@ -67,7 +49,7 @@ export function TableauSeances({ seances, aujourdhui }: { seances: SeanceCoach[]
             ))}
           </ul>
         ) : (
-          <p className={styles.aucune}>{seances.length ? "Aucune séance pour ce filtre." : "Aucune séance notée pour l'instant."}</p>
+          <p className={styles.aucune}>Aucune séance notée pour l&apos;instant.</p>
         )}
       </Carte>
     </>

@@ -6,6 +6,7 @@ import { FormulaireEvenement } from "@/app/(espace)/admin/agenda/FormulaireEvene
 import { GestionPartenaires } from "@/app/(espace)/admin/partenaires/GestionPartenaires";
 import { EcranQuestionsAdmin } from "@/app/(espace)/admin/questions/EcranQuestionsAdmin";
 import { EcranMembres } from "@/app/(espace)/admin/membres/EcranMembres";
+import { EcranEquipe } from "@/app/(espace)/admin/equipe/EcranEquipe";
 import { EcranAdminRessources } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
 import { FormulaireContenu } from "@/app/(espace)/admin/ressources/FormulaireContenu";
 import { GestionThemes } from "@/app/(espace)/admin/ressources/GestionThemes";
@@ -14,6 +15,7 @@ import { AccueilCoach } from "@/app/(espace)/coach/AccueilCoach";
 import { FicheAthlete } from "@/app/(espace)/coach/FicheAthlete";
 import {
   ATHLETES_FICTIFS,
+  COMPTES_EQUIPE_FICTIFS,
   AUJOURDHUI_FICTIF,
   COMMENTAIRES_ADMIN_FICTIFS,
   CONTENUS_ADMIN_FICTIFS,
@@ -77,6 +79,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
     return <GestionThemes themes={THEMES_FICTIFS} contenusParRubrique={parRubrique} />;
   }
   if (ecran === "admin-ressources-commentaires") return <ModerationCommentaires commentaires={COMMENTAIRES_ADMIN_FICTIFS} />;
+  if (ecran === "admin-equipe") return <EcranEquipe comptes={COMPTES_EQUIPE_FICTIFS} moi={UTILISATEUR_FICTIF.id} />;
   if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} />;
   if (ecran === "admin-questions") return <EcranQuestionsAdmin questions={QUESTIONS_FICTIVES} />;
   if (ecran === "admin-agenda") return <EcranAgendaAdmin evenements={EVENEMENTS_FICTIFS} maintenant="2027-01-18T10:00:00.000Z" />;

@@ -3,6 +3,7 @@ import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
 import { ChampPrenom } from "@/components/ChampPrenom";
 import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
+import { MesDonnees } from "@/components/MesDonnees";
 import { ReglagesNotifications } from "@/components/ReglagesNotifications";
 import { initiale } from "@/components/IdentiteMembre";
 import { Carte } from "@/components/ui";
@@ -48,6 +49,7 @@ export function EcranProfil({
   suggestion,
   notifications = { annonces: true, faq: true, evenements: true },
   appareilApercu,
+  suppressionOuverte,
 }: {
   utilisateur: Utilisateur;
   maintenant: Date;
@@ -57,6 +59,8 @@ export function EcranProfil({
   notifications?: { annonces: boolean; faq: boolean; evenements: boolean };
   /** Aperçus seulement : état de l'appareil imposé. */
   appareilApercu?: EtatAppareil;
+  /** Aperçus seulement : panneau « Supprimer mon compte » ouvert. */
+  suppressionOuverte?: boolean;
 }) {
   return (
     <>
@@ -91,7 +95,7 @@ export function EcranProfil({
             {utilisateur.prenom ?? "Mon profil"}
           </h1>
           <p style={{ fontSize: 14, color: "#a9a4c9", marginTop: 4, overflowWrap: "anywhere" }}>{utilisateur.email}</p>
-          <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{STATUT[utilisateur.role]}</p>
+          <p style={{ fontSize: 14, color: "#a9a4c9", fontWeight: 500 }}>{utilisateur.afficheCoach ? STATUT.coach : STATUT[utilisateur.role]}</p>
         </div>
       </header>
 
@@ -114,6 +118,14 @@ export function EcranProfil({
       {LIENS.map((l) => (
         <LienCarte key={l.href} {...l} />
       ))}
+
+      <MesDonnees
+        suppressionOuverte={suppressionOuverte}
+        membre={utilisateur.role === "membre"}
+        abonnementEnCours={
+          utilisateur.abonnement.clientStripe && !!utilisateur.abonnement.fin && new Date(utilisateur.abonnement.fin) > maintenant && !utilisateur.abonnement.annulationPrevue
+        }
+      />
 
       <form action={seDeconnecter}>
         <button

@@ -21,22 +21,22 @@ describe("jour de la séance", () => {
 
 describe("ressenti saisi", () => {
   it("RPE obligatoire de 1 à 10", () => {
-    expect(lireRessentiSaisi({ rpe: null, douleur: false })).toEqual({ erreur: "Choisis ton RPE, de 1 à 10." });
-    for (const rpe of [0, 11, 5.5, "7"]) expect(lireRessentiSaisi({ rpe, douleur: false }), String(rpe)).toHaveProperty("erreur");
-    expect(lireRessentiSaisi({ rpe: 10, douleur: false })).toEqual({ ressenti: { rpe: 10, douleur: false, commentaire: null } });
+    expect(lireRessentiSaisi({ rpe: null })).toEqual({ erreur: "Choisis ton RPE, de 1 à 10." });
+    for (const rpe of [0, 11, 5.5, "7"]) expect(lireRessentiSaisi({ rpe }), String(rpe)).toHaveProperty("erreur");
+    expect(lireRessentiSaisi({ rpe: 10 })).toEqual({ ressenti: { rpe: 10, commentaire: null } });
   });
 
-  it("douleur oui ou non, commentaire facultatif nettoyé", () => {
-    expect(lireRessentiSaisi({ rpe: 7, douleur: "oui" })).toHaveProperty("erreur");
-    expect(lireRessentiSaisi({ rpe: 7, douleur: true, commentaire: "  Genou droit  " })).toEqual({
-      ressenti: { rpe: 7, douleur: true, commentaire: "Genou droit" },
+  it("commentaire facultatif nettoyé ; plus de case « douleur »", () => {
+    expect(lireRessentiSaisi({ rpe: 7, douleur: true })).toEqual({ ressenti: { rpe: 7, commentaire: null } });
+    expect(lireRessentiSaisi({ rpe: 7, commentaire: "  Bonnes jambes  " })).toEqual({
+      ressenti: { rpe: 7, commentaire: "Bonnes jambes" },
     });
-    expect(lireRessentiSaisi({ rpe: 7, douleur: true, commentaire: "   " })).toEqual({ ressenti: { rpe: 7, douleur: true, commentaire: null } });
+    expect(lireRessentiSaisi({ rpe: 7, commentaire: "   " })).toEqual({ ressenti: { rpe: 7, commentaire: null } });
   });
 
   it("commentaire de 500 caractères au plus", () => {
-    expect(lireRessentiSaisi({ rpe: 3, douleur: false, commentaire: "x".repeat(500) })).toHaveProperty("ressenti");
-    expect(lireRessentiSaisi({ rpe: 3, douleur: false, commentaire: "x".repeat(501) })).toEqual({
+    expect(lireRessentiSaisi({ rpe: 3, commentaire: "x".repeat(500) })).toHaveProperty("ressenti");
+    expect(lireRessentiSaisi({ rpe: 3, commentaire: "x".repeat(501) })).toEqual({
       erreur: "Ton commentaire dépasse 500 caractères.",
     });
   });

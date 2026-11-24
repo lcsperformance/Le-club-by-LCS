@@ -174,52 +174,6 @@
   box-shadow: 0 8px 24px rgba(250, 148, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.douleur {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 48px;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--texte);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.interrupteur {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 52px;
-  height: 30px;
-  padding: 3px;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.14);
-  transition: background 0.15s ease;
-}
-
-.interrupteur span {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--texte);
-}
-
-.douleur[aria-checked="true"] .interrupteur {
-  justify-content: flex-end;
-  background: rgba(250, 148, 255, 0.45);
-}
-
-.douleur[aria-checked="true"] .interrupteur span {
-  background: var(--accent);
-}
-
 .confidentiel {
   font-size: 12px;
   text-align: center;
