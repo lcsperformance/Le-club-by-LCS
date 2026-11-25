@@ -19,11 +19,17 @@ describe("partenaires", () => {
         nom: "Le nom fait entre 1 et 40 caractères.",
         remise: "La remise est un nombre entier de 1 à 90 (en %).",
         description: "La description fait entre 1 et 80 caractères (ex. « sur les produits Pyrène »).",
-        code: "Le code fait 3 à 30 caractères : lettres, chiffres, tirets (sans espace ni accent).",
+        code: "Le code fait 3 à 30 caractères : lettres, chiffres, tirets, « ! » et « ? » (sans espace ni accent).",
         lien: "Le lien doit commencer par https://",
         ordre: "L'ordre est un nombre entier entre 1 et 99.",
       },
     });
+  });
+
+  it("le code accepte « ! » et « ? » mais pas les autres signes", () => {
+    const champs = { nom: "Pyrène", remise: "15", description: "sur les produits Pyrène", lien: "", ordre: "1" };
+    expect(lirePartenaire({ ...champs, code: "LCS2026?!" })).toHaveProperty("partenaire.code", "LCS2026?!");
+    expect(lirePartenaire({ ...champs, code: "LCS#2026" })).toHaveProperty("erreurs.code");
   });
 
   it("dans l'ordre, puis par nom", () => {

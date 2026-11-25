@@ -54,6 +54,8 @@ describe("partenaires", () => {
     expect(await en(ADMIN, "delete from partenaires where id = $1 returning id", [p.id])).toEqual([{ id: p.id }]);
     await expect(en(ADMIN, "insert into partenaires (nom, remise, description, code) values ('X', 95, 'x', 'XX95')")).rejects.toThrow(/check constraint/);
     await expect(en(ADMIN, "insert into partenaires (nom, remise, description, code) values ('X', 10, 'x', 'avec espace')")).rejects.toThrow(/check constraint/);
+    await expect(en(ADMIN, "insert into partenaires (nom, remise, description, code) values ('X', 10, 'x', 'CODE#10')")).rejects.toThrow(/check constraint/);
+    await expect(en(ADMIN, "insert into partenaires (nom, remise, description, code) values ('Point', 10, 'x', 'LCS2026?!')")).resolves.toBeDefined();
   });
 
   it("aucun thème des Ressources ne peut prendre l'adresse du calculateur", async () => {
