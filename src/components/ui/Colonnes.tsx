@@ -39,9 +39,10 @@ export function DeuxColonnes({
   );
 }
 
-/** Seulement sur téléphone et iPad (moins de 1100 px) : sur ordinateur, sorti de la page. */
-export function SurTelephone({ children }: { children: ReactNode }) {
-  return <div className={styles.surTelephone}>{children}</div>;
+/** Seulement sur téléphone et iPad (moins de 1100 px) : sur ordinateur, sorti de la page. enLigne : dans une phrase ou un titre. */
+export function SurTelephone({ children, enLigne = false }: { children: ReactNode; enLigne?: boolean }) {
+  const Balise = enLigne ? "span" : "div";
+  return <Balise className={styles.surTelephone}>{children}</Balise>;
 }
 
 /**
@@ -50,6 +51,7 @@ export function SurTelephone({ children }: { children: ReactNode }) {
  * (courbe plus large, courbe à côté des zones, calendrier de la saison…), jamais pour une information
  * dont le téléphone aurait besoin.
  */
-export function SurOrdinateur({ children }: { children: ReactNode }) {
-  return <div className={styles.surOrdinateur}>{children}</div>;
+export function SurOrdinateur({ children, enLigne = false }: { children: ReactNode; enLigne?: boolean }) {
+  const Balise = enLigne ? "span" : "div";
+  return <Balise className={styles.surOrdinateur}>{children}</Balise>;
 }

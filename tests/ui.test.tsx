@@ -148,6 +148,8 @@ describe("mises en page ordinateur", () => {
   it("SurTelephone et SurOrdinateur : deux versions, le CSS n'en montre qu'une", () => {
     expect(renderToStaticMarkup(<SurTelephone>T</SurTelephone>)).toBe('<div class="surTelephone">T</div>');
     expect(renderToStaticMarkup(<SurOrdinateur>O</SurOrdinateur>)).toBe('<div class="surOrdinateur">O</div>');
+    expect(renderToStaticMarkup(<SurTelephone enLigne>t</SurTelephone>)).toBe('<span class="surTelephone">t</span>');
+    expect(renderToStaticMarkup(<SurOrdinateur enLigne>o</SurOrdinateur>)).toBe('<span class="surOrdinateur">o</span>');
   });
 
   it("DeuxColonnes sans latérale : une seule colonne limitée en largeur", () => {

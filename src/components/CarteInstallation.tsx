@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BoutonPrincipal, Carte } from "@/components/ui";
+import { BoutonPrincipal, Carte, SurOrdinateur, SurTelephone } from "@/components/ui";
 import {
   carteInstallation,
   CLE_CARTE_FERMEE,
@@ -85,11 +85,16 @@ export function CarteInstallation({ apercu }: Props) {
         </button>
       </span>
       <h2 id="titre-installation" className={`titre-carte ${styles.titre}`}>
-        Installe Le Club sur ton téléphone
+        Installe Le Club sur ton{" "}
+        <SurTelephone enLigne>téléphone</SurTelephone>
+        <SurOrdinateur enLigne>ordinateur</SurOrdinateur>
       </h2>
       {affichage === "android" ? (
         <>
-          <p className={styles.texte}>Une icône sur ton écran d&apos;accueil, et l&apos;app s&apos;ouvre en plein écran.</p>
+          <p className={styles.texte}>
+            <SurTelephone enLigne>Une icône sur ton écran d&apos;accueil, et l&apos;app s&apos;ouvre en plein écran.</SurTelephone>
+            <SurOrdinateur enLigne>Une icône dans ton dock ou ton menu, et l&apos;app s&apos;ouvre dans sa propre fenêtre.</SurOrdinateur>
+          </p>
           <BoutonPrincipal onClick={installer} style={{ minHeight: 46, fontSize: 15 }}>
             Installer
           </BoutonPrincipal>

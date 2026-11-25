@@ -440,6 +440,21 @@ describe.each(ORDINATEURS)("espaces coach et admin à %i × %i px", (largeur, ha
   });
 });
 
+describe("corrections de la revue finale (1440 px)", () => {
+  it("carte d'installation : « sur ton ordinateur », app dans sa propre fenêtre", async () => {
+    const page = await ouvrir("/apercu-membre/accueil-installer-android", 1440, 900);
+    try {
+      const carte = page.getByRole("region", { name: "Installe Le Club sur ton ordinateur" });
+      expect(await carte.isVisible()).toBe(true);
+      const texte = await carte.innerText();
+      expect(texte).toContain("propre fenêtre");
+      expect(texte).not.toContain("téléphone");
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);
