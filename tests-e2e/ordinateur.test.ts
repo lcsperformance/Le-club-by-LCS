@@ -291,10 +291,10 @@ describe.each(ORDINATEURS)("Club, agenda, ressources, avantages à %i × %i px",
     }
   });
 
-  it("ressources : thèmes sur 4 colonnes, contenus d'un thème en grille", async () => {
+  it("ressources : les 5 thèmes sur une ligne, contenus d'un thème en grille", async () => {
     const page = await ouvrir("/apercu-membre/ressources", largeur, hauteur);
     try {
-      expect(await parLigne(page, "main ul")).toBe(4);
+      expect(await parLigne(page, "main ul")).toBe(5);
     } finally {
       await page.close();
     }
