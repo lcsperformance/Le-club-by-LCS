@@ -441,6 +441,19 @@ describe.each(ORDINATEURS)("espaces coach et admin à %i × %i px", (largeur, ha
 });
 
 describe("corrections de la revue finale (1440 px)", () => {
+  it("séance à venir : le message « jour J » est dans une carte, à droite des blocs", async () => {
+    const page = await ouvrir("/apercu-membre/seance-a-venir", 1440, 900);
+    try {
+      const carte = page.locator('section[aria-label="Suivi de la séance"]');
+      expect(await carte.isVisible()).toBe(true);
+      expect(await carte.innerText()).toContain("jour J");
+      const blocs = await boite(page, "main ol");
+      expect(blocs.droite).toBeLessThan((await boite(page, 'section[aria-label="Suivi de la séance"]')).gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
   it("Ma saison : la fenêtre de date est centrée sur ordinateur", async () => {
     const page = await ouvrir("/apercu-membre/saison-calendrier", 1440, 900);
     try {
