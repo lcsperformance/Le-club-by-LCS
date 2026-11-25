@@ -51,8 +51,8 @@
 /* Ordinateur : aligné sur la colonne de contenu, à droite du menu latéral. */
 @media (min-width: 1100px) {
   .bandeau {
-    padding-left: calc(var(--decalage-menu) + 40px);
-    padding-right: 40px;
+    padding-left: calc(var(--decalage-menu) + var(--marge-contenu));
+    padding-right: var(--marge-contenu);
   }
 
   .lien {

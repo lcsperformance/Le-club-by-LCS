@@ -9,11 +9,11 @@
 import { chromium, type Browser, type Page } from "playwright";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { barreVisible, cheminAffiche, ONGLETS, ongletActif, profilActif } from "../src/lib/onglets";
-import { ECRANS, PETIT_ORDINATEUR } from "./ecrans";
+import { DEBUT_ORDINATEUR, ECRANS, PETIT_ORDINATEUR } from "./ecrans";
 import { BASE } from "./serveur";
 
 const ECRANS_MEMBRE = ECRANS.filter((e) => e.startsWith("/apercu-membre/"));
-const LARGEURS = [PETIT_ORDINATEUR, [1280, 800], [1440, 900]] as const;
+const LARGEURS = [PETIT_ORDINATEUR, DEBUT_ORDINATEUR, [1280, 800], [1440, 900]] as const;
 const DEBUT_MENU = 1100;
 
 let navigateur: Browser;

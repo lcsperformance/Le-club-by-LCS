@@ -24,7 +24,10 @@
    */
   --largeur-telephone: 480px;
   --largeur-contenu: 1100px;
-  --largeur-menu: 248px;
+  /* Menu latéral : 212 px de 1100 à 1439 px, 248 px sur grand écran (MenuLateral.module.css). */
+  --largeur-menu: 212px;
+  /* Marge de côté du contenu sur ordinateur : 28 px, 40 px sur grand écran. */
+  --marge-contenu: 28px;
   --marge-menu: 20px;
   --decalage-menu: 0px;
 
