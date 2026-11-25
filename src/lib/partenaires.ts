@@ -19,7 +19,7 @@ export const formatRemise = (remise: number) => `−${remise} %`;
 
 export const initialePartenaire = (nom: string) => (nom.trim().charAt(0) || "?").toLocaleUpperCase("fr-FR");
 
-const CODE = /^[A-Za-z0-9_-]{3,30}$/;
+const CODE = /^[A-Za-z0-9_!?-]{3,30}$/;
 
 export type ChampPartenaire = "nom" | "remise" | "description" | "code" | "lien" | "ordre";
 export type PartenaireSaisi = Omit<Partenaire, "id" | "exemple">;
@@ -37,7 +37,7 @@ export function lirePartenaire(s: Record<string, unknown>): { partenaire: Parten
   const description = texte(s.description);
   if (!description || description.length > 80) erreurs.description = "La description fait entre 1 et 80 caractères (ex. « sur les produits Pyrène »).";
   const code = texte(s.code);
-  if (!CODE.test(code)) erreurs.code = "Le code fait 3 à 30 caractères : lettres, chiffres, tirets (sans espace ni accent).";
+  if (!CODE.test(code)) erreurs.code = "Le code fait 3 à 30 caractères : lettres, chiffres, tirets, « ! » et « ? » (sans espace ni accent).";
   const lien = texte(s.lien) || null;
   if (lien && (!/^https:\/\/\S+$/.test(lien) || lien.length > 300)) erreurs.lien = "Le lien doit commencer par https://";
   const ordre = entier(s.ordre);
