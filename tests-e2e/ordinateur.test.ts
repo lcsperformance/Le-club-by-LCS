@@ -94,6 +94,72 @@ describe.each(ORDINATEURS)("ordinateur de %i × %i px", (largeur, hauteur) => {
   });
 });
 
+/** Boîte d'un élément de la page. */
+const boite = (page: Page, selecteur: string) =>
+  page.locator(selecteur).first().evaluate((e) => {
+    const r = e.getBoundingClientRect();
+    return { gauche: r.left, droite: r.right, haut: r.top, largeur: r.width };
+  });
+
+describe.each(ORDINATEURS)("écrans en deux colonnes à %i × %i px", (largeur, hauteur) => {
+  it("accueil : cartes en grille de 2, en-tête sans débordement", async () => {
+    const page = await ouvrir("/apercu-membre/accueil", largeur, hauteur);
+    try {
+      const grille = await page.evaluate(() => {
+        const g = [...document.querySelectorAll("main *")].find(
+          (e) => getComputedStyle(e).display === "grid" && getComputedStyle(e).gridTemplateColumns.split(" ").length === 2,
+        );
+        return [...(g?.children ?? [])].slice(0, 2).map((e) => e.getBoundingClientRect().toJSON() as DOMRect);
+      });
+      expect(grille, "une grille de 2 cartes").toHaveLength(2);
+      expect(grille[0].top, "deux cartes sur la même ligne").toBe(grille[1].top);
+      expect(grille[0].right).toBeLessThan(grille[1].left);
+      const entete = await boite(page, "header");
+      const contenu = await boite(page, 'section[aria-labelledby="etape-tests"]');
+      expect(entete.gauche, "l'en-tête est aligné sur le contenu").toBe(contenu.gauche);
+      expect(await page.locator("header").getByText("le club").isVisible(), "logo seulement dans le menu").toBe(false);
+      expect(await page.locator("main header a[href='/profil']").isVisible(), "profil seulement dans le menu").toBe(false);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Ma semaine : les 7 jours à gauche, le jour choisi et ses séances à droite", async () => {
+    const page = await ouvrir("/apercu-membre/semaine", largeur, hauteur);
+    try {
+      const jours = await boite(page, '[aria-label="Jours de la semaine"]');
+      const titreJour = await boite(page, "main h2");
+      expect(jours.droite).toBeLessThan(titreJour.gauche);
+      const avant = await page.locator("main h2").first().innerText();
+      await page.locator('[aria-label="Jours de la semaine"] button[aria-pressed="false"]').first().click();
+      await expect.poll(() => page.locator("main h2").first().innerText()).not.toBe(avant);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Séance : les blocs à gauche, le suivi (RPE, ressenti) à droite", async () => {
+    const page = await ouvrir("/apercu-membre/seance-faite", largeur, hauteur);
+    try {
+      const blocs = await boite(page, "main ol");
+      const ressenti = await boite(page, 'section[aria-labelledby="titre-ressenti"]');
+      expect(blocs.droite).toBeLessThan(ressenti.gauche);
+      expect(ressenti.haut, "le suivi commence en haut de la page").toBeLessThan(blocs.haut + 200);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Séance sans suivi : une colonne de 720 px au plus", async () => {
+    const page = await ouvrir("/apercu-membre/seance-verrouillee", largeur, hauteur);
+    try {
+      expect((await boite(page, "main ol")).largeur).toBeLessThanOrEqual(720);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);

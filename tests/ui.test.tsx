@@ -5,7 +5,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { MenuLateral } from "@/components/MenuLateral";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, PastilleZone, ZONES } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, DeuxColonnes, GrilleCartes, PastilleZone, ZONES } from "@/components/ui";
 import { barreVisible, cheminAffiche, ONGLETS, ongletActif, profilActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
@@ -120,5 +120,30 @@ describe("carte", () => {
   });
   it("accepte une autre balise", () => {
     expect(renderToStaticMarkup(<Carte as="section">x</Carte>)).toMatch(/^<section class="carte/);
+  });
+});
+
+describe("mises en page ordinateur", () => {
+  it("GrilleCartes garde ses cartes dans l'ordre", () => {
+    const html = renderToStaticMarkup(
+      <GrilleCartes>
+        <Carte>Un</Carte>
+        <Carte>Deux</Carte>
+      </GrilleCartes>,
+    );
+    expect(html).toMatch(/^<div class="grille ">/);
+    expect(html.indexOf("Un")).toBeLessThan(html.indexOf("Deux"));
+  });
+
+  it("DeuxColonnes : principale puis latérale (ordre de lecture du téléphone), latérale collante", () => {
+    const html = renderToStaticMarkup(<DeuxColonnes collante principale={<p>Gauche</p>} laterale={<p>Droite</p>} />);
+    expect(html).toBe('<div class="deuxColonnes "><div class="colonne"><p>Gauche</p></div><div class="colonne collante"><p>Droite</p></div></div>');
+  });
+
+  it("DeuxColonnes sans latérale : une seule colonne limitée en largeur", () => {
+    for (const laterale of [undefined, null, false]) {
+      const html = renderToStaticMarkup(<DeuxColonnes principale={<p>Seule</p>} laterale={laterale} />);
+      expect(html).toBe('<div class="deuxColonnes uneColonne"><div class="colonne"><p>Seule</p></div></div>');
+    }
   });
 });
