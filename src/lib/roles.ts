@@ -31,7 +31,7 @@ const CHEMINS_PUBLICS = [
  * Pages d'aperçu avec des données fictives, pour les tests automatiques d'affichage.
  * Elles n'existent que si la variable APERCU vaut « 1 » (jamais en production).
  */
-export const PREFIXES_APERCU = ["/apercu-espace", "/apercu-membre"];
+export const PREFIXES_APERCU = ["/apercu-espace", "/apercu-membre", "/apercu-conditions"];
 
 export function apercuActif(): boolean {
   return process.env.APERCU === "1" && process.env.VERCEL_ENV !== "production";

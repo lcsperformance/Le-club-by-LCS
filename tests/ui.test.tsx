@@ -55,7 +55,6 @@ describe("barre d'onglets", () => {
     expect(cheminAffiche("/apercu-membre/calculateur-ouvrir")).toBe("/ressources/calculateur");
     expect(cheminAffiche("/apercu-membre/acces-coupe")).toBe("/abonnement");
     expect(barreVisible(cheminAffiche("/apercu-membre/tests-pma"))).toBe(false);
-    expect(barreVisible(cheminAffiche("/apercu-membre/conditions"))).toBe(false);
     expect(ongletActif(cheminAffiche("/apercu-membre/saison-vide"))).toBe("semaine");
     expect(cheminAffiche("/semaine")).toBe("/semaine");
     expect(cheminAffiche("/apercu-espace/admin")).toBe("/apercu-espace/admin");
@@ -148,6 +147,8 @@ describe("mises en page ordinateur", () => {
   it("SurTelephone et SurOrdinateur : deux versions, le CSS n'en montre qu'une", () => {
     expect(renderToStaticMarkup(<SurTelephone>T</SurTelephone>)).toBe('<div class="surTelephone">T</div>');
     expect(renderToStaticMarkup(<SurOrdinateur>O</SurOrdinateur>)).toBe('<div class="surOrdinateur">O</div>');
+    expect(renderToStaticMarkup(<SurTelephone enLigne>t</SurTelephone>)).toBe('<span class="surTelephone">t</span>');
+    expect(renderToStaticMarkup(<SurOrdinateur enLigne>o</SurOrdinateur>)).toBe('<span class="surOrdinateur">o</span>');
   });
 
   it("DeuxColonnes sans latérale : une seule colonne limitée en largeur", () => {

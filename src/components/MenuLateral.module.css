@@ -97,3 +97,11 @@
     color: var(--accent);
   }
 }
+
+/* Grand écran : menu plus large (entre 1100 et 1439 px, il reste compact pour laisser la place au contenu). */
+@media (min-width: 1440px) {
+  :global(body):has(.menu) {
+    --largeur-menu: 248px;
+    --marge-contenu: 40px;
+  }
+}

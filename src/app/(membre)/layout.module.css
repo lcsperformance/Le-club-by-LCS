@@ -11,7 +11,8 @@
  * Variables lues par les écrans (avec, par défaut, les valeurs du téléphone) :
  * --debord-haut / --debord-cote : de combien un bandeau peut déborder des marges de la page ;
  * --arrondi-debord : arrondi de ses coins du haut quand il ne déborde pas ;
- * --colonnes-vignettes : colonnes des grilles de petites cartes (thèmes des Ressources : 2 sur téléphone) ;
+ * --grille-vignettes : colonnes des grilles de petites cartes (thèmes des Ressources : 2 sur téléphone ;
+ *   sur ordinateur, autant que de cartes qui tiennent, sans case vide ni carte seule sur sa ligne si possible) ;
  * --colonnes-cartes : colonnes des listes de cartes (contenus, partenaires : 1 sur téléphone) ;
  * --ligne-entete : affichage de la ligne logo + pastille de l'en-tête de l'accueil (déjà dans le menu sur ordinateur).
  */
@@ -21,7 +22,7 @@
   .contenu {
     max-width: none;
     margin: 0;
-    padding: 32px 40px 48px calc(var(--decalage-menu) + 40px);
+    padding: 32px var(--marge-contenu) 48px calc(var(--decalage-menu) + var(--marge-contenu));
     grid-template-columns: minmax(0, var(--largeur-contenu));
     justify-content: center;
     gap: 20px;
@@ -29,7 +30,7 @@
     --debord-cote: 0px;
     --arrondi-debord: 30px;
     --ligne-entete: none;
-    --colonnes-vignettes: 4;
+    --grille-vignettes: repeat(auto-fit, minmax(140px, 1fr));
     --colonnes-cartes: 2;
   }
 }

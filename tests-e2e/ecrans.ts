@@ -47,7 +47,7 @@ export const ECRANS = [
   "/apercu-membre/zones-personnalisation",
   "/apercu-membre/profil",
   "/apercu-membre/profil-suppression",
-  "/apercu-membre/conditions",
+  "/apercu-conditions",
   "/mentions-legales",
   "/cgv",
   "/confidentialite",
@@ -112,6 +112,9 @@ export const TABLETTES = [
 
 /** Petite fenêtre d'ordinateur (souris) : encore l'affichage iPad, la version ordinateur commence à 1100 px. */
 export const PETIT_ORDINATEUR = [1024, 768] as const;
+
+/** Plus petit ordinateur : la version ordinateur commence (menu latéral compact, deux colonnes). */
+export const DEBUT_ORDINATEUR = [1100, 760] as const;
 
 /** Ordinateurs : portable, écran courant, grand écran. */
 export const ORDINATEURS = [

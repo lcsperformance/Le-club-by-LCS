@@ -103,7 +103,8 @@ describe("Séance : marquer comme faite et ressenti", () => {
 
   it("séance à venir : on ne peut pas encore la marquer", async () => {
     const page = await ouvrir("seance-a-venir");
-    expect(await page.getByText("Tu pourras marquer cette séance le jour J.").isVisible()).toBe(true);
+    // Une version pour le téléphone, une pour l'ordinateur : une seule est affichée.
+    expect(await page.getByText("Tu pourras marquer cette séance le jour J.").locator("visible=true").count()).toBe(1);
     expect(await page.getByRole("button", { name: "Marquer comme faite" }).count()).toBe(0);
     await page.close();
   });

@@ -339,6 +339,51 @@
   box-shadow: none;
 }
 
+/* ===== Feuille modale (FeuilleModale) : panneau du bas sur téléphone ===== */
+.voile {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(9, 10, 15, 0.7);
+}
+
+.feuille {
+  width: 100%;
+  max-width: 480px;
+  max-height: 100dvh;
+  overflow-y: auto;
+  display: grid;
+  gap: 12px;
+  padding: 18px 18px calc(24px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0;
+  background: linear-gradient(180deg, var(--abysse), var(--cendre));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 -16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.feuilleEntete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.feuilleFermer {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--texte);
+  cursor: pointer;
+}
+
 /* ===== Mises en page ordinateur (GrilleCartes, DeuxColonnes) ===== */
 /* Téléphone et iPad : transparentes, les enfants restent dans la colonne de la page. */
 .grille,
@@ -384,6 +429,19 @@
     gap: 16px;
     align-content: start;
     min-width: 0;
+  }
+
+  /* Feuille modale : fenêtre centrée. */
+  .voile {
+    align-items: center;
+    padding: 40px;
+  }
+
+  .feuille {
+    max-height: calc(100dvh - 80px);
+    padding: 22px 22px 24px;
+    border-radius: 28px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 24px 60px rgba(0, 0, 0, 0.6);
   }
 
   /* Liste et détail : liste étroite à gauche, détail large à droite. */

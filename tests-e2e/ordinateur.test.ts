@@ -291,10 +291,10 @@ describe.each(ORDINATEURS)("Club, agenda, ressources, avantages à %i × %i px",
     }
   });
 
-  it("ressources : thèmes sur 4 colonnes, contenus d'un thème en grille", async () => {
+  it("ressources : les 5 thèmes sur une ligne, contenus d'un thème en grille", async () => {
     const page = await ouvrir("/apercu-membre/ressources", largeur, hauteur);
     try {
-      expect(await parLigne(page, "main ul")).toBe(4);
+      expect(await parLigne(page, "main ul")).toBe(5);
     } finally {
       await page.close();
     }
@@ -434,6 +434,47 @@ describe.each(ORDINATEURS)("espaces coach et admin à %i × %i px", (largeur, ha
       const liste = await boite(page, 'section[aria-labelledby="titre-athletes"]');
       const titre = await boite(page, "#titre-athlete");
       expect(liste.droite).toBeLessThan(titre.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
+describe("corrections de la revue finale (1440 px)", () => {
+  it("séance à venir : le message « jour J » est dans une carte, à droite des blocs", async () => {
+    const page = await ouvrir("/apercu-membre/seance-a-venir", 1440, 900);
+    try {
+      const carte = page.locator('section[aria-label="Suivi de la séance"]');
+      expect(await carte.isVisible()).toBe(true);
+      expect(await carte.innerText()).toContain("jour J");
+      const blocs = await boite(page, "main ol");
+      expect(blocs.droite).toBeLessThan((await boite(page, 'section[aria-label="Suivi de la séance"]')).gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Ma saison : la fenêtre de date est centrée sur ordinateur", async () => {
+    const page = await ouvrir("/apercu-membre/saison-calendrier", 1440, 900);
+    try {
+      const f = await boite(page, '[role="dialog"]');
+      const bas = await page.locator('[role="dialog"]').evaluate((e) => e.getBoundingClientRect().bottom);
+      expect(Math.abs(f.haut - (900 - bas)), "autant d'espace en haut qu'en bas").toBeLessThan(4);
+      expect(Math.abs(f.gauche - (1440 - f.droite)), "centrée en largeur").toBeLessThan(4);
+      expect(f.haut).toBeGreaterThan(20);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("carte d'installation : « sur ton ordinateur », app dans sa propre fenêtre", async () => {
+    const page = await ouvrir("/apercu-membre/accueil-installer-android", 1440, 900);
+    try {
+      const carte = page.getByRole("region", { name: "Installe Le Club sur ton ordinateur" });
+      expect(await carte.isVisible()).toBe(true);
+      const texte = await carte.innerText();
+      expect(texte).toContain("propre fenêtre");
+      expect(texte).not.toContain("téléphone");
     } finally {
       await page.close();
     }

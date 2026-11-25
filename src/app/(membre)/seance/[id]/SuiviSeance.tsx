@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, type FormEvent } from "react";
-import { BoutonPrincipal, Carte, Champ } from "@/components/ui";
+import { BoutonPrincipal, Carte, Champ, SurOrdinateur, SurTelephone } from "@/components/ui";
 import { LONGUEUR_MAX_COMMENTAIRE, lireRessentiSaisi, type Ressenti } from "@/lib/ressenti";
 import { enregistrerRessenti, marquerSeance } from "../actions";
 import styles from "./seance.module.css";
@@ -23,7 +23,20 @@ export function SuiviSeance({ seanceId, jour, ressenti, interdit }: { seanceId: 
 
   if (interdit) {
     // Trop ancienne pour être modifiée : le ressenti déjà noté reste visible, en lecture seule.
-    if (!ressenti) return <p className="message-info">{interdit}</p>;
+    if (!ressenti)
+      return (
+        <>
+          <SurTelephone>
+            <p className="message-info">{interdit}</p>
+          </SurTelephone>
+          {/* Sur ordinateur, la colonne de droite : le message dans une carte plutôt que seul. */}
+          <SurOrdinateur>
+            <Carte as="section" aria-label="Suivi de la séance">
+              <p className="message-info">{interdit}</p>
+            </Carte>
+          </SurOrdinateur>
+        </>
+      );
     return (
       <Carte as="section" aria-labelledby="titre-ressenti" className={styles.ressenti}>
         <h2 id="titre-ressenti" className={styles.ressentiTitre}>
