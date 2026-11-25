@@ -129,6 +129,31 @@
   backdrop-filter: blur(12px);
   min-width: 0;
 }
+/* Champ avec un bouton à droite (œil du mot de passe) : le texte ne passe pas sous le bouton. */
+.saisieAvecBouton {
+  position: relative;
+}
+.saisieAvecBouton .saisie {
+  padding-right: 56px;
+}
+.oeil {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 11px;
+  background: none;
+  color: var(--texte-doux);
+  cursor: pointer;
+}
+.oeil[aria-pressed="true"] {
+  color: var(--accent);
+}
 /* Safari sur iPhone donne aux champs date une largeur minimale qui les fait déborder : on la retire. */
 .saisie[type="date"],
 .saisie[type="time"] {

@@ -48,6 +48,7 @@ export const ECRANS = [
   "/apercu-membre/profil",
   "/apercu-membre/profil-suppression",
   "/apercu-conditions",
+  "/apercu-mot-de-passe",
   "/mentions-legales",
   "/cgv",
   "/confidentialite",

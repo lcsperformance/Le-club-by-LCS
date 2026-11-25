@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { BoutonPrincipal, Champ } from "@/components/ui";
+import { BoutonPrincipal, ChampMotDePasse } from "@/components/ui";
 import type { EtatFormulaire } from "@/app/connexion/actions";
 import { LONGUEUR_MIN_MOT_DE_PASSE } from "@/lib/mot-de-passe";
 import { changerMotDePasse } from "./actions";
@@ -14,8 +14,8 @@ export function FormulaireNouveau() {
       <p className="message-info" style={{ color: "var(--texte-doux)" }}>
         Au moins {LONGUEUR_MIN_MOT_DE_PASSE} caractères, avec au moins une lettre et un chiffre.
       </p>
-      <Champ libelle="Nouveau mot de passe" name="mot_de_passe" type="password" autoComplete="new-password" required />
-      <Champ libelle="Confirme le mot de passe" name="confirmation" type="password" autoComplete="new-password" required />
+      <ChampMotDePasse libelle="Nouveau mot de passe" name="mot_de_passe" autoComplete="new-password" required />
+      <ChampMotDePasse libelle="Confirme le mot de passe" name="confirmation" autoComplete="new-password" required />
       {etat.erreur && (
         <p className="message-erreur" role="alert">
           {etat.erreur}
