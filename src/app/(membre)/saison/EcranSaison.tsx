@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { CarteDecompte } from "@/components/CarteDecompte";
-import { BoutonPrincipal, BoutonSecondaire, CalendrierMois, Carte, Champ, DeuxColonnes, SurOrdinateur } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, CalendrierMois, Carte, Champ, DeuxColonnes, FeuilleModale, SurOrdinateur } from "@/components/ui";
 import {
   ANNEES_MAX,
   ajouterJours,
@@ -328,7 +328,7 @@ function CarteObjectif({
   );
 }
 
-/** Feuille du bas avec le calendrier ; l'aperçu du bloc suit le jour touché. */
+/** Feuille avec le calendrier (panneau du bas sur téléphone, fenêtre centrée sur ordinateur) ; l'aperçu du bloc suit le jour touché. */
 function FeuilleCalendrier({
   titre,
   bloc,
@@ -347,44 +347,24 @@ function FeuilleCalendrier({
   valider: (jour: string) => void;
 }) {
   const [jour, setJour] = useState(dateInitiale < aujourdhui ? aujourdhui : dateInitiale);
-  const boutonFermer = useRef<HTMLButtonElement>(null);
   const erreur = erreurDateCourse(jour, aujourdhui);
 
-  useEffect(() => {
-    boutonFermer.current?.focus();
-    const touche = (e: KeyboardEvent) => e.key === "Escape" && fermer();
-    document.addEventListener("keydown", touche);
-    return () => document.removeEventListener("keydown", touche);
-  }, [fermer]);
-
   return (
-    <div className={styles.voile} onClick={(e) => e.target === e.currentTarget && fermer()}>
-      <div role="dialog" aria-modal="true" aria-labelledby="titre-feuille" className={styles.feuille}>
-        <div className={styles.feuilleEntete}>
-          <h2 id="titre-feuille" className="titre-carte" style={{ fontSize: 18 }}>
-            {titre}
-          </h2>
-          <button ref={boutonFermer} type="button" className={styles.fermer} aria-label="Fermer" onClick={fermer}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" />
-            </svg>
-          </button>
-        </div>
-        <CalendrierMois
-          valeur={jour}
-          aujourdhui={aujourdhui}
-          min={aujourdhui}
-          max={ajouterJours(aujourdhui, 365 * ANNEES_MAX)}
-          onChoisir={setJour}
-        />
-        <p className={styles.apercu} aria-live="polite">
-          {erreur ?? apercuBloc(bloc, jour, aujourdhui)}
-        </p>
-        <BoutonPrincipal disabled={!!erreur || enCours} onClick={() => valider(jour)}>
-          Valider le {formatIsoCourt(jour)}
-        </BoutonPrincipal>
-      </div>
-    </div>
+    <FeuilleModale titre={titre} fermer={fermer}>
+      <CalendrierMois
+        valeur={jour}
+        aujourdhui={aujourdhui}
+        min={aujourdhui}
+        max={ajouterJours(aujourdhui, 365 * ANNEES_MAX)}
+        onChoisir={setJour}
+      />
+      <p className={styles.apercu} aria-live="polite">
+        {erreur ?? apercuBloc(bloc, jour, aujourdhui)}
+      </p>
+      <BoutonPrincipal disabled={!!erreur || enCours} onClick={() => valider(jour)}>
+        Valider le {formatIsoCourt(jour)}
+      </BoutonPrincipal>
+    </FeuilleModale>
   );
 }
 

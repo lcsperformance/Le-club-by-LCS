@@ -441,6 +441,19 @@ describe.each(ORDINATEURS)("espaces coach et admin à %i × %i px", (largeur, ha
 });
 
 describe("corrections de la revue finale (1440 px)", () => {
+  it("Ma saison : la fenêtre de date est centrée sur ordinateur", async () => {
+    const page = await ouvrir("/apercu-membre/saison-calendrier", 1440, 900);
+    try {
+      const f = await boite(page, '[role="dialog"]');
+      const bas = await page.locator('[role="dialog"]').evaluate((e) => e.getBoundingClientRect().bottom);
+      expect(Math.abs(f.haut - (900 - bas)), "autant d'espace en haut qu'en bas").toBeLessThan(4);
+      expect(Math.abs(f.gauche - (1440 - f.droite)), "centrée en largeur").toBeLessThan(4);
+      expect(f.haut).toBeGreaterThan(20);
+    } finally {
+      await page.close();
+    }
+  });
+
   it("carte d'installation : « sur ton ordinateur », app dans sa propre fenêtre", async () => {
     const page = await ouvrir("/apercu-membre/accueil-installer-android", 1440, 900);
     try {
