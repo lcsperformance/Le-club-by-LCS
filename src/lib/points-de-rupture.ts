@@ -7,10 +7,10 @@
  * tests/points-de-rupture.test.ts vérifie qu'ils reprennent exactement ces valeurs,
  * et que seuls les fichiers de mise en page partagés en contiennent (jamais un écran).
  * Les largeurs, elles, sont des variables CSS (globals.css) : --largeur-telephone,
- * --largeur-contenu, --largeur-rail, --marge-rail.
+ * --largeur-contenu, --largeur-menu, --marge-menu.
  */
 
-/** Ordinateur : rail latéral, contenu élargi, deux colonnes. */
+/** Ordinateur : menu latéral, contenu élargi, deux colonnes. */
 export const ORDINATEUR = 1100;
 
 /** Grand écran : plus d'espace, grilles plus larges. */

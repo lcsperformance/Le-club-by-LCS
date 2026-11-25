@@ -15,6 +15,7 @@ const SRC = join(__dirname, "..", "src");
 const MISE_EN_PAGE = [
   "app/(membre)/layout.module.css",
   "components/BarreOnglets.module.css",
+  "components/MenuLateral.module.css",
   "components/BandeauEvenement.module.css",
   "components/ui/ui.module.css",
 ];

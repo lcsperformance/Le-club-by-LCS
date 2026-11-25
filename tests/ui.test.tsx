@@ -4,8 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
+import { MenuLateral } from "@/components/MenuLateral";
 import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, PastilleZone, ZONES } from "@/components/ui";
-import { barreVisible, cheminAffiche, ONGLETS, ongletActif } from "@/lib/onglets";
+import { barreVisible, cheminAffiche, ONGLETS, ongletActif, profilActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
   it("a 5 onglets dans l'ordre de la maquette", () => {
@@ -29,6 +30,22 @@ describe("barre d'onglets", () => {
     for (const c of ["/accueil", "/saison", "/zones", "/profil", "/progres", "/records"]) expect(barreVisible(c), c).toBe(true);
     for (const c of ["/tests", "/abonnement", "/admin", "/connexion", "/bienvenue"]) expect(barreVisible(c), c).toBe(false);
     expect(ongletActif("/zones")).toBeNull();
+  });
+
+  it("« Mon profil » est en valeur sur le profil, les zones, les progrès et les records", () => {
+    for (const c of ["/profil", "/zones", "/progres", "/records"]) expect(profilActif(c), c).toBe(true);
+    for (const c of ["/accueil", "/semaine", "/seance/x", "/profils", "/club"]) expect(profilActif(c), c).toBe(false);
+  });
+
+  it("le menu latéral a le logo, les 5 onglets et le profil, onglet en cours marqué", () => {
+    const html = renderToStaticMarkup(<MenuLateral />);
+    expect(html).toContain('aria-label="Navigation principale"');
+    expect(html).toContain("le club");
+    for (const o of ONGLETS) expect(html).toContain(`href="${o.chemin}"`);
+    expect(html).toContain('href="/profil"');
+    expect(html).toContain("Mon profil");
+    expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+    expect(html.match(/<a [^>]*aria-current="page"[^>]*>/)?.[0]).toContain('href="/semaine"');
   });
 
   it("les aperçus montrent la barre de la vraie page", () => {

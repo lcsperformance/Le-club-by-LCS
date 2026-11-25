@@ -9,7 +9,7 @@ type Props = {
   /** Si fourni, la carte entière devient un lien. */
   href?: string;
   /** Balise HTML (section, article…) quand la carte n'est pas un lien. */
-  as?: "div" | "section" | "article" | "li";
+  as?: "div" | "section" | "article" | "li" | "nav";
 } & Omit<HTMLAttributes<HTMLElement>, "children" | "className" | "style">;
 
 /** Carte en verre fumé : flou, bordure dégradée 1 px, lueur interne. */
