@@ -3,7 +3,7 @@
  *
  *   npm run icones
  *
- * Source : marque/logo-club-icone.png (logo D2, tiré de marque/logo-club-icone.svg). Pour changer de logo : remplacer ce fichier
+ * Source : marque/logo-club-icone.png (logo D, tiré de marque/logo-club-icone.svg). Pour changer de logo : remplacer ce fichier
  * (ou changer SOURCE et CADRAGE ci-dessous), relancer la commande, puis faire un commit.
  *
  * Produit :
