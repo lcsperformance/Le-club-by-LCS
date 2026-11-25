@@ -333,6 +333,56 @@ describe.each(ORDINATEURS)("Club, agenda, ressources, avantages à %i × %i px",
   });
 });
 
+describe.each(ORDINATEURS)("connexion, abonnement, pages légales à %i × %i px", (largeur, hauteur) => {
+  it.each(["/connexion", "/mot-de-passe-oublie", "/bienvenue"])(
+    "%s : fond sur tout l'écran, décors masqués, colonne centrée, « le club » sur une ligne",
+    async (ecran) => {
+      const page = await ouvrir(ecran, largeur, hauteur);
+      try {
+        const m = await page.evaluate(() => {
+          const ecran = document.querySelector("main")!.getBoundingClientRect();
+          const titre = document.querySelector("h1")!.getBoundingClientRect();
+          const club = [...document.querySelectorAll(".logo")].find((e) => e.textContent?.includes("club"))!.getBoundingClientRect();
+          const decors = [...document.querySelectorAll("main > div[aria-hidden]")].filter((e) => getComputedStyle(e).display !== "none");
+          return { ecran: ecran.width, gauche: titre.left, droite: titre.right, clubHauteur: club.height, decors: decors.length };
+        });
+        expect(m.ecran, "le fond couvre la largeur").toBeGreaterThanOrEqual(largeur - 20);
+        expect(m.decors, "décors masqués").toBe(0);
+        expect(m.droite - m.gauche, "colonne de 440 px au plus").toBeLessThanOrEqual(440);
+        expect(Math.abs(m.gauche + (m.droite - m.gauche) / 2 - largeur / 2), "colonne centrée").toBeLessThan(230);
+        expect(m.clubHauteur, "« le club » sur une ligne").toBeLessThan(70);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  it("abonnement : les deux formules côte à côte dans 720 px", async () => {
+    const page = await ouvrir("/apercu-membre/abonnement-termine", largeur, hauteur);
+    try {
+      const mensuelle = await boite(page, "main >> text=/réabonner · 49/");
+      const annuelle = await boite(page, "main >> text=/à l'année/");
+      expect(mensuelle.droite).toBeLessThan(annuelle.gauche);
+      expect(Math.abs(mensuelle.haut - annuelle.haut)).toBeLessThan(10);
+      const section = await boite(page, 'section[aria-labelledby="titre-formule"]');
+      expect(section.largeur).toBeLessThanOrEqual(720);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("CGV : colonne de lecture de 720 px au plus, centrée", async () => {
+    const page = await ouvrir("/cgv", largeur, hauteur);
+    try {
+      const article = await boite(page, "article");
+      expect(article.largeur).toBeLessThanOrEqual(720);
+      expect(Math.abs(article.gauche - (largeur - article.droite))).toBeLessThan(20);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);

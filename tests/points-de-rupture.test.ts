@@ -18,6 +18,8 @@ const MISE_EN_PAGE = [
   "components/MenuLateral.module.css",
   "components/BandeauEvenement.module.css",
   "components/ui/ui.module.css",
+  "components/EcranAuth.module.css",
+  "components/legal/PageLegale.module.css",
 ];
 
 /** Règles plus anciennes que la version ordinateur, tolérées telles quelles (fichier → conditions). */

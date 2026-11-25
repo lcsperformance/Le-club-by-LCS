@@ -2,6 +2,7 @@ import { LiensLegaux } from "@/components/legal/LiensLegaux";
 import { seDeconnecter } from "@/app/auth/actions";
 import { CarteAbonnement } from "@/components/CarteAbonnement";
 import { ChoixFormule, type LiensPaiement } from "@/components/ChoixFormule";
+import { DeuxColonnes } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 
 /** Page d'un membre dont la période payée est terminée (ou pas encore commencée). */
@@ -15,44 +16,49 @@ export function EcranAbonnement({
   maintenant: Date;
 }) {
   return (
-    <>
-      <span className="logo" style={{ fontSize: 30, lineHeight: 1, marginTop: 8 }}>
-        le club
-      </span>
-      <h1 className="titre" style={{ fontSize: 24, lineHeight: 1.15 }}>
-        Ton abonnement
-      </h1>
-      {utilisateur.abonnement.coupe ? (
-        <p className="message-info" style={{ fontSize: 15, lineHeight: 1.45 }}>
-          Ton accès au Club a été suspendu par l&apos;équipe. Pour en savoir plus, écris-nous à{" "}
-          <a className="lien" href="mailto:Leclub@lcsperformance.fr">
-            Leclub@lcsperformance.fr
-          </a>
-          .
-        </p>
-      ) : (
+    // Sur ordinateur : une colonne centrée de 720 px au plus (écran plein écran, sans menu).
+    <DeuxColonnes
+      principale={
         <>
-          <p style={{ fontSize: 15, color: "#a9a4c9", lineHeight: 1.45 }}>
-            Ton accès au Club n&apos;est pas ouvert en ce moment. Tes tests et tes zones sont conservés : tu les
-            retrouves dès que tu reprends.
-          </p>
-          <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />
-          <ChoixFormule
-            liens={liensPaiement}
-            email={utilisateur.email}
-            verbe={utilisateur.abonnement.statut === "inactif" ? "M'abonner" : "Me réabonner"}
-          />
+          <span className="logo" style={{ fontSize: 30, lineHeight: 1, marginTop: 8 }}>
+            le club
+          </span>
+          <h1 className="titre" style={{ fontSize: 24, lineHeight: 1.15 }}>
+            Ton abonnement
+          </h1>
+          {utilisateur.abonnement.coupe ? (
+            <p className="message-info" style={{ fontSize: 15, lineHeight: 1.45 }}>
+              Ton accès au Club a été suspendu par l&apos;équipe. Pour en savoir plus, écris-nous à{" "}
+              <a className="lien" href="mailto:Leclub@lcsperformance.fr">
+                Leclub@lcsperformance.fr
+              </a>
+              .
+            </p>
+          ) : (
+            <>
+              <p style={{ fontSize: 15, color: "#a9a4c9", lineHeight: 1.45 }}>
+                Ton accès au Club n&apos;est pas ouvert en ce moment. Tes tests et tes zones sont conservés : tu les
+                retrouves dès que tu reprends.
+              </p>
+              <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />
+              <ChoixFormule
+                liens={liensPaiement}
+                email={utilisateur.email}
+                verbe={utilisateur.abonnement.statut === "inactif" ? "M'abonner" : "Me réabonner"}
+              />
+            </>
+          )}
+          <form action={seDeconnecter}>
+            <button
+              type="submit"
+              style={{ width: "100%", minHeight: 50, border: 0, background: "none", color: "var(--texte)", font: "inherit", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
+            >
+              Se déconnecter
+            </button>
+          </form>
+          <LiensLegaux />
         </>
-      )}
-      <form action={seDeconnecter}>
-        <button
-          type="submit"
-          style={{ width: "100%", minHeight: 50, border: 0, background: "none", color: "var(--texte)", font: "inherit", fontSize: 15, fontWeight: 800, cursor: "pointer" }}
-        >
-          Se déconnecter
-        </button>
-      </form>
-      <LiensLegaux />
-    </>
+      }
+    />
   );
 }
