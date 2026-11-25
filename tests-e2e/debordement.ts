@@ -1,25 +1,27 @@
 /**
- * Vérifie que chaque écran tient dans la largeur de l'écran, sans déborder à droite
- * (sur téléphone, une page trop large fait dézoomer toute la page) : téléphones, iPad et ordinateurs.
+ * Vérification commune des tests d'affichage : un écran tient dans la largeur, sans déborder à droite
+ * (sur téléphone, une page trop large fait dézoomer toute la page).
  * L'app compilée est démarrée par tests-e2e/serveur.ts (APERCU=1 pour les écrans à données fictives).
- * Pour prouver qu'un changement ne touche pas au téléphone ni à l'iPad : npm run comparer-affichage.
  */
 import { chromium, type Browser, type BrowserContextOptions } from "playwright";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { ECRANS, ORDINATEURS, TABLETTES, TELEPHONES } from "./ecrans";
+import { afterAll, beforeAll, expect } from "vitest";
 import { BASE } from "./serveur";
 
 let navigateur: Browser;
 
-beforeAll(async () => {
-  navigateur = await chromium.launch();
-});
+/** Ouvre un navigateur pour le fichier de tests qui appelle cette fonction. */
+export function preparerNavigateur() {
+  beforeAll(async () => {
+    navigateur = await chromium.launch();
+  });
+  afterAll(async () => {
+    await navigateur?.close();
+  });
+}
 
-afterAll(async () => {
-  await navigateur?.close();
-});
+export const tactile: BrowserContextOptions = { isMobile: true, hasTouch: true };
 
-async function verifier(ecran: string, largeur: number, hauteur: number, options: BrowserContextOptions) {
+export async function verifierDebordement(ecran: string, largeur: number, hauteur: number, options: BrowserContextOptions) {
   const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur }, ...options });
   try {
     // Attendre la fin du chargement (styles compris) : mesurer avant donnerait un faux débordement.
@@ -45,17 +47,3 @@ async function verifier(ecran: string, largeur: number, hauteur: number, options
     await page.close();
   }
 }
-
-const tactile = { isMobile: true, hasTouch: true };
-
-describe.each(TELEPHONES)("téléphone de %i px de large", (largeur) => {
-  it.each(ECRANS)("%s ne déborde pas", (ecran) => verifier(ecran, largeur, 780, tactile));
-});
-
-describe.each(TABLETTES)("iPad de %i × %i px", (largeur, hauteur) => {
-  it.each(ECRANS)("%s ne déborde pas", (ecran) => verifier(ecran, largeur, hauteur, tactile));
-});
-
-describe.each(ORDINATEURS)("ordinateur de %i × %i px", (largeur, hauteur) => {
-  it.each(ECRANS)("%s ne déborde pas", (ecran) => verifier(ecran, largeur, hauteur, {}));
-});
