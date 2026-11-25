@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
+import { DeuxColonnes } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { facultativesFaites, valeursDeDepart } from "@/lib/tests-depart";
@@ -12,10 +13,17 @@ export const metadata: Metadata = { title: "Tests de départ · Le Club by LCS" 
 export default function PageTests() {
   return (
     <>
-      <EnTeteTests />
-      <Suspense fallback={<Chargement />}>
-        <Formulaire />
-      </Suspense>
+      {/* Sur ordinateur : une colonne de lecture centrée, mesures 2 par 2. */}
+      <DeuxColonnes
+        principale={
+          <>
+            <EnTeteTests />
+            <Suspense fallback={<Chargement />}>
+              <Formulaire />
+            </Suspense>
+          </>
+        }
+      />
       <div style={{ height: 28 }} />
     </>
   );

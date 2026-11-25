@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import type { ReactNode } from "react";
 import { Chargement } from "@/components/Chargement";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, Compteur, NOMS_ZONES, PastilleZone, ZONES } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, Compteur, DeuxColonnes, GrilleCartes, NOMS_ZONES, PastilleZone, ZONES } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "Composants · Le Club by LCS" };
@@ -105,6 +105,27 @@ async function Contenu() {
               <PastilleZone key={z} zone={z} taille="petite" />
             ))}
           </div>
+        </Bloc>
+
+        <Bloc titre="Mises en page ordinateur">
+          <p style={{ fontSize: 14, color: "var(--texte-doux)" }}>
+            À partir de 1100 px de large. Sur téléphone et iPad, les cartes restent l&apos;une sous l&apos;autre.
+          </p>
+          <GrilleCartes>
+            <Carte>GrilleCartes : carte 1</Carte>
+            <Carte>GrilleCartes : carte 2</Carte>
+            <Carte>GrilleCartes : carte 3</Carte>
+          </GrilleCartes>
+          <DeuxColonnes
+            collante
+            principale={
+              <>
+                <Carte>DeuxColonnes : principale</Carte>
+                <Carte>Suite de la colonne principale</Carte>
+              </>
+            }
+            laterale={<Carte>DeuxColonnes : latérale (collante)</Carte>}
+          />
         </Bloc>
       </div>
     </>

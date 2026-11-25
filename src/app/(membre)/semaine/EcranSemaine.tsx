@@ -63,46 +63,55 @@ export function EcranSemaine({
   return (
     <div data-programme style={{ display: "grid", gap: 16 }}>
       <BandeauVisite utilisateur={utilisateur} />
-      <header className={styles.entete}>
-        <div className={styles.enteteTexte}>
-          <h1 className="titre" style={{ fontSize: 28, lineHeight: 1.1, color: "#fff" }}>
-            Ma semaine
-          </h1>
-          <p className={styles.sousTitre}>
-            {titreSemaine(jours)} · {phaseDuMoment(saisonAffichee)}
-          </p>
-          {pastille ? (
-            <p className={styles.pastille}>{pastille}</p>
-          ) : (
-            <Link href="/profil" className={`${styles.pastille} ${styles.pastilleVide}`}>
-              Choisis ton niveau
+      <BandeJours
+        key={lundi}
+        jours={jours}
+        aujourdhui={aujourdhui}
+        seances={seances}
+        avant={
+          <>
+          <header className={styles.entete}>
+            <div className={styles.enteteTexte}>
+              <h1 className="titre" style={{ fontSize: 28, lineHeight: 1.1, color: "#fff" }}>
+                Ma semaine
+              </h1>
+              <p className={styles.sousTitre}>
+                {titreSemaine(jours)} · {phaseDuMoment(saisonAffichee)}
+              </p>
+              {pastille ? (
+                <p className={styles.pastille}>{pastille}</p>
+              ) : (
+                <Link href="/profil" className={`${styles.pastille} ${styles.pastilleVide}`}>
+                  Choisis ton niveau
+                </Link>
+              )}
+            </div>
+            <Link href="/saison" className={styles.boutonSaison}>
+              Ma saison
+            </Link>
+          </header>
+          <CarteDecompte prochain={saison.prochain} href="/saison" />
+          {programme && !testsFaits && (
+            <Link href="/tests" className={styles.verrou}>
+              <Cadenas />
+              <span className={styles.verrouTexte}>Allures verrouillées. Fais tes tests pour les voir.</span>
+              <Chevron />
             </Link>
           )}
-        </div>
-        <Link href="/saison" className={styles.boutonSaison}>
-          Ma saison
-        </Link>
-      </header>
-      <CarteDecompte prochain={saison.prochain} href="/saison" />
-      {programme && !testsFaits && (
-        <Link href="/tests" className={styles.verrou}>
-          <Cadenas />
-          <span className={styles.verrouTexte}>Allures verrouillées. Fais tes tests pour les voir.</span>
-          <Chevron />
-        </Link>
-      )}
-      <nav className={styles.navSemaine} aria-label="Changer de semaine">
-        <Fleche vers={navigation.precedente} sens="precedente" />
-        {courante ? (
-          <span className={styles.navTexte}>Cette semaine</span>
-        ) : (
-          <Link href="/semaine" className={`${styles.navTexte} lien`} scroll={false}>
-            Revenir à cette semaine
-          </Link>
-        )}
-        <Fleche vers={navigation.suivante} sens="suivante" />
-      </nav>
-      <BandeJours key={lundi} jours={jours} aujourdhui={aujourdhui} seances={seances} />
+          <nav className={styles.navSemaine} aria-label="Changer de semaine">
+            <Fleche vers={navigation.precedente} sens="precedente" />
+            {courante ? (
+              <span className={styles.navTexte}>Cette semaine</span>
+            ) : (
+              <Link href="/semaine" className={`${styles.navTexte} lien`} scroll={false}>
+                Revenir à cette semaine
+              </Link>
+            )}
+            <Fleche vers={navigation.suivante} sens="suivante" />
+          </nav>
+          </>
+        }
+      />
     </div>
   );
 }

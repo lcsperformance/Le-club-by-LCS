@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { BoutonPrincipal, Carte, Compteur } from "@/components/ui";
+import { BoutonPrincipal, Carte, Compteur, GrilleCartes } from "@/components/ui";
 import { MESURES, type CleMesure, type Mesure, type ValeursTests } from "@/lib/tests-depart";
 import { enregistrerTests, type EtatTests } from "./actions";
 import { IconeSport } from "./IconeSport";
@@ -19,9 +19,11 @@ export function FormulaireTests({
 
   return (
     <form action={action} style={{ display: "grid", gap: 16 }}>
-      {MESURES.map((m) => (
-        <CarteMesure key={m.cle} mesure={m} valeurInitiale={valeursInitiales[m.cle]} faiteAuDepart={facultativesFaites.includes(m.cle)} />
-      ))}
+      <GrilleCartes>
+        {MESURES.map((m) => (
+          <CarteMesure key={m.cle} mesure={m} valeurInitiale={valeursInitiales[m.cle]} faiteAuDepart={facultativesFaites.includes(m.cle)} />
+        ))}
+      </GrilleCartes>
 
       {etat.erreur && (
         <p className="message-erreur" role="alert">

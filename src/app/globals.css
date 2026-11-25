@@ -18,6 +18,16 @@
   --titre-largeur: 125%;
   --titre-casse: uppercase;
 
+  /*
+   * Largeurs de la mise en page. Points de rupture : src/lib/points-de-rupture.ts.
+   * --decalage-menu vaut 0, sauf sur ordinateur quand le menu latéral est affiché (MenuLateral).
+   */
+  --largeur-telephone: 480px;
+  --largeur-contenu: 1100px;
+  --largeur-menu: 248px;
+  --marge-menu: 20px;
+  --decalage-menu: 0px;
+
   color-scheme: dark;
 }
 

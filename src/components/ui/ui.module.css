@@ -338,3 +338,62 @@
   background: var(--fond);
   box-shadow: none;
 }
+
+/* ===== Mises en page ordinateur (GrilleCartes, DeuxColonnes) ===== */
+/* Téléphone et iPad : transparentes, les enfants restent dans la colonne de la page. */
+.grille,
+.deuxColonnes,
+.colonne,
+.surTelephone {
+  display: contents;
+}
+.surOrdinateur {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .surTelephone {
+    display: none;
+  }
+
+  .surOrdinateur {
+    display: contents;
+  }
+
+  .grille {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .deuxColonnes {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* Sans colonne latérale : une colonne de lecture, sans étirer les cartes. */
+  .uneColonne {
+    grid-template-columns: minmax(0, 720px);
+    justify-content: center;
+  }
+
+  .colonne {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    min-width: 0;
+  }
+
+  /* Liste et détail : liste étroite à gauche, détail large à droite. */
+  .listeDetail {
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  }
+
+  /* Reste visible au défilement, sous le bandeau du prochain événement. */
+  .collante {
+    position: sticky;
+    top: 76px;
+  }
+}

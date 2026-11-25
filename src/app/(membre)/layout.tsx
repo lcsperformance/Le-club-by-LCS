@@ -1,31 +1,27 @@
 import { Suspense } from "react";
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { FondNeon } from "@/components/FondNeon";
-import { HabillageOrdinateur } from "@/components/HabillageOrdinateur";
-import habillage from "@/components/HabillageOrdinateur.module.css";
+import { MenuLateral } from "@/components/MenuLateral";
 import { ProchainEvenement } from "@/components/ProchainEvenement";
+import styles from "./layout.module.css";
 
 /**
- * Espace membre : fond Neon, bandeau du prochain événement en haut, contenu centré façon téléphone,
- * barre d'onglets flottante.
+ * Espace membre : fond Neon, bandeau du prochain événement en haut, contenu centré façon téléphone
+ * (élargi sur ordinateur), barre d'onglets flottante (menu latéral sur ordinateur).
  */
 export default function LayoutMembre({ children }: LayoutProps<"/">) {
   return (
     <>
       <FondNeon />
-      <HabillageOrdinateur />
-      <div className={habillage.colonne}>
-        {/* Le bandeau lit l'agenda (session du membre) : il doit être sous Suspense. */}
-        <Suspense fallback={null}>
-          <ProchainEvenement />
-        </Suspense>
-        <main style={{ maxWidth: 480, margin: "0 auto", padding: "22px 20px 0", display: "grid", gap: 16 }}>
-          {children}
-        </main>
-      </div>
-      {/* La barre lit l'adresse de la page : elle doit être sous Suspense. */}
+      {/* Le bandeau lit l'agenda (session du membre) : il doit être sous Suspense. */}
+      <Suspense fallback={null}>
+        <ProchainEvenement />
+      </Suspense>
+      <main className={styles.contenu}>{children}</main>
+      {/* La barre et le menu lisent l'adresse de la page : ils doivent être sous Suspense. */}
       <Suspense fallback={null}>
         <BarreOnglets />
+        <MenuLateral />
       </Suspense>
     </>
   );

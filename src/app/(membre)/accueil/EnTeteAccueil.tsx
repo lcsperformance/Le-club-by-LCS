@@ -13,7 +13,7 @@ export function EnTeteAccueil({ utilisateur, aujourdhui, phase }: { utilisateur:
     <>
       <header className={styles.bandeau}>
         <div className={styles.ligne}>
-          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span className={styles.marque}>
             <SymboleClub hauteur={30} />
             <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
               le club

@@ -1,7 +1,7 @@
 import { CarteInstallation } from "@/components/CarteInstallation";
 import { CarteNotifications } from "@/components/CarteNotifications";
 import { IconeSport } from "@/components/IconeSport";
-import { BoutonPrincipal, Carte } from "@/components/ui";
+import { BoutonPrincipal, Carte, GrilleCartes } from "@/components/ui";
 import { texteQuestionsFaq, type CarteAujourdhui } from "@/lib/accueil";
 import { quandEvenement, type Evenement } from "@/lib/agenda";
 import type { Utilisateur } from "@/lib/auth";
@@ -41,71 +41,72 @@ export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, 
       {/* Proposée après la connexion ; la fenêtre du téléphone ne s'ouvre qu'au toucher de « Activer ». */}
       <CarteNotifications apercu={notifications} />
 
-      {testsFaits ? (
-        <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <span aria-hidden style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--accent)", flex: "none" }} />
-          <span style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>Tes zones sont à jour</span>
-          <span style={{ fontSize: 14, fontWeight: 700 }}>Voir</span>
-        </Carte>
-      ) : (
-        <section
-          aria-labelledby="etape-tests"
-          style={{
-            background: "var(--aurore)",
-            color: "var(--fond)",
-            borderRadius: 20,
-            padding: 18,
-            display: "grid",
-            gap: 10,
-            boxShadow: "0 14px 34px rgba(250, 148, 255, 0.3)",
-          }}
-        >
-          <span
+      <GrilleCartes>
+        {testsFaits ? (
+          <Carte href="/zones" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span aria-hidden style={{ width: 10, height: 10, borderRadius: "50%", background: "var(--accent)", flex: "none" }} />
+            <span style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>Tes zones sont à jour</span>
+            <span style={{ fontSize: 14, fontWeight: 700 }}>Voir</span>
+          </Carte>
+        ) : (
+          <section
+            aria-labelledby="etape-tests"
             style={{
-              justifySelf: "start",
-              background: "var(--accent)",
-              fontSize: 12,
-              fontWeight: 800,
-              borderRadius: 999,
-              padding: "4px 10px",
+              background: "var(--aurore)",
+              color: "var(--fond)",
+              borderRadius: 20,
+              padding: 18,
+              display: "grid",
+              gap: 10,
+              boxShadow: "0 14px 34px rgba(250, 148, 255, 0.3)",
             }}
           >
-            Étape 1
-          </span>
-          <h2 id="etape-tests" className="titre-carte" style={{ fontSize: 19, lineHeight: 1.2 }}>
-            Définis tes zones pour débloquer tes allures
-          </h2>
-          <p style={{ fontSize: 14, lineHeight: 1.4 }}>Quatre mesures à faire en autonomie : course, vélo, natation et cardio.</p>
-          <BoutonPrincipal href="/tests" style={{ minHeight: 48, fontSize: 16, boxShadow: "none" }}>
-            Faire mes tests
-          </BoutonPrincipal>
-        </section>
-      )}
-
-      <CarteDuJour carte={seanceDuJour} />
-
-      <Carte href="/saison" className={styles.carteBloc}>
-        <span className={styles.carteBlocHaut}>
-          <span className={styles.surtitre}>{bloc.surtitre}</span>
-          <span className={styles.lienSaison}>Ma saison</span>
-        </span>
-        <span className={styles.carteBlocTitre}>{bloc.titre}</span>
-        <span className={styles.carteBlocSous}>{bloc.sous}</span>
-        {bloc.progression !== null && (
-          <span
-            className={styles.jauge}
-            role="progressbar"
-            aria-label="Avancement du bloc"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(bloc.progression * 100)}
-          >
-            <span style={{ width: `${Math.round(bloc.progression * 100)}%` }} />
-          </span>
+            <span
+              style={{
+                justifySelf: "start",
+                background: "var(--accent)",
+                fontSize: 12,
+                fontWeight: 800,
+                borderRadius: 999,
+                padding: "4px 10px",
+              }}
+            >
+              Étape 1
+            </span>
+            <h2 id="etape-tests" className="titre-carte" style={{ fontSize: 19, lineHeight: 1.2 }}>
+              Définis tes zones pour débloquer tes allures
+            </h2>
+            <p style={{ fontSize: 14, lineHeight: 1.4 }}>Quatre mesures à faire en autonomie : course, vélo, natation et cardio.</p>
+            <BoutonPrincipal href="/tests" style={{ minHeight: 48, fontSize: 16, boxShadow: "none" }}>
+              Faire mes tests
+            </BoutonPrincipal>
+          </section>
         )}
-      </Carte>
 
-      <Carte as="section" className={a.carte} aria-labelledby="titre-faq">
+        <CarteDuJour carte={seanceDuJour} />
+
+        <Carte href="/saison" className={styles.carteBloc}>
+          <span className={styles.carteBlocHaut}>
+            <span className={styles.surtitre}>{bloc.surtitre}</span>
+            <span className={styles.lienSaison}>Ma saison</span>
+          </span>
+          <span className={styles.carteBlocTitre}>{bloc.titre}</span>
+          <span className={styles.carteBlocSous}>{bloc.sous}</span>
+          {bloc.progression !== null && (
+            <span
+              className={styles.jauge}
+              role="progressbar"
+              aria-label="Avancement du bloc"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(bloc.progression * 100)}
+            >
+              <span style={{ width: `${Math.round(bloc.progression * 100)}%` }} />
+            </span>
+          )}
+        </Carte>
+
+        <Carte as="section" className={a.carte} aria-labelledby="titre-faq">
           <span className={a.faqEntete}>
             <span className={a.point} aria-hidden />
             <span id="titre-faq" className={a.surtitre}>
@@ -117,33 +118,34 @@ export function AccueilMembre({ utilisateur, testsFaits, objectifs, aujourdhui, 
           <BoutonPrincipal href="/club/questions" style={{ minHeight: 46, fontSize: 15 }}>
             Poser une question
           </BoutonPrincipal>
-      </Carte>
-
-      {nouveau && (
-        <Carte href={`/ressources/contenu/${nouveau.id}`} className={a.nouveau}>
-          <span className={a.nouveauIcone} aria-hidden>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {nouveau.type === "video" ? (
-                <>
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M10 8.5l5 3.5-5 3.5z" />
-                </>
-              ) : (
-                <>
-                  <path d="M6 3h8l4 4v14H6z" />
-                  <path d="M14 3v4h4" />
-                </>
-              )}
-            </svg>
-          </span>
-          <span className={a.texte}>
-            <span className={a.surtitre}>Nouveau cette semaine</span>
-            <span className={a.nouveauTitre}>{nouveau.titre}</span>
-          </span>
         </Carte>
-      )}
 
-      <CarteInstallation apercu={installation} />
+        {nouveau && (
+          <Carte href={`/ressources/contenu/${nouveau.id}`} className={a.nouveau}>
+            <span className={a.nouveauIcone} aria-hidden>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {nouveau.type === "video" ? (
+                  <>
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M10 8.5l5 3.5-5 3.5z" />
+                  </>
+                ) : (
+                  <>
+                    <path d="M6 3h8l4 4v14H6z" />
+                    <path d="M14 3v4h4" />
+                  </>
+                )}
+              </svg>
+            </span>
+            <span className={a.texte}>
+              <span className={a.surtitre}>Nouveau cette semaine</span>
+              <span className={a.nouveauTitre}>{nouveau.titre}</span>
+            </span>
+          </Carte>
+        )}
+
+        <CarteInstallation apercu={installation} />
+      </GrilleCartes>
     </>
   );
 }

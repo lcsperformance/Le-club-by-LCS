@@ -66,5 +66,5 @@ jobs:
       - name: Navigateur pour les tests d'affichage
         run: npx playwright install --with-deps chromium
 
-      - name: Affichage sur téléphone (320, 360, 390 px)
+      - name: Affichage sur téléphone, iPad et ordinateur
         run: npm run test:e2e

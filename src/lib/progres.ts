@@ -80,6 +80,11 @@ export function lignesHistorique(sport: SportHistorique, points: PointHistorique
 /** Repère de la courbe (même cadre que la maquette : 330 × 190). */
 export const CADRE = { largeur: 330, hauteur: 190, gauche: 30, droite: 300, haut: 44, bas: 150, dates: 176 } as const;
 
+/** Repère large (ordinateur) : même dessin, plus de place en largeur, mis à l'échelle sans déformation. */
+export const CADRE_LARGE = { largeur: 660, hauteur: 240, gauche: 40, droite: 620, haut: 52, bas: 186, dates: 220 } as const;
+
+export type Cadre = { largeur: number; hauteur: number; gauche: number; droite: number; haut: number; bas: number; dates: number };
+
 export type PointCourbe = {
   x: number;
   y: number;
@@ -96,10 +101,15 @@ const arrondi = (n: number) => Math.round(n * 10) / 10;
 /**
  * Courbe : un point par série de tests, réparti de gauche à droite.
  * Plus haut = meilleur (allure plus rapide, puissance ou FC plus élevée).
+ * cadre : repère du dessin (CADRE sur téléphone, CADRE_LARGE sur ordinateur).
  */
-export function courbe(sport: SportHistorique, points: PointHistorique[]): { points: PointCourbe[]; ligne: string; aire: string } {
+export function courbe(
+  sport: SportHistorique,
+  points: PointHistorique[],
+  cadre: Cadre = CADRE,
+): { points: PointCourbe[]; ligne: string; aire: string } {
   if (!points.length) return { points: [], ligne: "", aire: "" };
-  const { gauche: G, droite: D, haut: H, bas: B } = CADRE;
+  const { gauche: G, droite: D, haut: H, bas: B } = cadre;
   const valeurs = points.map((p) => p.valeur);
   const etendue = Math.max(Math.max(...valeurs) - Math.min(...valeurs), 1);
   const mini = Math.min(...valeurs) - etendue * 0.4;

@@ -9,12 +9,13 @@ export function EcranAuth({ titre, children }: { titre: string; children: ReactN
       <div className={styles.halo} aria-hidden />
       <div className={styles.point} aria-hidden />
       <div className={styles.logo}>
-        <div style={{ marginBottom: 18 }}>
+        <div className={styles.symbole}>
           <SymboleClub hauteur={72} />
         </div>
         <div className={`logo ${styles.club}`}>
           le
           <br />
+          {/* Espace : « le club » sur une ligne sur ordinateur, où le retour à la ligne est masqué. */}{" "}
           club
         </div>
         <div className={styles.signature}>by LCS Performance</div>

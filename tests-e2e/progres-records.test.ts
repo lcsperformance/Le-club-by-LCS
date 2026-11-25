@@ -24,8 +24,10 @@ describe("Mes progrès", () => {
     const page = await ouvrir("progres");
     expect(await page.getByText("−22 s/km").isVisible()).toBe(true);
     expect(await page.getByText("plus vite sur ton allure seuil").isVisible()).toBe(true);
-    expect(await page.getByRole("img", { name: /^Courbe de ta allure seuil en course : 4:52 \/km le 14\/09/ }).count()).toBe(1);
-    expect(await page.locator("svg circle").count()).toBe(4);
+    const courbe = page.getByRole("img", { name: /^Courbe de ta allure seuil en course : 4:52 \/km le 14\/09/ });
+    expect(await courbe.count()).toBe(1);
+    // Points de la courbe seulement (les icônes de la navigation ont aussi des ronds).
+    expect(await courbe.locator("circle").count()).toBe(4);
     const lignes = page.getByRole("region", { name: "Historique des tests" }).getByRole("listitem");
     expect(await lignes.count()).toBe(4);
     expect(await lignes.first().innerText()).toMatch(/11\/01\/2027\s+4:30 \/km\s+−16 s/);

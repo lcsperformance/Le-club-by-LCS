@@ -40,6 +40,10 @@
   margin-top: 96px;
 }
 
+.symbole {
+  margin-bottom: 18px;
+}
+
 .club {
   font-size: 76px;
   line-height: 0.95;
@@ -69,4 +73,65 @@
   font-size: 26px;
   line-height: 1.15;
   color: #fff;
+}
+
+/*
+ * Ordinateur : le fond couvre tout l'écran ; les décors de la maquette téléphone (demi-cercle, pastille)
+ * sont masqués ; une seule colonne centrée, en largeur comme en hauteur, avec le logo sur une ligne.
+ */
+@media (min-width: 1100px) {
+  .ecran {
+    max-width: none;
+    justify-content: center;
+    align-items: center;
+    padding: 64px 40px;
+  }
+
+  .halo,
+  .point {
+    display: none;
+  }
+
+  .logo,
+  .contenu {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  /* Symbole et « le club » sur une ligne, signature dessous. */
+  .logo {
+    margin-top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 14px;
+  }
+
+  .symbole {
+    margin-bottom: 0;
+  }
+
+  .symbole svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .signature {
+    flex-basis: 100%;
+  }
+
+  .club {
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  .club br {
+    display: none;
+  }
+
+  .espace {
+    flex: none;
+    min-height: 0;
+    height: 48px;
+  }
 }

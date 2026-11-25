@@ -14,6 +14,9 @@ const SOUS_PAGES: Record<string, CleOnglet> = { "/saison": "semaine", "/seance":
 /** Sous-pages qui gardent la barre sans onglet en valeur (comme dans la maquette). */
 const AVEC_BARRE = ["/zones", "/profil", "/progres", "/records"];
 
+/** Pages personnelles : « Mon profil » y est mis en valeur dans le menu latéral (ordinateur). */
+const PAGES_PROFIL = ["/profil", "/zones", "/progres", "/records"];
+
 const sous = (chemin: string, base: string) => chemin === base || chemin.startsWith(`${base}/`);
 
 /** Onglet à mettre en valeur pour une adresse donnée (sous-pages comprises). */
@@ -27,4 +30,26 @@ export function ongletActif(chemin: string): CleOnglet | null {
 /** La barre s'affiche partout dans l'espace membre, sauf sur les écrans plein écran (tests, abonnement…). */
 export function barreVisible(chemin: string): boolean {
   return ongletActif(chemin) !== null || AVEC_BARRE.some((p) => sous(chemin, p));
+}
+
+/** « Mon profil » est mis en valeur sur le profil, les zones, les progrès et les records. */
+export function profilActif(chemin: string): boolean {
+  return PAGES_PROFIL.some((p) => sous(chemin, p));
+}
+
+/** Aperçus dont le nom ne commence pas par l'adresse de la vraie page. */
+const APERCUS_PARTICULIERS: Record<string, string> = {
+  calculateur: "/ressources/calculateur",
+  acces: "/abonnement",
+  bandeau: "/accueil",
+};
+
+/**
+ * Adresse de la vraie page montrée par un aperçu (`/apercu-membre/seance-faite` → `/seance`),
+ * pour que la barre et le menu s'y affichent comme dans l'app. Toute autre adresse est rendue telle quelle.
+ */
+export function cheminAffiche(chemin: string): string {
+  const apercu = chemin.match(/^\/apercu-membre\/([a-z]+)/);
+  if (!apercu) return chemin;
+  return APERCUS_PARTICULIERS[apercu[1]] ?? `/${apercu[1]}`;
 }

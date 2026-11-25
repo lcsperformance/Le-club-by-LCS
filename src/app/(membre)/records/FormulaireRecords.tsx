@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, type FormEvent } from "react";
-import { BoutonPrincipal, Carte } from "@/components/ui";
+import { BoutonPrincipal, Carte, GrilleCartes } from "@/components/ui";
 import { EPREUVES, formatTemps, lireRecords, type Epreuve, type Records } from "@/lib/records";
 import { enregistrerRecords } from "./actions";
 import styles from "./records.module.css";
@@ -57,41 +57,43 @@ export function FormulaireRecords({ records }: { records: Records }) {
 
   return (
     <form onSubmit={enregistrer} noValidate style={{ display: "grid", gap: 16 }}>
-      {GROUPES.map((g) => (
-        <section key={g.cle} style={{ display: "grid", gap: 10 }} aria-labelledby={`groupe-${g.cle}`}>
-          <h2 id={`groupe-${g.cle}`} className={styles.surtitre}>
-            {g.titre}
-          </h2>
-          <Carte className={styles.carte}>
-            {EPREUVES.filter((e) => e.groupe === g.cle).map((e) => (
-              <div key={e.cle} className={styles.ligne}>
-                <label className={styles.ligneHaut}>
-                  <span className={styles.libelle}>{e.libelle}</span>
-                  <input
-                    className={styles.saisie}
-                    name={e.cle}
-                    type="text"
-                    inputMode="text"
-                    autoComplete="off"
-                    placeholder={`ex. ${e.exemple}`}
-                    value={valeurs[e.cle]}
-                    onChange={(ev) => changer(e.cle, ev.target.value)}
-                    aria-label={`Record ${e.libelle}`}
-                    aria-invalid={erreurs[e.cle] ? true : undefined}
-                    aria-describedby={erreurs[e.cle] ? `erreur-${e.cle}` : undefined}
-                    maxLength={12}
-                  />
-                </label>
-                {erreurs[e.cle] && (
-                  <p id={`erreur-${e.cle}`} className={styles.erreur}>
-                    {erreurs[e.cle]}
-                  </p>
-                )}
-              </div>
-            ))}
-          </Carte>
-        </section>
-      ))}
+      <GrilleCartes>
+        {GROUPES.map((g) => (
+          <section key={g.cle} style={{ display: "grid", gap: 10, alignContent: "start" }} aria-labelledby={`groupe-${g.cle}`}>
+            <h2 id={`groupe-${g.cle}`} className={styles.surtitre}>
+              {g.titre}
+            </h2>
+            <Carte className={styles.carte}>
+              {EPREUVES.filter((e) => e.groupe === g.cle).map((e) => (
+                <div key={e.cle} className={styles.ligne}>
+                  <label className={styles.ligneHaut}>
+                    <span className={styles.libelle}>{e.libelle}</span>
+                    <input
+                      className={styles.saisie}
+                      name={e.cle}
+                      type="text"
+                      inputMode="text"
+                      autoComplete="off"
+                      placeholder={`ex. ${e.exemple}`}
+                      value={valeurs[e.cle]}
+                      onChange={(ev) => changer(e.cle, ev.target.value)}
+                      aria-label={`Record ${e.libelle}`}
+                      aria-invalid={erreurs[e.cle] ? true : undefined}
+                      aria-describedby={erreurs[e.cle] ? `erreur-${e.cle}` : undefined}
+                      maxLength={12}
+                    />
+                  </label>
+                  {erreurs[e.cle] && (
+                    <p id={`erreur-${e.cle}`} className={styles.erreur}>
+                      {erreurs[e.cle]}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </Carte>
+          </section>
+        ))}
+      </GrilleCartes>
       <BoutonPrincipal type="submit" enCours={enCours} texteEnCours="Enregistrement…">
         Enregistrer mes records
       </BoutonPrincipal>

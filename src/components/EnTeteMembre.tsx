@@ -16,14 +16,12 @@ export function EnTeteMembre({
   return (
     <header style={{ display: "grid", gap: 16 }}>
       <BandeauVisite utilisateur={utilisateur} />
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      {/* Logo et pastille : masqués sur ordinateur (--ligne-entete), où le menu latéral les a déjà. */}
+      <div style={{ display: "var(--ligne-entete, flex)", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <SymboleClub hauteur={30} />
-          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <SymboleClub hauteur={30} />
-            <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
-              le club
-            </span>
+          <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
+            le club
           </span>
         </span>
         <PastilleProfil utilisateur={utilisateur} />

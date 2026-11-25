@@ -47,3 +47,25 @@
   flex: none;
   opacity: 0.7;
 }
+
+/* Ordinateur : aligné sur la colonne de contenu, à droite du menu latéral. */
+@media (min-width: 1100px) {
+  .bandeau {
+    padding-left: calc(var(--decalage-menu) + 40px);
+    padding-right: 40px;
+  }
+
+  .lien {
+    max-width: var(--largeur-contenu);
+  }
+
+  /* Aperçus : le bandeau est dans le contenu, déjà à droite du menu. */
+  :global(main) .bandeau {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .lien:hover .fleche {
+    opacity: 1;
+  }
+}

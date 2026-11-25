@@ -1,9 +1,12 @@
-/* Bandeau de l'accueil (maquette) : rose translucide, arrondi en bas, sur toute la largeur. */
+/*
+ * Bandeau de l'accueil (maquette) : rose translucide, arrondi en bas, sur toute la largeur.
+ * Sur ordinateur, la page règle les variables pour en faire une carte arrondie, sans débordement.
+ */
 .bandeau {
   /* Déborde des marges de la page (main : 22px en haut, 20px sur les côtés). */
-  margin: -22px -20px 0;
+  margin: calc(-1 * var(--debord-haut, 22px)) calc(-1 * var(--debord-cote, 20px)) 0;
   padding: 22px 20px 26px;
-  border-radius: 0 0 30px 30px;
+  border-radius: var(--arrondi-debord, 0) var(--arrondi-debord, 0) 30px 30px;
   background: rgba(250, 148, 255, 0.2);
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
@@ -11,10 +14,16 @@
   display: grid;
   gap: 18px;
 }
+/* Logo et pastille du profil : masqués sur ordinateur, où le menu latéral les a déjà. */
 .ligne {
-  display: flex;
+  display: var(--ligne-entete, flex);
   align-items: center;
   justify-content: space-between;
+}
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .salut {
   font-size: clamp(26px, 8.5vw, 32px);

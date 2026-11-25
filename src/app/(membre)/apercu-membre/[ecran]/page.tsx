@@ -5,11 +5,13 @@ import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { BandeauEvenement } from "@/components/BandeauEvenement";
 import { EcranAuth } from "@/components/EcranAuth";
+import { DeuxColonnes } from "@/components/ui";
 import { FormulaireConditions } from "@/app/conditions/FormulaireConditions";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
 import { EcranCanal } from "@/app/(membre)/club/[canal]/EcranCanal";
+import { ListeCanaux } from "@/app/(membre)/club/ListeCanaux";
 import { EcranAgenda } from "@/app/(membre)/club/agenda/EcranAgenda";
 import { EcranQuestions } from "@/app/(membre)/club/questions/EcranQuestions";
 import { EcranClub } from "@/app/(membre)/club/EcranClub";
@@ -118,17 +120,25 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     }
     case "tests":
       return (
-        <>
-          <EnTeteTests />
-          <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
-        </>
+        <DeuxColonnes
+          principale={
+            <>
+              <EnTeteTests />
+              <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
+            </>
+          }
+        />
       );
     case "tests-pma":
       return (
-        <>
-          <EnTeteTests />
-          <FormulaireTests valeursInitiales={valeursDeDepart(TEST_FICTIF)} facultativesFaites={["pma_5min"]} />
-        </>
+        <DeuxColonnes
+          principale={
+            <>
+              <EnTeteTests />
+              <FormulaireTests valeursInitiales={valeursDeDepart(TEST_FICTIF)} facultativesFaites={["pma_5min"]} />
+            </>
+          }
+        />
       );
     case "profil":
       return (
@@ -273,6 +283,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           aujourdhui={AUJOURDHUI_FICTIF}
           moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-canal-admin" ? "admin" : "membre" }}
           direct={false}
+          liste={<ListeCanaux canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[1].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[1].cle} />}
         />
       );
     case "club-annonces":
@@ -285,6 +296,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           aujourdhui={AUJOURDHUI_FICTIF}
           moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-annonces-coach" ? "coach" : "membre" }}
           direct={false}
+          liste={<ListeCanaux canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[0].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[0].cle} />}
         />
       );
     case "avantages":
@@ -400,7 +412,11 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return (
         <>
           <EnTeteZones />
-          <AffichageZones sport={sport} test={TEST_FICTIF} />
+          <AffichageZones
+            sport={sport}
+            test={TEST_FICTIF}
+            progres={sport === "course" ? HISTORIQUE_COURSE_FICTIF : sport === "velo" ? HISTORIQUE_VELO_FICTIF : []}
+          />
         </>
       );
     }

@@ -81,7 +81,8 @@
 
 .grille {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* 2 sur téléphone ; plus sur ordinateur (variable posée par la mise en page). */
+  grid-template-columns: repeat(var(--colonnes-vignettes, 2), minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -535,4 +536,9 @@ a.calculateur {
   height: min(620px, 70vh);
   border: 0;
   background: #fff;
+}
+
+/* Contenus d'une rubrique : 1 colonne sur téléphone ; plus sur ordinateur (variable posée par la mise en page). */
+.listeContenus {
+  grid-template-columns: repeat(var(--colonnes-cartes, 1), minmax(0, 1fr));
 }

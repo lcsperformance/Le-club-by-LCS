@@ -8,6 +8,8 @@
 
 .partenaires {
   display: grid;
+  /* 1 colonne sur téléphone ; plus sur ordinateur (variable posée par la mise en page). */
+  grid-template-columns: repeat(var(--colonnes-cartes, 1), minmax(0, 1fr));
   gap: 16px;
   margin: 0;
   padding: 0;

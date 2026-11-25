@@ -103,3 +103,24 @@
   opacity: 0.4;
   cursor: default;
 }
+
+/* Courbe de progrès à côté des zones (ordinateur seulement). */
+.evolution {
+  display: grid;
+  gap: 4px;
+}
+.evolutionTitre {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texte-doux);
+}
+.evolutionTitre span {
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--accent);
+}

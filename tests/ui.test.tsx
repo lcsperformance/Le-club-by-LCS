@@ -4,8 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, PastilleZone, ZONES } from "@/components/ui";
-import { barreVisible, ONGLETS, ongletActif } from "@/lib/onglets";
+import { MenuLateral } from "@/components/MenuLateral";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, DeuxColonnes, GrilleCartes, PastilleZone, SurOrdinateur, SurTelephone, ZONES } from "@/components/ui";
+import { barreVisible, cheminAffiche, ONGLETS, ongletActif, profilActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
   it("a 5 onglets dans l'ordre de la maquette", () => {
@@ -29,6 +30,35 @@ describe("barre d'onglets", () => {
     for (const c of ["/accueil", "/saison", "/zones", "/profil", "/progres", "/records"]) expect(barreVisible(c), c).toBe(true);
     for (const c of ["/tests", "/abonnement", "/admin", "/connexion", "/bienvenue"]) expect(barreVisible(c), c).toBe(false);
     expect(ongletActif("/zones")).toBeNull();
+  });
+
+  it("« Mon profil » est en valeur sur le profil, les zones, les progrès et les records", () => {
+    for (const c of ["/profil", "/zones", "/progres", "/records"]) expect(profilActif(c), c).toBe(true);
+    for (const c of ["/accueil", "/semaine", "/seance/x", "/profils", "/club"]) expect(profilActif(c), c).toBe(false);
+  });
+
+  it("le menu latéral a le logo, les 5 onglets et le profil, onglet en cours marqué", () => {
+    const html = renderToStaticMarkup(<MenuLateral />);
+    expect(html).toContain('aria-label="Navigation principale"');
+    expect(html).toContain("le club");
+    for (const o of ONGLETS) expect(html).toContain(`href="${o.chemin}"`);
+    expect(html).toContain('href="/profil"');
+    expect(html).toContain("Mon profil");
+    expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+    expect(html.match(/<a [^>]*aria-current="page"[^>]*>/)?.[0]).toContain('href="/semaine"');
+  });
+
+  it("les aperçus montrent la barre de la vraie page", () => {
+    expect(cheminAffiche("/apercu-membre/seance-faite")).toBe("/seance");
+    expect(cheminAffiche("/apercu-membre/club-canal")).toBe("/club");
+    expect(cheminAffiche("/apercu-membre/accueil")).toBe("/accueil");
+    expect(cheminAffiche("/apercu-membre/calculateur-ouvrir")).toBe("/ressources/calculateur");
+    expect(cheminAffiche("/apercu-membre/acces-coupe")).toBe("/abonnement");
+    expect(barreVisible(cheminAffiche("/apercu-membre/tests-pma"))).toBe(false);
+    expect(barreVisible(cheminAffiche("/apercu-membre/conditions"))).toBe(false);
+    expect(ongletActif(cheminAffiche("/apercu-membre/saison-vide"))).toBe("semaine");
+    expect(cheminAffiche("/semaine")).toBe("/semaine");
+    expect(cheminAffiche("/apercu-espace/admin")).toBe("/apercu-espace/admin");
   });
 
   it("marque l'onglet de la page courante", () => {
@@ -90,5 +120,40 @@ describe("carte", () => {
   });
   it("accepte une autre balise", () => {
     expect(renderToStaticMarkup(<Carte as="section">x</Carte>)).toMatch(/^<section class="carte/);
+  });
+});
+
+describe("mises en page ordinateur", () => {
+  it("GrilleCartes garde ses cartes dans l'ordre", () => {
+    const html = renderToStaticMarkup(
+      <GrilleCartes>
+        <Carte>Un</Carte>
+        <Carte>Deux</Carte>
+      </GrilleCartes>,
+    );
+    expect(html).toMatch(/^<div class="grille ">/);
+    expect(html.indexOf("Un")).toBeLessThan(html.indexOf("Deux"));
+  });
+
+  it("DeuxColonnes : principale puis latérale (ordre de lecture du téléphone), latérale collante", () => {
+    const html = renderToStaticMarkup(<DeuxColonnes collante principale={<p>Gauche</p>} laterale={<p>Droite</p>} />);
+    expect(html).toBe('<div class="deuxColonnes"><div class="colonne"><p>Gauche</p></div><div class="colonne collante"><p>Droite</p></div></div>');
+  });
+
+  it("DeuxColonnes en liste et détail", () => {
+    const html = renderToStaticMarkup(<DeuxColonnes liste principale={<p>Liste</p>} laterale={<p>Détail</p>} />);
+    expect(html).toMatch(/^<div class="deuxColonnes listeDetail">/);
+  });
+
+  it("SurTelephone et SurOrdinateur : deux versions, le CSS n'en montre qu'une", () => {
+    expect(renderToStaticMarkup(<SurTelephone>T</SurTelephone>)).toBe('<div class="surTelephone">T</div>');
+    expect(renderToStaticMarkup(<SurOrdinateur>O</SurOrdinateur>)).toBe('<div class="surOrdinateur">O</div>');
+  });
+
+  it("DeuxColonnes sans latérale : une seule colonne limitée en largeur", () => {
+    for (const laterale of [undefined, null, false]) {
+      const html = renderToStaticMarkup(<DeuxColonnes principale={<p>Seule</p>} laterale={laterale} />);
+      expect(html).toBe('<div class="deuxColonnes uneColonne"><div class="colonne"><p>Seule</p></div></div>');
+    }
   });
 });

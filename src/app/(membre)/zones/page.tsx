@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
 import { BoutonPrincipal, Carte } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
+import { historiqueSport } from "@/lib/historique-serveur";
 import { createClient } from "@/lib/supabase/server";
 import { bornesDuClub, sportDepuisAdresse } from "@/lib/zones";
 import { bornesPersoApplicables } from "@/lib/zones-perso";
@@ -52,6 +53,8 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
     .eq("membre_id", utilisateur.id)
     .in("sport", sport === "cardio" ? ["cardio"] : [sport, "cardio"]);
   const enregistrees = (s: string) => persos?.find((p) => p.sport === s)?.bornes;
+  // Courbe de progrès du même sport, à côté des zones sur ordinateur.
+  const progres = await historiqueSport(sport, utilisateur.id);
 
   return (
     <AffichageZones
@@ -61,6 +64,7 @@ async function Contenu({ searchParams }: Pick<PageProps<"/zones">, "searchParams
       bornesFc={bornesPersoApplicables(enregistrees("cardio"), bornesDuClub("cardio"))}
       niveau={utilisateur.niveau}
       profil={utilisateur.profil}
+      progres={progres}
     />
   );
 }

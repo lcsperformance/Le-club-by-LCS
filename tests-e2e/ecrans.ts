@@ -1,13 +1,9 @@
 /**
- * Vérifie que chaque écran tient dans la largeur d'un téléphone,
- * sans déborder à droite (sinon le téléphone dézoome toute la page).
- * L'app compilée est démarrée par tests-e2e/serveur.ts (APERCU=1 pour les écrans à données fictives).
+ * Tous les écrans vérifiés dans un navigateur (tests d'affichage et comparaison des captures).
+ * Les écrans connectés passent par les pages d'aperçu (données fictives, APERCU=1).
+ * Tout nouvel écran doit être ajouté ici.
  */
-import { chromium, type Browser } from "playwright";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { BASE } from "./serveur";
-
-const ECRANS = [
+export const ECRANS = [
   "/connexion",
   "/mot-de-passe-oublie",
   "/auth/confirm?code=exemple",
@@ -105,64 +101,21 @@ const ECRANS = [
   "/bienvenue",
 ];
 
-const LARGEURS = [320, 360, 390];
+/** Téléphones : largeurs vérifiées (hauteur 780 px). */
+export const TELEPHONES = [320, 360, 390] as const;
 
-let navigateur: Browser;
-
-beforeAll(async () => {
-  navigateur = await chromium.launch();
-});
-
-afterAll(async () => {
-  await navigateur?.close();
-});
-
-describe.each(LARGEURS)("téléphone de %i px de large", (largeur) => {
-  it.each(ECRANS)("%s ne déborde pas", async (ecran) => {
-    const page = await navigateur.newPage({ viewport: { width: largeur, height: 780 }, isMobile: true, hasTouch: true });
-    try {
-      // Attendre la fin du chargement (styles compris) : mesurer avant donnerait un faux débordement.
-      const reponse = await page.goto(BASE + ecran, { waitUntil: "networkidle" });
-      await page.waitForFunction(() => !document.body.innerText.includes("Chargement…"));
-      expect(reponse?.status(), "la page doit exister").toBeLessThan(400);
-      expect(page.url(), "pas de redirection vers la connexion").toContain(ecran.split("?")[0]);
-      await page.evaluate(() => document.fonts.ready);
-
-      // Sur téléphone, une page trop large élargit toute la zone d'affichage (le téléphone dézoome) :
-      // on compare donc la largeur réelle de la page à la largeur de l'écran simulé.
-      const mesure = await page.evaluate((largeurEcran) => {
-        const largeurPage = document.documentElement.scrollWidth;
-        const fautifs = [...document.querySelectorAll("body *")]
-          .filter((e) => e.getBoundingClientRect().right > largeurEcran + 1)
-          .map((e) => `<${e.tagName.toLowerCase()}> « ${(e.textContent ?? "").trim().slice(0, 40)} »`);
-        return { largeurPage, fautifs: largeurPage > largeurEcran ? fautifs.slice(0, 5) : [] };
-      }, largeur);
-
-      expect(mesure.largeurPage, `la page dépasse de l'écran ; en cause : ${mesure.fautifs.join(", ")}`).toBeLessThanOrEqual(
-        largeur,
-      );
-    } finally {
-      await page.close();
-    }
-  });
-});
-
-// iPad (portrait et paysage) : l'espace membre reste centré, rien ne déborde.
-const TABLETTES = [
+/** iPad en portrait et en paysage : l'affichage doit y rester celui d'aujourd'hui. */
+export const TABLETTES = [
   [768, 1024],
   [1024, 768],
 ] as const;
-const ECRANS_TABLETTE = ECRANS.filter((e) => e.startsWith("/apercu-membre/")).slice(0, 12);
 
-describe.each(TABLETTES)("iPad de %i × %i px", (largeur, hauteur) => {
-  it.each(ECRANS_TABLETTE)("%s ne déborde pas", async (ecran) => {
-    const page = await navigateur.newPage({ viewport: { width: largeur, height: hauteur }, isMobile: true, hasTouch: true });
-    try {
-      await page.goto(BASE + ecran, { waitUntil: "networkidle" });
-      await page.waitForFunction(() => !document.body.innerText.includes("Chargement…"));
-      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(largeur);
-    } finally {
-      await page.close();
-    }
-  });
-});
+/** Petite fenêtre d'ordinateur (souris) : encore l'affichage iPad, la version ordinateur commence à 1100 px. */
+export const PETIT_ORDINATEUR = [1024, 768] as const;
+
+/** Ordinateurs : portable, écran courant, grand écran. */
+export const ORDINATEURS = [
+  [1280, 800],
+  [1440, 900],
+  [1920, 1080],
+] as const;
