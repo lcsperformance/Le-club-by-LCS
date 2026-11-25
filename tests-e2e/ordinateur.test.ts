@@ -236,6 +236,103 @@ describe.each(ORDINATEURS)("profil, zones, progrès, saison, tests, records à %
   });
 });
 
+describe.each(ORDINATEURS)("Club, agenda, ressources, avantages à %i × %i px", (largeur, hauteur) => {
+  /** Nombre de cartes sur la première ligne d'une liste. */
+  const parLigne = (page: Page, selecteur: string) =>
+    page.locator(selecteur).first().evaluate((liste) => {
+      const tops = [...liste.children].map((e) => Math.round(e.getBoundingClientRect().top));
+      return tops.filter((t) => t === tops[0]).length;
+    });
+
+  it("canal : la liste des canaux à gauche, le fil et la zone d'envoi à droite", async () => {
+    const page = await ouvrir("/apercu-membre/club-canal", largeur, hauteur);
+    try {
+      const actif = await boite(page, 'main a[aria-current="page"][href^="/club/"]');
+      const fil = await boite(page, 'section[aria-label^="Messages de #"]');
+      const envoi = await boite(page, '[aria-label="Ton message"]');
+      expect(actif.droite).toBeLessThan(fil.gauche);
+      expect(envoi.gauche).toBeGreaterThan(actif.droite);
+      expect(await page.locator('[aria-label="Ton message"]').isVisible()).toBe(true);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Club : la liste à gauche, « Choisis un canal » à droite", async () => {
+    const page = await ouvrir("/apercu-membre/club", largeur, hauteur);
+    try {
+      const liste = await boite(page, 'main a[href="/club/general"]');
+      const invitation = await boite(page, "main >> text=Choisis un canal pour lire et écrire.");
+      expect(liste.droite).toBeLessThan(invitation.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("boîte à questions : formulaire à gauche, questions à droite", async () => {
+    const page = await ouvrir("/apercu-membre/club-questions", largeur, hauteur);
+    try {
+      const champ = await boite(page, "#champ-question");
+      const compte = await boite(page, "main h2 >> text=/déposée/");
+      expect(champ.droite).toBeLessThan(compte.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("agenda : calendrier mensuel à gauche, événements à droite", async () => {
+    const page = await ouvrir("/apercu-membre/club-agenda", largeur, hauteur);
+    try {
+      const calendrier = await boite(page, 'main [aria-label="Mois suivant"]');
+      const titre = await boite(page, "main h2 >> text=/Ce mois-ci/");
+      expect(calendrier.droite).toBeLessThan(titre.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("ressources : thèmes sur 4 colonnes, contenus d'un thème en grille", async () => {
+    const page = await ouvrir("/apercu-membre/ressources", largeur, hauteur);
+    try {
+      expect(await parLigne(page, "main ul")).toBe(4);
+    } finally {
+      await page.close();
+    }
+    const theme = await ouvrir("/apercu-membre/ressources-theme", largeur, hauteur);
+    try {
+      const colonnes = await theme
+        .locator("main section ul")
+        .first()
+        .evaluate((ul) => getComputedStyle(ul).gridTemplateColumns.split(" ").length);
+      expect(colonnes).toBe(largeur >= 1440 ? 3 : 2);
+    } finally {
+      await theme.close();
+    }
+  });
+
+  it("vidéo : le contenu à gauche, les commentaires à droite", async () => {
+    const page = await ouvrir("/apercu-membre/ressources-video", largeur, hauteur);
+    try {
+      const titre = await boite(page, "main h1");
+      const commentaires = await boite(page, 'section[aria-labelledby="titre-commentaires"]');
+      expect(titre.droite).toBeLessThan(commentaires.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("avantages : partenaires en grille", async () => {
+    const page = await ouvrir("/apercu-membre/avantages", largeur, hauteur);
+    try {
+      const colonnes = await page.locator("main ul").first().evaluate((ul) => getComputedStyle(ul).gridTemplateColumns.split(" ").length);
+      expect(colonnes).toBe(largeur >= 1440 ? 3 : 2);
+      expect(await parLigne(page, "main ul")).toBe(2);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);

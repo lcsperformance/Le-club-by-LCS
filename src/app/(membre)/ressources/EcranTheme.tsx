@@ -25,7 +25,7 @@ export function EcranTheme({ titre, rubriques, messageVide }: { titre: string; r
             {r.nom}
           </h2>
           {r.contenus.length ? (
-            <ul className={styles.liste}>
+            <ul className={`${styles.liste} ${styles.listeContenus}`}>
               {r.contenus.map((c) => (
                 <CarteContenu key={c.id} c={c} />
               ))}

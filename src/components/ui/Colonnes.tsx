@@ -16,13 +16,25 @@ export function GrilleCartes({ children, className = "" }: { children: ReactNode
  * Deux colonnes sur ordinateur (principale à gauche, latérale à droite), à la suite sur téléphone.
  * collante : la colonne latérale reste visible quand la page défile.
  * Sans colonne latérale, la principale est limitée en largeur pour ne pas s'étirer.
+ * liste : la principale est une liste étroite, la latérale le détail (canaux et fil du Club).
  */
-export function DeuxColonnes({ principale, laterale, collante = false }: { principale: ReactNode; laterale?: ReactNode; collante?: boolean }) {
+export function DeuxColonnes({
+  principale,
+  laterale,
+  collante = false,
+  liste = false,
+}: {
+  principale: ReactNode;
+  laterale?: ReactNode;
+  collante?: boolean;
+  /** Liste et détail : colonne principale étroite (une liste), latérale large (le détail). */
+  liste?: boolean;
+}) {
   const avecLaterale = laterale !== undefined && laterale !== null && laterale !== false;
   return (
-    <div className={`${styles.deuxColonnes} ${avecLaterale ? "" : styles.uneColonne}`}>
+    <div className={[styles.deuxColonnes, !avecLaterale && styles.uneColonne, liste && styles.listeDetail].filter(Boolean).join(" ")}>
       <div className={styles.colonne}>{principale}</div>
-      {avecLaterale && <div className={`${styles.colonne} ${collante ? styles.collante : ""}`}>{laterale}</div>}
+      {avecLaterale && <div className={[styles.colonne, collante && styles.collante].filter(Boolean).join(" ")}>{laterale}</div>}
     </div>
   );
 }

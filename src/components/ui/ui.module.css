@@ -386,6 +386,11 @@
     min-width: 0;
   }
 
+  /* Liste et détail : liste étroite à gauche, détail large à droite. */
+  .listeDetail {
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  }
+
   /* Reste visible au défilement, sous le bandeau du prochain événement. */
   .collante {
     position: sticky;

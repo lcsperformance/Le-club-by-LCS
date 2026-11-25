@@ -12,19 +12,24 @@ export function EcranQuestions({ utilisateur, prochaine, questions }: { utilisat
     <>
       <EnTeteMembre utilisateur={utilisateur} titre="Le Club" />
       <OngletsClub actif="questions" />
-      <section className={styles.prochaineFaq} aria-labelledby="titre-prochaine-faq">
-        <p id="titre-prochaine-faq" className={styles.prochaineSurtitre}>
-          Prochaine FAQ en visio
-        </p>
-        <p className={styles.prochaineQuand}>{prochaine ? quandEvenement(prochaine) : "Date bientôt annoncée"}</p>
-        <p className={styles.prochaineTexte}>Le coach répond en direct aux questions déposées. Pas de réponse individuelle : tout le monde en profite.</p>
-        {prochaine && (
-          <a href={`/club/agenda/${prochaine.id}/ics`} className={styles.boutonAgenda}>
-            Ajouter à mon agenda
-          </a>
-        )}
-      </section>
-      <BoiteAQuestions questions={trierQuestions(questions)} moi={utilisateur.id} />
+      <BoiteAQuestions
+        questions={trierQuestions(questions)}
+        moi={utilisateur.id}
+        avant={
+          <section className={styles.prochaineFaq} aria-labelledby="titre-prochaine-faq">
+            <p id="titre-prochaine-faq" className={styles.prochaineSurtitre}>
+              Prochaine FAQ en visio
+            </p>
+            <p className={styles.prochaineQuand}>{prochaine ? quandEvenement(prochaine) : "Date bientôt annoncée"}</p>
+            <p className={styles.prochaineTexte}>Le coach répond en direct aux questions déposées. Pas de réponse individuelle : tout le monde en profite.</p>
+            {prochaine && (
+              <a href={`/club/agenda/${prochaine.id}/ics`} className={styles.boutonAgenda}>
+                Ajouter à mon agenda
+              </a>
+            )}
+          </section>
+        }
+      />
       <div style={{ height: 8 }} />
     </>
   );

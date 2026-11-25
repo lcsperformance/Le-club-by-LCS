@@ -137,7 +137,12 @@ describe("mises en page ordinateur", () => {
 
   it("DeuxColonnes : principale puis latérale (ordre de lecture du téléphone), latérale collante", () => {
     const html = renderToStaticMarkup(<DeuxColonnes collante principale={<p>Gauche</p>} laterale={<p>Droite</p>} />);
-    expect(html).toBe('<div class="deuxColonnes "><div class="colonne"><p>Gauche</p></div><div class="colonne collante"><p>Droite</p></div></div>');
+    expect(html).toBe('<div class="deuxColonnes"><div class="colonne"><p>Gauche</p></div><div class="colonne collante"><p>Droite</p></div></div>');
+  });
+
+  it("DeuxColonnes en liste et détail", () => {
+    const html = renderToStaticMarkup(<DeuxColonnes liste principale={<p>Liste</p>} laterale={<p>Détail</p>} />);
+    expect(html).toMatch(/^<div class="deuxColonnes listeDetail">/);
   });
 
   it("SurTelephone et SurOrdinateur : deux versions, le CSS n'en montre qu'une", () => {

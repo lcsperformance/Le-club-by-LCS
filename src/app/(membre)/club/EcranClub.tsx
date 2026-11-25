@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { Cadenas } from "@/components/Cadenas";
 import { EnTeteMembre } from "@/components/EnTeteMembre";
-import { Carte } from "@/components/ui";
+import { Carte, DeuxColonnes, SurOrdinateur } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
-import { badgeNonLus, type Canal } from "@/lib/club";
+import type { Canal } from "@/lib/club";
 import { ActualiserEnDirect } from "./ActualiserEnDirect";
+import { ListeCanaux } from "./ListeCanaux";
 import styles from "./club.module.css";
 
 /** Onglets du Club (maquette) : Discussion, Questions, Agenda. */
@@ -46,37 +46,21 @@ export function EcranClub({
     <>
       <EnTeteMembre utilisateur={utilisateur} titre="Le Club" />
       <OngletsClub actif="discussion" />
-      <ul className={styles.canaux}>
-        {canaux.map((c) => {
-          const badge = badgeNonLus(nonLus[c.cle] ?? 0);
-          return (
-            <li key={c.cle}>
-              <Carte href={`/club/${c.cle}`} className={styles.canal}>
-                <span className={`${styles.diese} ${c.lecture_seule ? styles.dieseAnnonces : ""}`} aria-hidden>
-                  #
-                </span>
-                <span className={styles.canalTexte}>
-                  <span className={styles.canalNom}>
-                    {c.nom}
-                    {monBloc === c.cle && <span className={styles.monBloc}>Mon bloc</span>}
-                  </span>
-                  <span className={styles.canalDescription}>{c.description}</span>
-                </span>
-                {c.lecture_seule && (
-                  <span className={styles.cadenas} role="img" aria-label="Lecture seule">
-                    <Cadenas />
-                  </span>
-                )}
-                {badge && (
-                  <span className={styles.nonLus} aria-label={`${badge} message${badge === "1" ? "" : "s"} non lu${badge === "1" ? "" : "s"}`}>
-                    {badge}
-                  </span>
-                )}
-              </Carte>
-            </li>
-          );
-        })}
-      </ul>
+      {/* Sur ordinateur : la liste à gauche ; à droite, l'invitation à ouvrir un canal. */}
+      <DeuxColonnes
+        liste
+        principale={<ListeCanaux canaux={canaux} nonLus={nonLus} monBloc={monBloc} />}
+        laterale={
+          <SurOrdinateur>
+            <Carte className={styles.choisirCanal}>
+              <span className={styles.diese} aria-hidden>
+                #
+              </span>
+              <p className={styles.choisirCanalTexte}>Choisis un canal pour lire et écrire.</p>
+            </Carte>
+          </SurOrdinateur>
+        }
+      />
       {direct && <ActualiserEnDirect />}
     </>
   );
