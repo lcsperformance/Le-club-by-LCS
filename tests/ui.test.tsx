@@ -5,7 +5,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, PastilleZone, ZONES } from "@/components/ui";
-import { barreVisible, ONGLETS, ongletActif } from "@/lib/onglets";
+import { barreVisible, cheminAffiche, ONGLETS, ongletActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
   it("a 5 onglets dans l'ordre de la maquette", () => {
@@ -29,6 +29,19 @@ describe("barre d'onglets", () => {
     for (const c of ["/accueil", "/saison", "/zones", "/profil", "/progres", "/records"]) expect(barreVisible(c), c).toBe(true);
     for (const c of ["/tests", "/abonnement", "/admin", "/connexion", "/bienvenue"]) expect(barreVisible(c), c).toBe(false);
     expect(ongletActif("/zones")).toBeNull();
+  });
+
+  it("les aperçus montrent la barre de la vraie page", () => {
+    expect(cheminAffiche("/apercu-membre/seance-faite")).toBe("/seance");
+    expect(cheminAffiche("/apercu-membre/club-canal")).toBe("/club");
+    expect(cheminAffiche("/apercu-membre/accueil")).toBe("/accueil");
+    expect(cheminAffiche("/apercu-membre/calculateur-ouvrir")).toBe("/ressources/calculateur");
+    expect(cheminAffiche("/apercu-membre/acces-coupe")).toBe("/abonnement");
+    expect(barreVisible(cheminAffiche("/apercu-membre/tests-pma"))).toBe(false);
+    expect(barreVisible(cheminAffiche("/apercu-membre/conditions"))).toBe(false);
+    expect(ongletActif(cheminAffiche("/apercu-membre/saison-vide"))).toBe("semaine");
+    expect(cheminAffiche("/semaine")).toBe("/semaine");
+    expect(cheminAffiche("/apercu-espace/admin")).toBe("/apercu-espace/admin");
   });
 
   it("marque l'onglet de la page courante", () => {

@@ -28,3 +28,20 @@ export function ongletActif(chemin: string): CleOnglet | null {
 export function barreVisible(chemin: string): boolean {
   return ongletActif(chemin) !== null || AVEC_BARRE.some((p) => sous(chemin, p));
 }
+
+/** Aperçus dont le nom ne commence pas par l'adresse de la vraie page. */
+const APERCUS_PARTICULIERS: Record<string, string> = {
+  calculateur: "/ressources/calculateur",
+  acces: "/abonnement",
+  bandeau: "/accueil",
+};
+
+/**
+ * Adresse de la vraie page montrée par un aperçu (`/apercu-membre/seance-faite` → `/seance`),
+ * pour que la barre et le menu s'y affichent comme dans l'app. Toute autre adresse est rendue telle quelle.
+ */
+export function cheminAffiche(chemin: string): string {
+  const apercu = chemin.match(/^\/apercu-membre\/([a-z]+)/);
+  if (!apercu) return chemin;
+  return APERCUS_PARTICULIERS[apercu[1]] ?? `/${apercu[1]}`;
+}

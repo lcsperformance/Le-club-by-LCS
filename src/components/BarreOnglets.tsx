@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { barreVisible, ONGLETS, ongletActif, type CleOnglet } from "@/lib/onglets";
+import { barreVisible, cheminAffiche, ONGLETS, ongletActif, type CleOnglet } from "@/lib/onglets";
 import styles from "./BarreOnglets.module.css";
 
 const ICONES: Record<CleOnglet, ReactNode> = {
@@ -28,7 +28,7 @@ const ICONES: Record<CleOnglet, ReactNode> = {
 
 /** Barre d'onglets flottante en verre, en bas de l'écran (rail vertical à gauche sur ordinateur). */
 export function BarreOnglets() {
-  const chemin = usePathname();
+  const chemin = cheminAffiche(usePathname());
   const actif = ongletActif(chemin);
 
   // Comme dans la maquette, pas de barre sur les écrans plein écran (tests, séance, abonnement…).
