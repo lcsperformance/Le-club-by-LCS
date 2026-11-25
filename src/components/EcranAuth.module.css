@@ -81,6 +81,9 @@
  */
 @media (min-width: 1100px) {
   .ecran {
+    background-image: var(--fond-ordinateur);
+    background-size: cover;
+    background-position: center;
     max-width: none;
     justify-content: center;
     align-items: center;

@@ -20,6 +20,7 @@ const MISE_EN_PAGE = [
   "components/BandeauEvenement.module.css",
   "components/ui/ui.module.css",
   "components/EcranAuth.module.css",
+  "components/FondNeon.module.css",
   "components/legal/PageLegale.module.css",
 ];
 

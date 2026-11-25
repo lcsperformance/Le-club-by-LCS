@@ -9,3 +9,12 @@
   background-repeat: no-repeat;
   pointer-events: none;
 }
+
+/* Ordinateur : dessin prévu pour un écran en largeur (pas de halo étiré en bande). */
+@media (min-width: 1100px) {
+  .fond {
+    background-image: var(--fond-ordinateur);
+    background-size: cover;
+    background-position: center;
+  }
+}
