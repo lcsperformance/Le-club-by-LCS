@@ -19,11 +19,8 @@ export function EnTeteMembre({
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <SymboleClub hauteur={30} />
-          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <SymboleClub hauteur={30} />
-            <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
-              le club
-            </span>
+          <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
+            le club
           </span>
         </span>
         <PastilleProfil utilisateur={utilisateur} />
