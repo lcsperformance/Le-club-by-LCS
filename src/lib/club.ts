@@ -86,3 +86,17 @@ export function lireMessageRecu(brut: unknown): Message | null {
   if (!champs.every((c) => typeof m[c] === "string")) return null;
   return Object.fromEntries(champs.map((c) => [c, m[c]])) as Message;
 }
+
+/**
+ * Non-lus de la liste des canaux, mis à jour quand un message arrive (liste à côté d'un canal ouvert) :
+ * +1 pour son canal, sauf si c'est le canal ouvert (il est lu en direct) ou si c'est son propre message.
+ */
+export function nonLusApresMessage(
+  nonLus: Record<string, number>,
+  message: Pick<Message, "canal" | "membre_id">,
+  actif: string | null,
+  moi: string,
+): Record<string, number> {
+  if (message.canal === actif || message.membre_id === moi) return nonLus;
+  return { ...nonLus, [message.canal]: (nonLus[message.canal] ?? 0) + 1 };
+}

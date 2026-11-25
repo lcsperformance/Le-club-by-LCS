@@ -8,7 +8,7 @@ import { lireCanaux, lireMessages, lireNonLus, marquerCanalLu } from "@/lib/club
 import { dateDuJourParis } from "@/lib/dates";
 import { organiserSaison } from "@/lib/saison";
 import { lireObjectifs } from "@/lib/saison-serveur";
-import { ListeCanaux } from "../ListeCanaux";
+import { ListeCanauxEnDirect } from "../ListeCanauxEnDirect";
 import { EcranCanal } from "./EcranCanal";
 
 export const metadata: Metadata = { title: "Le Club · Le Club by LCS" };
@@ -44,7 +44,9 @@ async function Contenu({ params }: Pick<PageProps<"/club/[canal]">, "params">) {
       aujourdhui={dateDuJourParis()}
       moi={{ id: utilisateur.id, role: utilisateur.role }}
       // Le canal ouvert vient d'être marqué lu : pas de badge pour lui.
-      liste={<ListeCanaux canaux={canaux} nonLus={{ ...nonLus, [canal.cle]: 0 }} monBloc={monBloc} actif={canal.cle} />}
+      liste={
+        <ListeCanauxEnDirect canaux={canaux} nonLus={{ ...nonLus, [canal.cle]: 0 }} monBloc={monBloc} actif={canal.cle} moi={utilisateur.id} />
+      }
     />
   );
 }

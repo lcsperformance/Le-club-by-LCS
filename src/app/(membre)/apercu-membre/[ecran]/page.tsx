@@ -11,7 +11,7 @@ import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
 import { EcranCanal } from "@/app/(membre)/club/[canal]/EcranCanal";
-import { ListeCanaux } from "@/app/(membre)/club/ListeCanaux";
+import { ListeCanauxEnDirect } from "@/app/(membre)/club/ListeCanauxEnDirect";
 import { EcranAgenda } from "@/app/(membre)/club/agenda/EcranAgenda";
 import { EcranQuestions } from "@/app/(membre)/club/questions/EcranQuestions";
 import { EcranClub } from "@/app/(membre)/club/EcranClub";
@@ -283,7 +283,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           aujourdhui={AUJOURDHUI_FICTIF}
           moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-canal-admin" ? "admin" : "membre" }}
           direct={false}
-          liste={<ListeCanaux canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[1].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[1].cle} />}
+          liste={<ListeCanauxEnDirect canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[1].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[1].cle} moi={UTILISATEUR_FICTIF.id} direct={false} />}
         />
       );
     case "club-annonces":
@@ -296,7 +296,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           aujourdhui={AUJOURDHUI_FICTIF}
           moi={{ id: UTILISATEUR_FICTIF.id, role: ecran === "club-annonces-coach" ? "coach" : "membre" }}
           direct={false}
-          liste={<ListeCanaux canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[0].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[0].cle} />}
+          liste={<ListeCanauxEnDirect canaux={CANAUX_FICTIFS} nonLus={{ ...NON_LUS_FICTIFS, [CANAUX_FICTIFS[0].cle]: 0 }} monBloc="bloc-m" actif={CANAUX_FICTIFS[0].cle} moi={UTILISATEUR_FICTIF.id} direct={false} />}
         />
       );
     case "avantages":
