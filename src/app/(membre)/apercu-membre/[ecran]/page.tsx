@@ -4,9 +4,7 @@ import { AccueilMembre } from "@/app/(membre)/accueil/AccueilMembre";
 import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { BandeauEvenement } from "@/components/BandeauEvenement";
-import { EcranAuth } from "@/components/EcranAuth";
 import { DeuxColonnes } from "@/components/ui";
-import { FormulaireConditions } from "@/app/conditions/FormulaireConditions";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
 import { EcranAvantages } from "@/app/(membre)/avantages/EcranAvantages";
@@ -178,12 +176,6 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
           appareilApercu={{ priseEnCharge: false, permission: null, abonne: false, apple: false, installee: false }}
           suppressionOuverte
         />
-      );
-    case "conditions":
-      return (
-        <EcranAuth titre="Avant de commencer">
-          <FormulaireConditions nouvelleVersion={false} />
-        </EcranAuth>
       );
     case "profil-annuel":
       return (

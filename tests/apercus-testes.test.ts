@@ -16,6 +16,10 @@ function apercusDeclares(fichier: string, prefixe: string): string[] {
 }
 
 describe("aperçus testés dans le navigateur", () => {
+  it("l'aperçu des conditions (hors espace membre) est testé", () => {
+    expect(ECRANS).toContain("/apercu-conditions");
+  });
+
   it.each([
     ["src/app/(membre)/apercu-membre/[ecran]/page.tsx", "/apercu-membre/"],
     ["src/app/(espace)/apercu-espace/[ecran]/page.tsx", "/apercu-espace/"],

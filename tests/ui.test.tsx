@@ -55,7 +55,6 @@ describe("barre d'onglets", () => {
     expect(cheminAffiche("/apercu-membre/calculateur-ouvrir")).toBe("/ressources/calculateur");
     expect(cheminAffiche("/apercu-membre/acces-coupe")).toBe("/abonnement");
     expect(barreVisible(cheminAffiche("/apercu-membre/tests-pma"))).toBe(false);
-    expect(barreVisible(cheminAffiche("/apercu-membre/conditions"))).toBe(false);
     expect(ongletActif(cheminAffiche("/apercu-membre/saison-vide"))).toBe("semaine");
     expect(cheminAffiche("/semaine")).toBe("/semaine");
     expect(cheminAffiche("/apercu-espace/admin")).toBe("/apercu-espace/admin");
