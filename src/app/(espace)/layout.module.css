@@ -1,0 +1,20 @@
+/* Espaces coach et admin : colonne de 960 px ; élargie sur ordinateur. */
+.contenu {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: grid;
+  gap: 24px;
+}
+
+/*
+ * Ordinateur : jusqu'à --largeur-contenu ; les listes de cartes (membres, équipe, questions, agenda,
+ * ressources, commentaires) lisent --colonnes-cartes (1 par défaut).
+ */
+@media (min-width: 1100px) {
+  .contenu {
+    max-width: calc(var(--largeur-contenu) + 80px);
+    padding: 48px 40px 64px;
+    --colonnes-cartes: 2;
+  }
+}

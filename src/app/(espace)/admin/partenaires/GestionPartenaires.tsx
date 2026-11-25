@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
 import { RetourAdmin } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
 import styles from "@/app/(espace)/admin/ressources/admin-ressources.module.css";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, GrilleCartes } from "@/components/ui";
 import { formatRemise, lirePartenaire, trierPartenaires, type ChampPartenaire, type Partenaire } from "@/lib/partenaires";
 import { enregistrerPartenaire, supprimerPartenaire } from "./actions";
 
@@ -21,10 +21,13 @@ export function GestionPartenaires({ partenaires }: { partenaires: Partenaire[] 
           Les remises de l&apos;onglet Avantages. Les codes ne sont visibles que par les membres connectés.
         </p>
       </header>
-      {trierPartenaires(partenaires).map((p) => (
-        <FormulairePartenaire key={p.id} partenaire={p} />
-      ))}
-      <FormulairePartenaire ordreParDefaut={partenaires.length + 1} />
+      {/* Sur ordinateur : deux partenaires par ligne. */}
+      <GrilleCartes>
+        {trierPartenaires(partenaires).map((p) => (
+          <FormulairePartenaire key={p.id} partenaire={p} />
+        ))}
+        <FormulairePartenaire ordreParDefaut={partenaires.length + 1} />
+      </GrilleCartes>
     </>
   );
 }

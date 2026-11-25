@@ -383,6 +383,63 @@ describe.each(ORDINATEURS)("connexion, abonnement, pages légales à %i × %i px
   });
 });
 
+describe.each(ORDINATEURS)("espaces coach et admin à %i × %i px", (largeur, hauteur) => {
+  /** Colonnes de la première liste en grille d'un écran. */
+  const colonnes = (page: Page, selecteur: string) =>
+    page.locator(selecteur).first().evaluate((e) => getComputedStyle(e).gridTemplateColumns.split(" ").length);
+
+  it.each([
+    ["/apercu-espace/admin-membres", "main ul"],
+    ["/apercu-espace/admin-equipe", "main ul >> nth=1"],
+    ["/apercu-espace/admin-questions", "main ol"],
+    ["/apercu-espace/admin-agenda", "main ul"],
+    ["/apercu-espace/admin-ressources", "main ul"],
+    ["/apercu-espace/admin-ressources-commentaires", "main ul"],
+  ])("%s : cartes 2 par ligne", async (ecran, selecteur) => {
+    const page = await ouvrir(ecran, largeur, hauteur);
+    try {
+      expect(await colonnes(page, selecteur)).toBe(2);
+      const main = await boite(page, "main");
+      expect(main.largeur, "contenu de 1100 px au plus (marges comprises)").toBeLessThanOrEqual(1180);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("partenaires : deux formulaires par ligne", async () => {
+    const page = await ouvrir("/apercu-espace/admin-partenaires", largeur, hauteur);
+    try {
+      const formulaires = await page.locator("main form").evaluateAll((fs) => fs.slice(0, 2).map((f) => f.getBoundingClientRect().top));
+      expect(formulaires[0]).toBe(formulaires[1]);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it.each(["/apercu-espace/admin-ressources-video", "/apercu-espace/admin-agenda-modifier"])(
+    "%s : formulaire de 720 px au plus",
+    async (ecran) => {
+      const page = await ouvrir(ecran, largeur, hauteur);
+      try {
+        expect((await boite(page, "main form")).largeur).toBeLessThanOrEqual(720);
+      } finally {
+        await page.close();
+      }
+    },
+  );
+
+  it("fiche coach : la liste des athlètes à gauche, la fiche à droite", async () => {
+    const page = await ouvrir("/apercu-espace/coach-fiche", largeur, hauteur);
+    try {
+      const liste = await boite(page, 'section[aria-labelledby="titre-athletes"]');
+      const titre = await boite(page, "#titre-athlete");
+      expect(liste.droite).toBeLessThan(titre.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);

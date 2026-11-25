@@ -14,6 +14,7 @@ const SRC = join(__dirname, "..", "src");
 /** Seuls fichiers autorisés à changer selon la largeur de l'écran (mise en page partagée). */
 const MISE_EN_PAGE = [
   "app/(membre)/layout.module.css",
+  "app/(espace)/layout.module.css",
   "components/BarreOnglets.module.css",
   "components/MenuLateral.module.css",
   "components/BandeauEvenement.module.css",

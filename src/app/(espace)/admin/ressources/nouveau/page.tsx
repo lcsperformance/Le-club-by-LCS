@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Chargement } from "@/components/Chargement";
+import { DeuxColonnes } from "@/components/ui";
 import { exigerRole } from "@/lib/auth";
 import { lireThemes } from "@/lib/ressources-serveur";
 import { RetourAdmin } from "../EcranAdminRessources";
@@ -18,13 +19,18 @@ export default function PageNouveauContenu() {
 
 async function Contenu() {
   await exigerRole("admin");
+  // Sur ordinateur : une colonne centrée de 720 px.
   return (
-    <>
-      <RetourAdmin href="/admin/ressources" libelle="Ressources" />
-      <h1 className="titre" style={{ fontSize: 26 }}>
-        Ajouter un contenu
-      </h1>
-      <FormulaireContenu themes={await lireThemes()} />
-    </>
+    <DeuxColonnes
+      principale={
+        <>
+            <RetourAdmin href="/admin/ressources" libelle="Ressources" />
+            <h1 className="titre" style={{ fontSize: 26 }}>
+              Ajouter un contenu
+            </h1>
+            <FormulaireContenu themes={await lireThemes()} />
+        </>
+      }
+    />
   );
 }

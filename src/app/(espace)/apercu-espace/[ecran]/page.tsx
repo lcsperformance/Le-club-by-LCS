@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { DeuxColonnes } from "@/components/ui";
 import { AccueilAdmin } from "@/app/(espace)/admin/AccueilAdmin";
 import { EcranAgendaAdmin } from "@/app/(espace)/admin/agenda/EcranAgendaAdmin";
 import { FormulaireEvenement } from "@/app/(espace)/admin/agenda/FormulaireEvenement";
@@ -68,11 +69,11 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
   if (ecran === "admin-ressources") {
     return <EcranAdminRessources themes={THEMES_FICTIFS} contenus={CONTENUS_ADMIN_FICTIFS} nbCommentaires={COMMENTAIRES_ADMIN_FICTIFS.length} />;
   }
-  if (ecran === "admin-ressources-nouveau") return <FormulaireContenu themes={THEMES_FICTIFS} />;
+  if (ecran === "admin-ressources-nouveau") return <DeuxColonnes principale={<FormulaireContenu themes={THEMES_FICTIFS} />} />;
   if (ecran === "admin-ressources-video") {
-    return <FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[0]} />;
+    return <DeuxColonnes principale={<FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[0]} />} />;
   }
-  if (ecran === "admin-ressources-pdf") return <FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[1]} />;
+  if (ecran === "admin-ressources-pdf") return <DeuxColonnes principale={<FormulaireContenu themes={THEMES_FICTIFS} contenu={CONTENUS_ADMIN_FICTIFS[1]} />} />;
   if (ecran === "admin-ressources-themes") {
     const parRubrique: Record<string, number> = {};
     for (const c of CONTENUS_ADMIN_FICTIFS) parRubrique[`${c.theme}/${c.sous_rubrique}`] = (parRubrique[`${c.theme}/${c.sous_rubrique}`] ?? 0) + 1;
@@ -83,8 +84,8 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
   if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} />;
   if (ecran === "admin-questions") return <EcranQuestionsAdmin questions={QUESTIONS_FICTIVES} />;
   if (ecran === "admin-agenda") return <EcranAgendaAdmin evenements={EVENEMENTS_FICTIFS} maintenant="2027-01-18T10:00:00.000Z" />;
-  if (ecran === "admin-agenda-nouveau") return <FormulaireEvenement />;
-  if (ecran === "admin-agenda-modifier") return <FormulaireEvenement evenement={EVENEMENTS_FICTIFS[0]} />;
-  if (ecran === "admin-agenda-a-confirmer") return <FormulaireEvenement evenement={EVENEMENTS_FICTIFS[2]} />;
+  if (ecran === "admin-agenda-nouveau") return <DeuxColonnes principale={<FormulaireEvenement />} />;
+  if (ecran === "admin-agenda-modifier") return <DeuxColonnes principale={<FormulaireEvenement evenement={EVENEMENTS_FICTIFS[0]} />} />;
+  if (ecran === "admin-agenda-a-confirmer") return <DeuxColonnes principale={<FormulaireEvenement evenement={EVENEMENTS_FICTIFS[2]} />} />;
   notFound();
 }
