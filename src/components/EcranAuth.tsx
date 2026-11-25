@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { SymboleClub } from "./SymboleClub";
 import styles from "./EcranAuth.module.css";
 
 /** Mise en page des écrans de connexion : halos, logo « le club », contenu en bas. */
@@ -8,6 +9,9 @@ export function EcranAuth({ titre, children }: { titre: string; children: ReactN
       <div className={styles.halo} aria-hidden />
       <div className={styles.point} aria-hidden />
       <div className={styles.logo}>
+        <div style={{ marginBottom: 18 }}>
+          <SymboleClub hauteur={72} />
+        </div>
         <div className={`logo ${styles.club}`}>
           le
           <br />

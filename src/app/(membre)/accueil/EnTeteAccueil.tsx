@@ -1,3 +1,4 @@
+import { SymboleClub } from "@/components/SymboleClub";
 import { BandeauVisite, PastilleProfil } from "@/components/IdentiteMembre";
 import type { Utilisateur } from "@/lib/auth";
 import { formatJourFr } from "@/lib/dates";
@@ -12,8 +13,11 @@ export function EnTeteAccueil({ utilisateur, aujourdhui, phase }: { utilisateur:
     <>
       <header className={styles.bandeau}>
         <div className={styles.ligne}>
-          <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
-            le club
+          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <SymboleClub hauteur={30} />
+            <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
+              le club
+            </span>
           </span>
           <PastilleProfil utilisateur={utilisateur} />
         </div>

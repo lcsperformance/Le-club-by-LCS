@@ -1,3 +1,4 @@
+import { SymboleClub } from "@/components/SymboleClub";
 import type { ReactNode } from "react";
 import type { Utilisateur } from "@/lib/auth";
 import { BandeauVisite, PastilleProfil } from "./IdentiteMembre";
@@ -16,8 +17,14 @@ export function EnTeteMembre({
     <header style={{ display: "grid", gap: 16 }}>
       <BandeauVisite utilisateur={utilisateur} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
-          le club
+        <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <SymboleClub hauteur={30} />
+          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <SymboleClub hauteur={30} />
+            <span className="logo" style={{ fontSize: 30, lineHeight: 1 }}>
+              le club
+            </span>
+          </span>
         </span>
         <PastilleProfil utilisateur={utilisateur} />
       </div>

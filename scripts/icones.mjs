@@ -3,7 +3,7 @@
  *
  *   npm run icones
  *
- * Source : marque/logo-provisoire.jpg (photo provisoire). Pour le vrai logo : remplacer ce fichier
+ * Source : marque/logo-club-icone.png (logo D, tiré de marque/logo-club-icone.svg). Pour changer de logo : remplacer ce fichier
  * (ou changer SOURCE et CADRAGE ci-dessous), relancer la commande, puis faire un commit.
  *
  * Produit :
@@ -16,9 +16,9 @@
 import sharp from "sharp";
 import { mkdirSync } from "node:fs";
 
-const SOURCE = "marque/logo-provisoire.jpg";
-// Carré découpé dans la photo, centré sur « Le Club by LCS » (marge suffisante pour les icônes arrondies).
-const CADRAGE = { left: 104, top: 35, width: 640, height: 640 };
+const SOURCE = "marque/logo-club-icone.png";
+// Logo du Club (symbole C sur fond Abysse), carré complet.
+const CADRAGE = { left: 0, top: 0, width: 1024, height: 1024 };
 const FOND = "#090A0F";
 
 // Même liste que ECRANS_DEMARRAGE (src/lib/installation.ts) : largeur et hauteur en points, densité.
