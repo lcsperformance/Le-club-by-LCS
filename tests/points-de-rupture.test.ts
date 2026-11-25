@@ -1,16 +1,23 @@
 /**
- * Garde-fou de la version ordinateur : l'affichage ne change qu'à partir de 1100 px
- * (ordinateur) et de 1440 px (grand écran). En dessous, téléphone (320-390 px) et iPad
- * (768 et 1024 px) restent tels quels : aucune nouvelle règle selon la largeur de l'écran.
+ * Garde-fou de la version ordinateur : l'affichage ne change qu'aux points de rupture de
+ * src/lib/points-de-rupture.ts (1100 et 1440 px), et seulement dans les fichiers de mise en page
+ * partagés : un écran n'écrit jamais de @media, il utilise ces mises en page. En dessous,
+ * téléphone (320-390 px) et iPad (768 et 1024 px) restent tels quels.
  */
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
+import { GRAND_ECRAN, ORDINATEUR, POINTS_DE_RUPTURE } from "@/lib/points-de-rupture";
 
 const SRC = join(__dirname, "..", "src");
 
-/** Seuls points de rupture permis (règles « à partir de »). */
-const POINTS_DE_RUPTURE = [1100, 1440];
+/** Seuls fichiers autorisés à changer selon la largeur de l'écran (mise en page partagée). */
+const MISE_EN_PAGE = [
+  "app/(membre)/layout.module.css",
+  "components/BarreOnglets.module.css",
+  "components/BandeauEvenement.module.css",
+  "components/ui/ui.module.css",
+];
 
 /** Règles plus anciennes que la version ordinateur, tolérées telles quelles (fichier → conditions). */
 const ANCIENNES: Record<string, string[]> = {
@@ -50,7 +57,12 @@ describe("points de rupture", () => {
     expect(permise("(min-width: 1100px) and (orientation: landscape)")).toBe(false);
   });
 
-  it("les styles ne changent selon la largeur de l'écran qu'à 1100 et 1440 px", () => {
+  it("les points de rupture sont ceux de la version ordinateur", () => {
+    expect(ORDINATEUR).toBe(1100);
+    expect(GRAND_ECRAN).toBe(1440);
+  });
+
+  it("les styles ne changent selon la largeur de l'écran qu'aux points de rupture", () => {
     const fautifs = fichiers(SRC)
       .filter((f) => /\.(css|tsx?)$/.test(f))
       .flatMap((f) => {
@@ -60,6 +72,15 @@ describe("points de rupture", () => {
           .filter((c) => !permise(c) && !tolerees.includes(c))
           .map((c) => `${chemin} : @media ${c}`);
       });
+    expect(fautifs).toEqual([]);
+  });
+
+  it("seuls les fichiers de mise en page partagés contiennent ces règles (jamais un écran)", () => {
+    const fautifs = fichiers(SRC)
+      .filter((f) => /\.(css|tsx?)$/.test(f))
+      .map((f) => relative(SRC, f))
+      .filter((chemin) => !MISE_EN_PAGE.includes(chemin))
+      .filter((chemin) => conditionsMedia(readFileSync(join(SRC, chemin), "utf8")).some(permise));
     expect(fautifs).toEqual([]);
   });
 

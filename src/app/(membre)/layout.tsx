@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { FondNeon } from "@/components/FondNeon";
 import { ProchainEvenement } from "@/components/ProchainEvenement";
+import styles from "./layout.module.css";
 
 /**
- * Espace membre : fond Neon, bandeau du prochain événement en haut, contenu centré façon téléphone,
- * barre d'onglets flottante.
+ * Espace membre : fond Neon, bandeau du prochain événement en haut, contenu centré façon téléphone
+ * (élargi sur ordinateur), barre d'onglets flottante (rail latéral sur ordinateur).
  */
 export default function LayoutMembre({ children }: LayoutProps<"/">) {
   return (
@@ -15,7 +16,7 @@ export default function LayoutMembre({ children }: LayoutProps<"/">) {
       <Suspense fallback={null}>
         <ProchainEvenement />
       </Suspense>
-      <main style={{ maxWidth: 480, margin: "0 auto", padding: "22px 20px 0", display: "grid", gap: 16 }}>
+      <main className={styles.contenu}>
         {children}
       </main>
       {/* La barre lit l'adresse de la page : elle doit être sous Suspense. */}

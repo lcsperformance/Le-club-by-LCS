@@ -26,7 +26,7 @@ const ICONES: Record<CleOnglet, ReactNode> = {
   ),
 };
 
-/** Barre d'onglets flottante en verre, en bas de l'écran. */
+/** Barre d'onglets flottante en verre, en bas de l'écran (rail vertical à gauche sur ordinateur). */
 export function BarreOnglets() {
   const chemin = usePathname();
   const actif = ongletActif(chemin);

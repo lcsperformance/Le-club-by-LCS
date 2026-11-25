@@ -58,3 +58,46 @@
 .reserve {
   height: calc(100px + env(safe-area-inset-bottom));
 }
+
+/*
+ * Ordinateur : la barre devient un rail vertical en verre, fixé à gauche et centré en hauteur.
+ * Tant qu'il est affiché, --decalage-rail pousse le contenu et le bandeau à sa droite.
+ */
+@media (min-width: 1100px) {
+  :global(body):has(.barre) {
+    --decalage-rail: calc(var(--largeur-rail) + var(--marge-rail));
+  }
+
+  .reserve {
+    display: none;
+  }
+
+  .barre {
+    left: var(--marge-rail);
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    width: var(--largeur-rail);
+    max-width: none;
+    height: auto;
+    padding: 10px 6px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .onglet {
+    min-height: 64px;
+  }
+
+  .onglet:hover {
+    color: var(--texte);
+  }
+
+  .onglet:hover .icone {
+    background: rgba(250, 148, 255, 0.12);
+  }
+
+  .actif:hover .icone {
+    background: rgba(250, 148, 255, 0.2);
+  }
+}

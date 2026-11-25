@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Copie de référence et captures de npm run comparer-affichage.
+    ".captures/**",
   ]),
 ]);
 

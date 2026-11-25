@@ -18,6 +18,16 @@
   --titre-largeur: 125%;
   --titre-casse: uppercase;
 
+  /*
+   * Largeurs de la mise en page. Points de rupture : src/lib/points-de-rupture.ts.
+   * --decalage-rail vaut 0, sauf sur ordinateur quand le rail d'onglets est affiché (BarreOnglets).
+   */
+  --largeur-telephone: 480px;
+  --largeur-contenu: 1100px;
+  --largeur-rail: 88px;
+  --marge-rail: 20px;
+  --decalage-rail: 0px;
+
   color-scheme: dark;
 }
 
