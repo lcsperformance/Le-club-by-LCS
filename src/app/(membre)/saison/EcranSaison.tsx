@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { CarteDecompte } from "@/components/CarteDecompte";
-import { BoutonPrincipal, BoutonSecondaire, CalendrierMois, Carte, Champ } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, CalendrierMois, Carte, Champ, DeuxColonnes, SurOrdinateur } from "@/components/ui";
 import {
   ANNEES_MAX,
   ajouterJours,
@@ -97,95 +97,124 @@ export function EcranSaison({ objectifs, aujourdhui, calendrierOuvert = false }:
 
       <CarteDecompte prochain={saison.prochain} />
 
-      <section aria-labelledby="titre-objectifs" className={styles.section}>
-        <h2 id="titre-objectifs" className={styles.surtitre}>
-          Mes objectifs
-        </h2>
-        {saison.objectifs.length === 0 ? (
-          <p className={styles.vide}>Aucun objectif pour l&apos;instant. Tu suis le fil rouge.</p>
-        ) : (
-          <ul className={styles.liste}>
-            {saison.objectifs.map((o) => (
-              <CarteObjectif
-                key={o.id}
-                objectif={o}
-                desactive={enCours}
-                changerDate={() => setCible({ pour: "objectif", objectif: o })}
-                renommer={(nouveau, fermer) =>
+      {/* Sur ordinateur : objectifs et ajout à gauche, calendrier de la saison à droite. */}
+      <DeuxColonnes
+        collante
+        principale={
+          <>
+            <section aria-labelledby="titre-objectifs" className={styles.section}>
+              <h2 id="titre-objectifs" className={styles.surtitre}>
+                Mes objectifs
+              </h2>
+              {saison.objectifs.length === 0 ? (
+                <p className={styles.vide}>Aucun objectif pour l&apos;instant. Tu suis le fil rouge.</p>
+              ) : (
+                <ul className={styles.liste}>
+                  {saison.objectifs.map((o) => (
+                    <CarteObjectif
+                      key={o.id}
+                      objectif={o}
+                      desactive={enCours}
+                      changerDate={() => setCible({ pour: "objectif", objectif: o })}
+                      renommer={(nouveau, fermer) =>
+                        agir(
+                          () => renommerObjectif(o.id, nouveau),
+                          nouveau.trim() ? `Nom enregistré : ${nouveau.trim().replace(/\s+/g, " ")}.` : "Nom retiré.",
+                          fermer,
+                        )
+                      }
+                      supprimer={() => {
+                        if (!window.confirm(`Supprimer l'objectif ${titreObjectif(o)} du ${formatIsoCourt(o.date_objectif)} ?`)) return;
+                        agir(() => supprimerObjectif(o.id), "Objectif supprimé.");
+                      }}
+                    />
+                  ))}
+                </ul>
+              )}
+            </section>
+
+            <section aria-labelledby="titre-blocs" className={styles.section}>
+              <h2 id="titre-blocs" className={styles.surtitre}>
+                Tous les blocs
+              </h2>
+              <div className={styles.blocs} role="group" aria-label="Choisis ton bloc">
+                {BLOCS.map((b) => (
+                  <button
+                    key={b}
+                    type="button"
+                    className={styles.bloc}
+                    aria-pressed={bloc === b}
+                    onClick={() => setBloc(b)}
+                  >
+                    <span className={styles.blocLettre}>{b}</span>
+                    <span className={styles.blocNom}>Bloc {b}</span>
+                    <span className={styles.blocDuree}>{dureeBloc(b)}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <Carte as="section" aria-labelledby="titre-date" style={{ display: "grid", gap: 12 }}>
+              <h2 id="titre-date" className="titre-carte" style={{ fontSize: 16 }}>
+                Date de ta course
+              </h2>
+              <button type="button" className={styles.choixDate} onClick={() => setCible({ pour: "nouveau" })} aria-label={`Date de ta course : ${formatIsoLong(date)}. Changer`}>
+                <span>{majuscule(formatIsoLong(date))}</span>
+                <IconeCalendrier />
+              </button>
+              <p className={styles.apercu}>{erreurDate ?? apercuBloc(bloc, date, aujourdhui)}</p>
+              <Champ
+                libelle="Nom de ta course (facultatif)"
+                name="nom-course"
+                placeholder="Ex. Triathlon de Nice"
+                maxLength={LONGUEUR_MAX_NOM}
+                autoComplete="off"
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+              />
+              <BoutonPrincipal
+                disabled={!!erreurDate || enCours}
+                onClick={() =>
                   agir(
-                    () => renommerObjectif(o.id, nouveau),
-                    nouveau.trim() ? `Nom enregistré : ${nouveau.trim().replace(/\s+/g, " ")}.` : "Nom retiré.",
-                    fermer,
+                    () => ajouterObjectif(bloc, date, nom),
+                    `Objectif ${titreObjectif({ bloc, nom: nom.trim().replace(/\s+/g, " ") })} ajouté à ta saison.`,
+                    () => setNom(""),
                   )
                 }
-                supprimer={() => {
-                  if (!window.confirm(`Supprimer l'objectif ${titreObjectif(o)} du ${formatIsoCourt(o.date_objectif)} ?`)) return;
-                  agir(() => supprimerObjectif(o.id), "Objectif supprimé.");
-                }}
+              >
+                Ajouter à ma saison
+              </BoutonPrincipal>
+            </Carte>
+
+            <p role={message?.erreur ? "alert" : "status"} className={message?.erreur ? "message-erreur" : "message-info"} hidden={!message}>
+              {message?.texte}
+            </p>
+
+            <p className={styles.pied}>Après ta course, tu reprends le fil rouge ou tu enchaînes sur un autre bloc, comme tu veux.</p>
+          </>
+        }
+        laterale={
+          <SurOrdinateur>
+            <Carte as="section" aria-labelledby="titre-calendrier" className={styles.calendrierSaison}>
+              <h2 id="titre-calendrier" className={styles.surtitre}>
+                Calendrier de ta saison
+              </h2>
+              <CalendrierMois
+                valeur={date}
+                aujourdhui={aujourdhui}
+                moisInitial={(saison.objectifs.find((o) => o.date_objectif >= aujourdhui)?.date_objectif ?? aujourdhui).slice(0, 7)}
+                marques={saison.objectifs.map((o) => o.date_objectif)}
+                min={aujourdhui}
+                max={ajouterJours(aujourdhui, 365 * ANNEES_MAX)}
+                onChoisir={setDate}
               />
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section aria-labelledby="titre-blocs" className={styles.section}>
-        <h2 id="titre-blocs" className={styles.surtitre}>
-          Tous les blocs
-        </h2>
-        <div className={styles.blocs} role="group" aria-label="Choisis ton bloc">
-          {BLOCS.map((b) => (
-            <button
-              key={b}
-              type="button"
-              className={styles.bloc}
-              aria-pressed={bloc === b}
-              onClick={() => setBloc(b)}
-            >
-              <span className={styles.blocLettre}>{b}</span>
-              <span className={styles.blocNom}>Bloc {b}</span>
-              <span className={styles.blocDuree}>{dureeBloc(b)}</span>
-            </button>
-          ))}
-        </div>
-      </section>
-
-      <Carte as="section" aria-labelledby="titre-date" style={{ display: "grid", gap: 12 }}>
-        <h2 id="titre-date" className="titre-carte" style={{ fontSize: 16 }}>
-          Date de ta course
-        </h2>
-        <button type="button" className={styles.choixDate} onClick={() => setCible({ pour: "nouveau" })} aria-label={`Date de ta course : ${formatIsoLong(date)}. Changer`}>
-          <span>{majuscule(formatIsoLong(date))}</span>
-          <IconeCalendrier />
-        </button>
-        <p className={styles.apercu}>{erreurDate ?? apercuBloc(bloc, date, aujourdhui)}</p>
-        <Champ
-          libelle="Nom de ta course (facultatif)"
-          name="nom-course"
-          placeholder="Ex. Triathlon de Nice"
-          maxLength={LONGUEUR_MAX_NOM}
-          autoComplete="off"
-          value={nom}
-          onChange={(e) => setNom(e.target.value)}
-        />
-        <BoutonPrincipal
-          disabled={!!erreurDate || enCours}
-          onClick={() =>
-            agir(
-              () => ajouterObjectif(bloc, date, nom),
-              `Objectif ${titreObjectif({ bloc, nom: nom.trim().replace(/\s+/g, " ") })} ajouté à ta saison.`,
-              () => setNom(""),
-            )
-          }
-        >
-          Ajouter à ma saison
-        </BoutonPrincipal>
-      </Carte>
-
-      <p role={message?.erreur ? "alert" : "status"} className={message?.erreur ? "message-erreur" : "message-info"} hidden={!message}>
-        {message?.texte}
-      </p>
-
-      <p className={styles.pied}>Après ta course, tu reprends le fil rouge ou tu enchaînes sur un autre bloc, comme tu veux.</p>
+              <p className={styles.legende}>
+                <span className={styles.legendePoint} aria-hidden /> Tes courses. Touche un jour pour choisir la date d&apos;une nouvelle course.
+              </p>
+            </Carte>
+          </SurOrdinateur>
+        }
+      />
 
       {cible && (
         <FeuilleCalendrier

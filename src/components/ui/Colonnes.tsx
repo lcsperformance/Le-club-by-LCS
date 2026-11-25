@@ -26,3 +26,18 @@ export function DeuxColonnes({ principale, laterale, collante = false }: { princ
     </div>
   );
 }
+
+/** Seulement sur téléphone et iPad (moins de 1100 px) : sur ordinateur, sorti de la page. */
+export function SurTelephone({ children }: { children: ReactNode }) {
+  return <div className={styles.surTelephone}>{children}</div>;
+}
+
+/**
+ * Seulement sur ordinateur (1100 px et plus) : sur téléphone et iPad, sorti de la page
+ * (aucun pixel, rien pour les lecteurs d'écran). Pour une version propre à l'ordinateur
+ * (courbe plus large, courbe à côté des zones, calendrier de la saison…), jamais pour une information
+ * dont le téléphone aurait besoin.
+ */
+export function SurOrdinateur({ children }: { children: ReactNode }) {
+  return <div className={styles.surOrdinateur}>{children}</div>;
+}

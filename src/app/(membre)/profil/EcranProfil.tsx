@@ -6,7 +6,7 @@ import { ChoixNiveauProfil } from "@/components/ChoixNiveauProfil";
 import { MesDonnees } from "@/components/MesDonnees";
 import { ReglagesNotifications } from "@/components/ReglagesNotifications";
 import { initiale } from "@/components/IdentiteMembre";
-import { Carte } from "@/components/ui";
+import { Carte, DeuxColonnes } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
 import type { SuggestionProfil } from "@/lib/profil-suggere";
 import type { EtatAppareil } from "@/lib/notifications-navigateur";
@@ -99,52 +99,62 @@ export function EcranProfil({
         </div>
       </header>
 
-      <ChampPrenom prenom={utilisateur.prenom} />
-      <ChampPrenom champ="nom" prenom={utilisateur.nom} />
+      {/* Sur ordinateur : identité, abonnement, niveau et profil à gauche ; réglages et liens à droite. */}
+      <DeuxColonnes
+        principale={
+          <>
+            <ChampPrenom prenom={utilisateur.prenom} />
+            <ChampPrenom champ="nom" prenom={utilisateur.nom} />
 
-      {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
-      {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
+            {/* L'équipe du Club (coach, admin) n'a pas d'abonnement. */}
+            {utilisateur.role === "membre" && <CarteAbonnement abonnement={utilisateur.abonnement} maintenant={maintenant} />}
 
-      <ChoixNiveauProfil
-        niveau={utilisateur.niveau}
-        profil={utilisateur.profil}
-        ecran="profil"
-        suggestion={suggestion}
-        entreLesDeux={<LienCarte href="/saison" libelle="Ma saison" />}
-      />
+            <ChoixNiveauProfil
+              niveau={utilisateur.niveau}
+              profil={utilisateur.profil}
+              ecran="profil"
+              suggestion={suggestion}
+              entreLesDeux={<LienCarte href="/saison" libelle="Ma saison" />}
+            />
+          </>
+        }
+        laterale={
+          <>
+            <ReglagesNotifications reglages={notifications} apercu={appareilApercu} />
 
-      <ReglagesNotifications reglages={notifications} apercu={appareilApercu} />
+            {LIENS.map((l) => (
+              <LienCarte key={l.href} {...l} />
+            ))}
 
-      {LIENS.map((l) => (
-        <LienCarte key={l.href} {...l} />
-      ))}
+            <MesDonnees
+              suppressionOuverte={suppressionOuverte}
+              membre={utilisateur.role === "membre"}
+              abonnementEnCours={
+                utilisateur.abonnement.clientStripe && !!utilisateur.abonnement.fin && new Date(utilisateur.abonnement.fin) > maintenant && !utilisateur.abonnement.annulationPrevue
+              }
+            />
 
-      <MesDonnees
-        suppressionOuverte={suppressionOuverte}
-        membre={utilisateur.role === "membre"}
-        abonnementEnCours={
-          utilisateur.abonnement.clientStripe && !!utilisateur.abonnement.fin && new Date(utilisateur.abonnement.fin) > maintenant && !utilisateur.abonnement.annulationPrevue
+            <form action={seDeconnecter}>
+              <button
+                type="submit"
+                style={{
+                  width: "100%",
+                  minHeight: 50,
+                  border: 0,
+                  background: "none",
+                  color: "var(--texte)",
+                  font: "inherit",
+                  fontSize: 15,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
+              >
+                Se déconnecter
+              </button>
+            </form>
+          </>
         }
       />
-
-      <form action={seDeconnecter}>
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            minHeight: 50,
-            border: 0,
-            background: "none",
-            color: "var(--texte)",
-            font: "inherit",
-            fontSize: 15,
-            fontWeight: 800,
-            cursor: "pointer",
-          }}
-        >
-          Se déconnecter
-        </button>
-      </form>
       <div style={{ height: 28 }} />
     </>
   );

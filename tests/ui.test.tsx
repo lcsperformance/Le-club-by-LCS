@@ -5,7 +5,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => "/semaine" }));
 
 import { BarreOnglets } from "@/components/BarreOnglets";
 import { MenuLateral } from "@/components/MenuLateral";
-import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, DeuxColonnes, GrilleCartes, PastilleZone, ZONES } from "@/components/ui";
+import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, DeuxColonnes, GrilleCartes, PastilleZone, SurOrdinateur, SurTelephone, ZONES } from "@/components/ui";
 import { barreVisible, cheminAffiche, ONGLETS, ongletActif, profilActif } from "@/lib/onglets";
 
 describe("barre d'onglets", () => {
@@ -138,6 +138,11 @@ describe("mises en page ordinateur", () => {
   it("DeuxColonnes : principale puis latérale (ordre de lecture du téléphone), latérale collante", () => {
     const html = renderToStaticMarkup(<DeuxColonnes collante principale={<p>Gauche</p>} laterale={<p>Droite</p>} />);
     expect(html).toBe('<div class="deuxColonnes "><div class="colonne"><p>Gauche</p></div><div class="colonne collante"><p>Droite</p></div></div>');
+  });
+
+  it("SurTelephone et SurOrdinateur : deux versions, le CSS n'en montre qu'une", () => {
+    expect(renderToStaticMarkup(<SurTelephone>T</SurTelephone>)).toBe('<div class="surTelephone">T</div>');
+    expect(renderToStaticMarkup(<SurOrdinateur>O</SurOrdinateur>)).toBe('<div class="surOrdinateur">O</div>');
   });
 
   it("DeuxColonnes sans latérale : une seule colonne limitée en largeur", () => {

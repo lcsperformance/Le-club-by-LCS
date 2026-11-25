@@ -5,6 +5,7 @@ import { EcranAbonnement } from "@/app/(membre)/abonnement/EcranAbonnement";
 import { EcranProfil } from "@/app/(membre)/profil/EcranProfil";
 import { BandeauEvenement } from "@/components/BandeauEvenement";
 import { EcranAuth } from "@/components/EcranAuth";
+import { DeuxColonnes } from "@/components/ui";
 import { FormulaireConditions } from "@/app/conditions/FormulaireConditions";
 import { EcranProgres } from "@/app/(membre)/progres/EcranProgres";
 import { EcranRecords } from "@/app/(membre)/records/EcranRecords";
@@ -118,17 +119,25 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
     }
     case "tests":
       return (
-        <>
-          <EnTeteTests />
-          <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
-        </>
+        <DeuxColonnes
+          principale={
+            <>
+              <EnTeteTests />
+              <FormulaireTests valeursInitiales={valeursDeDepart(null)} />
+            </>
+          }
+        />
       );
     case "tests-pma":
       return (
-        <>
-          <EnTeteTests />
-          <FormulaireTests valeursInitiales={valeursDeDepart(TEST_FICTIF)} facultativesFaites={["pma_5min"]} />
-        </>
+        <DeuxColonnes
+          principale={
+            <>
+              <EnTeteTests />
+              <FormulaireTests valeursInitiales={valeursDeDepart(TEST_FICTIF)} facultativesFaites={["pma_5min"]} />
+            </>
+          }
+        />
       );
     case "profil":
       return (
@@ -400,7 +409,11 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
       return (
         <>
           <EnTeteZones />
-          <AffichageZones sport={sport} test={TEST_FICTIF} />
+          <AffichageZones
+            sport={sport}
+            test={TEST_FICTIF}
+            progres={sport === "course" ? HISTORIQUE_COURSE_FICTIF : sport === "velo" ? HISTORIQUE_VELO_FICTIF : []}
+          />
         </>
       );
     }

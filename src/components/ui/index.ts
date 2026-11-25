@@ -4,4 +4,4 @@ export { Champ } from "./Champ";
 export { Compteur } from "./Compteur";
 export { PastilleZone, NOMS_ZONES, ZONES, type Zone } from "./PastilleZone";
 export { CalendrierMois } from "./CalendrierMois";
-export { DeuxColonnes, GrilleCartes } from "./Colonnes";
+export { DeuxColonnes, GrilleCartes, SurOrdinateur, SurTelephone } from "./Colonnes";

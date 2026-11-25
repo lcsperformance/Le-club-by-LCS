@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CADRE, courbe, ecart, formatValeur, gainDepuisPremier, lignesHistorique, sportProgres } from "@/lib/progres";
+import { CADRE, CADRE_LARGE, courbe, ecart, formatValeur, gainDepuisPremier, lignesHistorique, sportProgres } from "@/lib/progres";
 
 const pts = (...valeurs: number[]) => valeurs.map((valeur, i) => ({ date: `2026-${String(i + 9).padStart(2, "0")}-14`, valeur }));
 
@@ -77,5 +77,33 @@ describe("courbe", () => {
     expect(c.points.map((p) => p.etiquette)).toEqual([true, false, false, false, false, true]);
     expect(c.ligne.split(" ")).toHaveLength(6);
     expect(c.aire).toMatch(/^M30,150 L.* L300,150 Z$/);
+  });
+});
+
+describe("Mes progrès : courbe large (ordinateur)", () => {
+  it("plus large que haute, et plus large que la courbe du téléphone", () => {
+    expect(CADRE_LARGE.largeur / CADRE_LARGE.hauteur).toBeGreaterThan(CADRE.largeur / CADRE.hauteur);
+  });
+
+  it("mêmes règles que sur téléphone : plus haut = meilleur, points dans le cadre, étiquettes au-delà de 4 tests", () => {
+    const valeurs = pts(292, 285, 288, 276, 270, 268);
+    const petite = courbe("course", valeurs).points;
+    const large = courbe("course", valeurs, CADRE_LARGE).points;
+    expect(large.map((p) => p.etiquette)).toEqual(petite.map((p) => p.etiquette));
+    expect(large.map((p) => p.valeur)).toEqual(petite.map((p) => p.valeur));
+    // Même ordre vertical des points (le dessin est le même, seulement plus grand).
+    const ordre = (ps: typeof large) => ps.map((p) => p.y).map((y, _, ys) => ys.filter((z) => z < y).length);
+    expect(ordre(large)).toEqual(ordre(petite));
+    for (const p of large) {
+      expect(p.x).toBeGreaterThanOrEqual(CADRE_LARGE.gauche);
+      expect(p.x).toBeLessThanOrEqual(CADRE_LARGE.droite);
+      expect(p.y).toBeGreaterThanOrEqual(CADRE_LARGE.haut);
+      expect(p.y).toBeLessThanOrEqual(CADRE_LARGE.bas);
+    }
+    expect(large.at(-1)!.y).toBeLessThan(large[0].y);
+  });
+
+  it("sans cadre, la courbe reste celle de la maquette", () => {
+    expect(courbe("velo", pts(180, 220))).toEqual(courbe("velo", pts(180, 220), CADRE));
   });
 });

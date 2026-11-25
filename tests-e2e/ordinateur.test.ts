@@ -160,6 +160,82 @@ describe.each(ORDINATEURS)("écrans en deux colonnes à %i × %i px", (largeur, 
   });
 });
 
+describe.each(ORDINATEURS)("profil, zones, progrès, saison, tests, records à %i × %i px", (largeur, hauteur) => {
+  /** Courbe visible : plus large que haute, points ronds (pas de déformation). */
+  const mesurerCourbe = (page: Page) =>
+    page.getByRole("img", { name: /^Courbe de ta/ }).evaluate((svg) => {
+      const r = svg.getBoundingClientRect();
+      const point = svg.querySelector("circle")!.getBoundingClientRect();
+      return { largeur: r.width, hauteur: r.height, pointL: point.width, pointH: point.height, gauche: r.left, droite: r.right };
+    });
+
+  it("Mes progrès : grande courbe large à gauche, historique à droite", async () => {
+    const page = await ouvrir("/apercu-membre/progres", largeur, hauteur);
+    try {
+      const c = await mesurerCourbe(page);
+      expect(c.largeur / c.hauteur, "courbe en format large").toBeGreaterThan(2.5);
+      expect(Math.abs(c.pointL - c.pointH), "points ronds").toBeLessThan(0.5);
+      expect(c.largeur, "la courbe profite de la largeur").toBeGreaterThan(450);
+      const historique = await boite(page, 'section[aria-label="Historique des tests"]');
+      expect(c.droite).toBeLessThan(historique.gauche);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Mes zones : zones à gauche, courbe de progrès du sport à droite", async () => {
+    const page = await ouvrir("/apercu-membre/zones-course", largeur, hauteur);
+    try {
+      const zones = await boite(page, "main >> text=Récupération");
+      const c = await mesurerCourbe(page);
+      expect(zones.droite).toBeLessThan(c.gauche);
+      expect(Math.abs(c.pointL - c.pointH), "points ronds").toBeLessThan(0.5);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Ma saison : objectifs à gauche, calendrier de la saison à droite", async () => {
+    const page = await ouvrir("/apercu-membre/saison", largeur, hauteur);
+    try {
+      const objectifs = await boite(page, 'section[aria-labelledby="titre-objectifs"]');
+      const calendrier = await boite(page, 'section[aria-labelledby="titre-calendrier"]');
+      expect(objectifs.droite).toBeLessThan(calendrier.gauche);
+      expect(Math.abs(objectifs.haut - calendrier.haut)).toBeLessThan(40);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it("Profil : deux colonnes (niveau à gauche, notifications à droite)", async () => {
+    const page = await ouvrir("/apercu-membre/profil", largeur, hauteur);
+    try {
+      const gauche = await boite(page, "main input");
+      const droite = await page.getByRole("link", { name: /Mes records/ }).evaluate((e) => e.getBoundingClientRect().left);
+      expect(gauche.droite).toBeLessThan(droite);
+    } finally {
+      await page.close();
+    }
+  });
+
+  it.each(["/apercu-membre/tests", "/apercu-membre/records"])("%s : colonne de 720 px au plus, cartes 2 par 2", async (ecran) => {
+    const page = await ouvrir(ecran, largeur, hauteur);
+    try {
+      const largeurs = await page.evaluate(() => {
+        const g = [...document.querySelectorAll("main *")].find(
+          (e) => getComputedStyle(e).display === "grid" && getComputedStyle(e).gridTemplateColumns.split(" ").length === 2,
+        )!;
+        const enfants = [...g.children].map((e) => e.getBoundingClientRect());
+        return { grille: g.getBoundingClientRect().width, memeLigne: enfants[0].top === enfants[1].top };
+      });
+      expect(largeurs.grille).toBeLessThanOrEqual(720);
+      expect(largeurs.memeLigne).toBe(true);
+    } finally {
+      await page.close();
+    }
+  });
+});
+
 describe("iPad en paysage (1024 px)", () => {
   it("la barre d'onglets reste en bas", async () => {
     const page = await ouvrir("/apercu-membre/accueil", 1024, 768);
