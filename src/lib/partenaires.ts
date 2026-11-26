@@ -12,7 +12,26 @@ export type Partenaire = {
   affiche: boolean;
   /** Code d'exemple, à remplacer par le vrai. */
   exemple: boolean;
+  /** Chemin du logo dans le stockage public « logos » ; null : on affiche l'initiale. */
+  logo: string | null;
 };
+
+/** Colonnes lues pour afficher un partenaire. */
+export const COLONNES_PARTENAIRE = "id, nom, remise, description, code, lien, ordre, affiche, exemple, logo";
+
+/** Adresse publique d'un logo du stockage « logos ». */
+export const urlLogo = (chemin: string) =>
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}/storage/v1/object/public/logos/${encodeURIComponent(chemin)}`;
+
+/** Chemin d'un logo dans le stockage : identifiant aléatoire et extension d'image. */
+export const CHEMIN_LOGO = /^[0-9a-f-]{36}\.(png|jpg|webp|ico)$/;
+
+/** Logo déposé à la main par l'admin : JPG, PNG ou WebP, 1 Mo au plus. */
+export function erreurLogo(fichier: { type: string; size: number }): string | null {
+  if (!["image/png", "image/jpeg", "image/webp"].includes(fichier.type)) return "Le logo doit être une image JPG, PNG ou WebP.";
+  if (fichier.size > 1024 * 1024) return "Le logo fait 1 Mo au plus.";
+  return null;
+}
 
 /** « −15 % » (signe moins et espace insécable, à la française). */
 export const formatRemise = (remise: number) => `−${remise} %`;
@@ -22,7 +41,7 @@ export const initialePartenaire = (nom: string) => (nom.trim().charAt(0) || "?")
 const CODE = /^[A-Za-z0-9_!?-]{3,30}$/;
 
 export type ChampPartenaire = "nom" | "remise" | "description" | "code" | "lien" | "ordre";
-export type PartenaireSaisi = Omit<Partenaire, "id" | "exemple">;
+export type PartenaireSaisi = Omit<Partenaire, "id" | "exemple" | "logo">;
 
 const texte = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 const entier = (v: unknown) => (typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v.replace(",", ".")) : NaN);

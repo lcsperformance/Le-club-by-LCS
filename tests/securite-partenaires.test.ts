@@ -62,3 +62,31 @@ describe("partenaires", () => {
     await expect(en(ADMIN, "insert into themes_ressources (cle, nom, icone) values ('calculateur', 'Calcul', 'velo')")).rejects.toThrow(/check constraint/);
   });
 });
+
+describe("logos des partenaires", () => {
+  const LOGO = "11111111-1111-1111-1111-111111111111.png";
+
+  it("seul l'admin change le logo d'un partenaire", async () => {
+    for (const qui of [MEMBRE, COACH]) {
+      expect(await en(qui, "update partenaires set logo = $1 where nom = 'Pyrène' returning id", [LOGO])).toEqual([]);
+    }
+    expect(await en(ADMIN, "update partenaires set logo = $1 where nom = 'Pyrène' returning logo", [LOGO])).toEqual([{ logo: LOGO }]);
+    expect(await en(MEMBRE, "select logo from partenaires where nom = 'Pyrène'")).toEqual([{ logo: LOGO }]);
+  });
+
+  it("un logo est un chemin d'image du stockage, rien d'autre", async () => {
+    for (const mauvais of ["https://pirate.exemple/logo.png", "../autre/fichier.png", "logo.svg"]) {
+      await expect(en(ADMIN, "update partenaires set logo = $1 where nom = 'Pyrène'", [mauvais])).rejects.toThrow(/check/);
+    }
+  });
+
+  it("seul l'admin dépose ou supprime un fichier dans le stockage « logos »", async () => {
+    for (const qui of [MEMBRE, COACH]) {
+      await expect(en(qui, "insert into storage.objects (bucket_id, name) values ('logos', 'pirate.png')")).rejects.toThrow(/row-level security/);
+    }
+    await en(ADMIN, "insert into storage.objects (bucket_id, name) values ('logos', $1)", [LOGO]);
+    expect(await en(MEMBRE, "delete from storage.objects where bucket_id = 'logos' returning name")).toEqual([]);
+    expect(await en(ADMIN, "delete from storage.objects where bucket_id = 'logos' returning name")).toEqual([{ name: LOGO }]);
+  });
+});
+

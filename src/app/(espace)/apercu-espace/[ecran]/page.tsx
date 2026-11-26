@@ -26,6 +26,7 @@ import {
   MEMBRES_FICTIFS,
   OBJECTIFS_EN_COURS_FICTIFS,
   PARTENAIRES_FICTIFS,
+  urlLogoFictif,
   QUESTIONS_FICTIVES,
   SEANCES_COACH_FICTIVES,
   THEMES_FICTIFS,
@@ -94,7 +95,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
   }
   if (ecran === "admin-ressources-commentaires") return <ModerationCommentaires commentaires={COMMENTAIRES_ADMIN_FICTIFS} />;
   if (ecran === "admin-equipe") return <EcranEquipe comptes={COMPTES_EQUIPE_FICTIFS} moi={UTILISATEUR_FICTIF.id} />;
-  if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} />;
+  if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} logoApercu={urlLogoFictif()} />;
   if (ecran === "admin-canaux") return <GestionCanaux canaux={CANAUX_FICTIFS} messagesParCanal={{ annonces: 3, general: 128, "bloc-m": 12 }} />;
   if (ecran === "admin-questions") return <EcranQuestionsAdmin questions={QUESTIONS_FICTIVES} />;
   if (ecran === "admin-agenda") return <EcranAgendaAdmin evenements={EVENEMENTS_FICTIFS} maintenant="2027-01-18T10:00:00.000Z" />;

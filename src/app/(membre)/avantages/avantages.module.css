@@ -43,6 +43,13 @@
   color: var(--accent);
 }
 
+/* Logo du partenaire, dans la même pastille que l'initiale : fond blanc pour les logos sombres. */
+.logo {
+  object-fit: contain;
+  padding: 6px;
+  background: #fff;
+}
+
 .texte {
   flex: 1;
   min-width: 0;
