@@ -5,11 +5,16 @@ import { useState, useTransition, type FormEvent } from "react";
 import { RetourAdmin } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
 import styles from "@/app/(espace)/admin/ressources/admin-ressources.module.css";
 import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, GrilleCartes } from "@/components/ui";
-import { formatRemise, lirePartenaire, trierPartenaires, type ChampPartenaire, type Partenaire } from "@/lib/partenaires";
-import { enregistrerPartenaire, supprimerPartenaire } from "./actions";
+import { erreurLogo, formatRemise, lirePartenaire, trierPartenaires, urlLogo, type ChampPartenaire, type Partenaire } from "@/lib/partenaires";
+import { createClient } from "@/lib/supabase/client";
+import { changerLogo, enregistrerPartenaire, reprendreLogo, retirerLogo, supprimerPartenaire } from "./actions";
 
-/** Avantages côté admin : une carte modifiable par partenaire, puis « Ajouter un partenaire ». */
-export function GestionPartenaires({ partenaires }: { partenaires: Partenaire[] }) {
+/**
+ * Avantages côté admin : une carte modifiable par partenaire (avec son logo), puis « Ajouter un partenaire ».
+ * logoApercu : aperçus seulement (image des fichiers de l'app à la place du stockage).
+ */
+export function GestionPartenaires({ partenaires, logoApercu }: { partenaires: Partenaire[]; logoApercu?: string }) {
+  const adresseLogo = (chemin: string) => logoApercu ?? urlLogo(chemin);
   return (
     <>
       <RetourAdmin />
@@ -24,15 +29,23 @@ export function GestionPartenaires({ partenaires }: { partenaires: Partenaire[] 
       {/* Sur ordinateur : deux partenaires par ligne. */}
       <GrilleCartes>
         {trierPartenaires(partenaires).map((p) => (
-          <FormulairePartenaire key={p.id} partenaire={p} />
+          <FormulairePartenaire key={p.id} partenaire={p} adresseLogo={adresseLogo} />
         ))}
-        <FormulairePartenaire ordreParDefaut={partenaires.length + 1} />
+        <FormulairePartenaire ordreParDefaut={partenaires.length + 1} adresseLogo={adresseLogo} />
       </GrilleCartes>
     </>
   );
 }
 
-function FormulairePartenaire({ partenaire: p, ordreParDefaut = 1 }: { partenaire?: Partenaire; ordreParDefaut?: number }) {
+function FormulairePartenaire({
+  partenaire: p,
+  ordreParDefaut = 1,
+  adresseLogo,
+}: {
+  partenaire?: Partenaire;
+  ordreParDefaut?: number;
+  adresseLogo: (chemin: string) => string;
+}) {
   const router = useRouter();
   const vide = { nom: "", remise: "", description: "", code: "", lien: "", ordre: String(ordreParDefaut), affiche: true };
   const [v, setV] = useState(
@@ -61,7 +74,8 @@ function FormulairePartenaire({ partenaire: p, ordreParDefaut = 1 }: { partenair
       if (r.erreurs) setErreurs(r.erreurs);
       if (r.erreur || r.erreurs) setMessage({ texte: r.erreur ?? "Vérifie les champs en rouge.", erreur: true });
       else {
-        setMessage({ texte: p ? "Enregistré ✓" : "Partenaire ajouté ✓", erreur: false });
+        const logo = r.logo === "trouve" ? " Logo repris sur le site." : r.logo === "introuvable" ? " Logo introuvable sur le site : dépose-le à la main si tu veux." : "";
+        setMessage({ texte: (p ? "Enregistré ✓" : "Partenaire ajouté ✓") + logo, erreur: false });
         if (!p) setV(vide);
         router.refresh();
       }
@@ -86,6 +100,7 @@ function FormulairePartenaire({ partenaire: p, ordreParDefaut = 1 }: { partenair
           </h2>
           {p && !p.affiche && <span className={styles.aide}>Masqué aux membres</span>}
         </div>
+        {p && <LogoPartenaire partenaire={p} adresseLogo={adresseLogo} enCours={enCours} demarrer={demarrer} afficher={setMessage} />}
         {p?.exemple && <p className={styles.manque}>Code d&apos;exemple à remplacer par le vrai code du partenaire.</p>}
         <div className={styles.deuxColonnes}>
           <Champ libelle="Nom" name={`nom-${id}`} value={v.nom} maxLength={40} onChange={(e) => changer("nom")(e.target.value)} erreur={erreurs.nom} />
@@ -161,5 +176,74 @@ function FormulairePartenaire({ partenaire: p, ordreParDefaut = 1 }: { partenair
         </div>
       </form>
     </Carte>
+  );
+}
+
+/** Logo du partenaire : aperçu, « Reprendre le logo du site », dépôt à la main (JPG, PNG, WebP, 1 Mo), retrait. */
+function LogoPartenaire({
+  partenaire: p,
+  adresseLogo,
+  enCours,
+  demarrer,
+  afficher,
+}: {
+  partenaire: Partenaire;
+  adresseLogo: (chemin: string) => string;
+  enCours: boolean;
+  demarrer: (action: () => Promise<void>) => void;
+  afficher: (m: { texte: string; erreur: boolean }) => void;
+}) {
+  const router = useRouter();
+  const fin = (r: { erreur?: string; logo?: "trouve" | "introuvable" }, ok: string) => {
+    if (r.erreur) afficher({ texte: r.erreur, erreur: true });
+    else if (r.logo === "introuvable") afficher({ texte: "Logo introuvable sur le site : dépose-le à la main.", erreur: true });
+    else {
+      afficher({ texte: ok, erreur: false });
+      router.refresh();
+    }
+  };
+
+  function deposer(fichier: File | null) {
+    if (!fichier) return;
+    const erreur = erreurLogo(fichier);
+    if (erreur) return afficher({ texte: erreur, erreur: true });
+    demarrer(async () => {
+      const ext = fichier.type === "image/png" ? "png" : fichier.type === "image/webp" ? "webp" : "jpg";
+      const chemin = `${crypto.randomUUID()}.${ext}`;
+      const supabase = createClient();
+      const { error } = await supabase.storage.from("logos").upload(chemin, fichier, { contentType: fichier.type });
+      if (error) return afficher({ texte: "Dépôt du logo impossible. Réessaie dans un instant.", erreur: true });
+      const r = await changerLogo(p.id, chemin);
+      if (r.erreur) await supabase.storage.from("logos").remove([chemin]);
+      fin(r, "Logo enregistré ✓");
+    });
+  }
+
+  return (
+    <div className={styles.champ}>
+      <span className={styles.libelle}>Logo</span>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        {p.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={adresseLogo(p.logo)} alt={`Logo ${p.nom}`} width={52} height={52} style={{ borderRadius: 14, background: "#fff", padding: 6, objectFit: "contain" }} />
+        ) : (
+          <span className={styles.aide}>Pas encore de logo : les membres voient l&apos;initiale.</span>
+        )}
+        {p.lien && (
+          <BoutonSecondaire type="button" compact disabled={enCours} onClick={() => demarrer(async () => fin(await reprendreLogo(p.id), "Logo repris sur le site ✓"))}>
+            Reprendre le logo du site
+          </BoutonSecondaire>
+        )}
+        <label className={styles.boutonFichier}>
+          <input type="file" accept="image/png,image/jpeg,image/webp" aria-label={`Déposer un logo pour ${p.nom}`} className={styles.cache} disabled={enCours} onChange={(e) => deposer(e.target.files?.[0] ?? null)} />
+          <span aria-hidden>Déposer un logo</span>
+        </label>
+        {p.logo && (
+          <button type="button" className={`${styles.lienDiscret} ${styles.danger}`} disabled={enCours} onClick={() => demarrer(async () => fin(await retirerLogo(p.id), "Logo retiré."))}>
+            Retirer le logo
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

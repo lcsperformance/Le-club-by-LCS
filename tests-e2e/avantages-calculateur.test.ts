@@ -26,7 +26,11 @@ describe("Avantages", () => {
     const page = await ouvrir("/apercu-membre/avantages");
     const cartes = page.getByRole("listitem");
     expect(await cartes.count()).toBe(2);
-    expect(await page.getByRole("listitem", { name: "Pyrène" }).innerText()).toMatch(/P\s*Pyrène\s*sur les produits Pyrène\s*−15\s%\s*LECLUB15\s*Copier le code/);
+    // Pyrène a un logo (pris sur son site) ; Onatera n'en a pas : son initiale.
+    const pyrene = page.getByRole("listitem", { name: "Pyrène" });
+    expect(await pyrene.innerText()).toMatch(/^Pyrène\s*sur les produits Pyrène\s*−15\s%\s*LECLUB15\s*Copier le code/);
+    expect(await pyrene.locator("img").count()).toBe(1);
+    expect(await page.getByRole("listitem", { name: "Onatera" }).innerText()).toMatch(/^O\s*Onatera/);
     expect(await page.getByRole("link", { name: "Aller sur le site Pyrène" }).getAttribute("href")).toBe("https://pyrene.exemple.fr");
     expect(await page.getByText("Atelier Vélo du Sud-Ouest").count()).toBe(0); // masqué aux membres
     await page.getByRole("button", { name: "Copier le code Onatera" }).click();
@@ -70,6 +74,10 @@ describe("Admin : partenaires", () => {
     expect(await page.getByText("Code d'exemple à remplacer par le vrai code du partenaire.").count()).toBe(2);
     expect(await page.getByText("Masqué aux membres").isVisible()).toBe(true);
     expect(await page.getByLabel("Code promo").first().inputValue()).toBe("LECLUB15");
+    // Logo : visible pour Pyrène, « Reprendre le logo du site » seulement avec un site, dépôt à la main pour tous.
+    expect(await page.getByRole("img", { name: "Logo Pyrène" }).isVisible()).toBe(true);
+    expect(await page.getByRole("button", { name: "Reprendre le logo du site" }).count()).toBe(1);
+    expect(await page.getByLabel("Déposer un logo pour Onatera").count()).toBe(1);
     const ajout = page.getByRole("region", { name: "Ajouter un partenaire" });
     await ajout.getByRole("button", { name: "Ajouter le partenaire" }).click();
     expect(await ajout.getByText("Le nom fait entre 1 et 40 caractères.").isVisible()).toBe(true);

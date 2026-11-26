@@ -414,10 +414,13 @@ export const SEANCES_COACH_FICTIVES: SeanceCoach[] = [
 ];
 
 /** Partenaires fictifs : les deux exemples, un avec lien, un masqué (vu seulement par l'admin). */
+/** Aperçus : les logos viennent des fichiers de l'app (pas du stockage). */
+export const urlLogoFictif = () => "/icones/icone-192.png";
+
 export const PARTENAIRES_FICTIFS: Partenaire[] = [
-  { id: "00000000-0000-0000-0006-000000000001", nom: "Pyrène", remise: 15, description: "sur les produits Pyrène", code: "LECLUB15", lien: "https://pyrene.exemple.fr", ordre: 1, affiche: true, exemple: true },
-  { id: "00000000-0000-0000-0006-000000000002", nom: "Onatera", remise: 10, description: "sur les produits Onatera", code: "LECLUB10", lien: null, ordre: 2, affiche: true, exemple: true },
-  { id: "00000000-0000-0000-0006-000000000003", nom: "Atelier Vélo du Sud-Ouest", remise: 20, description: "sur l'entretien et le réglage de ton vélo de route", code: "CLUB-VELO-2027", lien: null, ordre: 3, affiche: false, exemple: false },
+  { id: "00000000-0000-0000-0006-000000000001", nom: "Pyrène", remise: 15, description: "sur les produits Pyrène", code: "LECLUB15", lien: "https://pyrene.exemple.fr", ordre: 1, affiche: true, exemple: true, logo: "00000000-0000-0000-0006-000000000001.png" },
+  { id: "00000000-0000-0000-0006-000000000002", nom: "Onatera", remise: 10, description: "sur les produits Onatera", code: "LECLUB10", lien: null, ordre: 2, affiche: true, exemple: true, logo: null },
+  { id: "00000000-0000-0000-0006-000000000003", nom: "Atelier Vélo du Sud-Ouest", remise: 20, description: "sur l'entretien et le réglage de ton vélo de route", code: "CLUB-VELO-2027", lien: null, ordre: 3, affiche: false, exemple: false, logo: null },
 ];
 
 /** Comptes fictifs de l'écran Équipe : un coach, un coach + admin, un admin, des membres. */

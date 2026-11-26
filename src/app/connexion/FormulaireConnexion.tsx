@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { BoutonPrincipal, Champ } from "@/components/ui";
+import { BoutonPrincipal, Champ, ChampMotDePasse } from "@/components/ui";
 import { seConnecter, type EtatFormulaire } from "./actions";
 
 export function FormulaireConnexion() {
@@ -20,10 +20,9 @@ export function FormulaireConnexion() {
         defaultValue={etat.email}
         required
       />
-      <Champ
+      <ChampMotDePasse
         libelle="Mot de passe"
         name="mot_de_passe"
-        type="password"
         autoComplete="current-password"
         placeholder="••••••••"
         required

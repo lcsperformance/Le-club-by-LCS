@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PageFormulaire } from "@/app/(espace)/admin/PageFormulaire";
+import { GestionCanaux } from "@/app/(espace)/admin/canaux/GestionCanaux";
 import { AccueilAdmin } from "@/app/(espace)/admin/AccueilAdmin";
 import { EcranAgendaAdmin } from "@/app/(espace)/admin/agenda/EcranAgendaAdmin";
 import { FormulaireEvenement } from "@/app/(espace)/admin/agenda/FormulaireEvenement";
@@ -25,11 +26,12 @@ import {
   MEMBRES_FICTIFS,
   OBJECTIFS_EN_COURS_FICTIFS,
   PARTENAIRES_FICTIFS,
+  urlLogoFictif,
   QUESTIONS_FICTIVES,
   SEANCES_COACH_FICTIVES,
   THEMES_FICTIFS,
 } from "@/lib/apercu";
-import { exigerApercu, UTILISATEUR_FICTIF } from "@/lib/apercu";
+import { CANAUX_FICTIFS, exigerApercu, UTILISATEUR_FICTIF } from "@/lib/apercu";
 
 /** Aperçus des espaces admin et coach (mode test uniquement). */
 export default function ApercuEspace({ params }: PageProps<"/apercu-espace/[ecran]">) {
@@ -93,7 +95,8 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-espace/[ecran]">, "para
   }
   if (ecran === "admin-ressources-commentaires") return <ModerationCommentaires commentaires={COMMENTAIRES_ADMIN_FICTIFS} />;
   if (ecran === "admin-equipe") return <EcranEquipe comptes={COMPTES_EQUIPE_FICTIFS} moi={UTILISATEUR_FICTIF.id} />;
-  if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} />;
+  if (ecran === "admin-partenaires") return <GestionPartenaires partenaires={PARTENAIRES_FICTIFS} logoApercu={urlLogoFictif()} />;
+  if (ecran === "admin-canaux") return <GestionCanaux canaux={CANAUX_FICTIFS} messagesParCanal={{ annonces: 3, general: 128, "bloc-m": 12 }} />;
   if (ecran === "admin-questions") return <EcranQuestionsAdmin questions={QUESTIONS_FICTIVES} />;
   if (ecran === "admin-agenda") return <EcranAgendaAdmin evenements={EVENEMENTS_FICTIFS} maintenant="2027-01-18T10:00:00.000Z" />;
   if (ecran === "admin-agenda-nouveau") return (

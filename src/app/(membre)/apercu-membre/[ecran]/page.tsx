@@ -38,6 +38,7 @@ import {
   NON_LUS_FICTIFS,
   OBJECTIFS_FICTIFS,
   PARTENAIRES_FICTIFS,
+  urlLogoFictif,
   QUESTIONS_FICTIVES,
   RECORDS_FICTIFS,
   RESSOURCES_FICTIVES,
@@ -292,7 +293,7 @@ async function Ecran({ params }: Pick<PageProps<"/apercu-membre/[ecran]">, "para
         />
       );
     case "avantages":
-      return <EcranAvantages utilisateur={UTILISATEUR_FICTIF} partenaires={PARTENAIRES_FICTIFS.filter((p) => p.affiche)} />;
+      return <EcranAvantages utilisateur={UTILISATEUR_FICTIF} partenaires={PARTENAIRES_FICTIFS.filter((p) => p.affiche)} adresseLogo={urlLogoFictif} />;
     case "avantages-vide":
       return <EcranAvantages utilisateur={UTILISATEUR_FICTIF} partenaires={[]} />;
     case "calculateur":

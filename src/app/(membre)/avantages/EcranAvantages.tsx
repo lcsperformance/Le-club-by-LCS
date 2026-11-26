@@ -1,12 +1,23 @@
 import { EnTeteMembre } from "@/components/EnTeteMembre";
 import { Carte } from "@/components/ui";
 import type { Utilisateur } from "@/lib/auth";
-import { formatRemise, initialePartenaire, trierPartenaires, type Partenaire } from "@/lib/partenaires";
+import { formatRemise, initialePartenaire, trierPartenaires, urlLogo, type Partenaire } from "@/lib/partenaires";
 import styles from "./avantages.module.css";
 import { BoutonCopier } from "./BoutonCopier";
 
-/** Avantages (maquette) : une carte par partenaire, avec sa remise, son code et « Copier le code ». */
-export function EcranAvantages({ utilisateur, partenaires }: { utilisateur: Utilisateur; partenaires: Partenaire[] }) {
+/**
+ * Avantages (maquette) : une carte par partenaire, avec son logo (sinon son initiale), sa remise,
+ * son code et « Copier le code ». adresseLogo : aperçus seulement.
+ */
+export function EcranAvantages({
+  utilisateur,
+  partenaires,
+  adresseLogo = urlLogo,
+}: {
+  utilisateur: Utilisateur;
+  partenaires: Partenaire[];
+  adresseLogo?: (chemin: string) => string;
+}) {
   return (
     <>
       <EnTeteMembre utilisateur={utilisateur} titre="Avantages" />
@@ -17,9 +28,15 @@ export function EcranAvantages({ utilisateur, partenaires }: { utilisateur: Util
         {trierPartenaires(partenaires).map((p) => (
           <Carte as="li" key={p.id} className={styles.partenaire} aria-label={p.nom}>
             <div className={styles.entete}>
-              <span className={styles.initiale} aria-hidden>
-                {initialePartenaire(p.nom)}
-              </span>
+              {p.logo ? (
+                // Logo gardé dans notre stockage (jamais chargé depuis le site du partenaire).
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className={`${styles.initiale} ${styles.logo}`} src={adresseLogo(p.logo)} alt="" width={52} height={52} loading="lazy" />
+              ) : (
+                <span className={styles.initiale} aria-hidden>
+                  {initialePartenaire(p.nom)}
+                </span>
+              )}
               <span className={styles.texte}>
                 <span className={styles.nom} style={{ display: "block" }}>
                   {p.nom}

@@ -158,3 +158,14 @@ describe("mises en page ordinateur", () => {
     }
   });
 });
+
+describe("champ de mot de passe", () => {
+  it("masqué par défaut, avec le bouton « Afficher le mot de passe »", async () => {
+    const { ChampMotDePasse } = await import("@/components/ui");
+    const html = renderToStaticMarkup(<ChampMotDePasse libelle="Mot de passe" name="mdp" />);
+    expect(html).toContain('type="password"');
+    expect(html).toContain('aria-label="Afficher le mot de passe"');
+    expect(html).toContain('aria-pressed="false"');
+    expect(html).toContain('aria-controls="champ-mdp"');
+  });
+});
