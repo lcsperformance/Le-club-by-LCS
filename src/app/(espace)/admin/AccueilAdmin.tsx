@@ -18,6 +18,7 @@ const LIENS = [
     texte: "Thèmes, sous-rubriques, PDF et vidéos, semaine de déblocage ; modération des commentaires.",
   },
   { href: "/admin/agenda", titre: "Agenda", texte: "FAQ en visio, webinaires et autres événements du Club, à l'heure de Paris." },
+  { href: "/admin/canaux", titre: "Canaux du Club", texte: "Ajouter, renommer ou supprimer les canaux collectifs (jamais de canal privé)." },
   { href: "/admin/questions", titre: "Boîte à questions", texte: "Les questions des membres pour préparer la FAQ en visio (sans votes)." },
   { href: "/admin/partenaires", titre: "Partenaires", texte: "Les remises et codes promo de l'onglet Avantages." },
   { href: "/accueil", titre: "Voir l'espace membre", texte: "Parcourir l'app comme un athlète, avec la barre d'onglets." },

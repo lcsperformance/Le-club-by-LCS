@@ -15,6 +15,7 @@ export const ECRANS = [
   "/apercu-espace/admin-equipe",
   "/apercu-espace/admin-partenaires",
   "/apercu-espace/admin-questions",
+  "/apercu-espace/admin-canaux",
   "/apercu-espace/admin-agenda",
   "/apercu-espace/admin-agenda-nouveau",
   "/apercu-espace/admin-agenda-modifier",
