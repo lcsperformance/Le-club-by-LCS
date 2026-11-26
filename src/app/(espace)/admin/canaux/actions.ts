@@ -42,10 +42,15 @@ export async function enregistrerCanal(cle: string | null, saisie: Record<string
   return error ? echec("Ajout du canal impossible", error) : {};
 }
 
-/** Supprime définitivement un canal et tous ses messages (il faut retaper son nom). */
-export async function supprimerCanal(cle: string, confirmation: string): Promise<ResultatCanal> {
+/**
+ * Supprime définitivement un canal et tous ses messages (après la confirmation de l'admin dans l'écran).
+ * La base demande le nom du canal en garde-fou : le serveur le lit lui-même, l'admin n'a rien à taper.
+ */
+export async function supprimerCanal(cle: string): Promise<ResultatCanal> {
   const a = await admin();
   if ("erreur" in a) return { erreur: a.erreur };
-  const { data, error } = await a.supabase.rpc("admin_supprimer_canal", { p_cle: cle, p_confirmation: confirmation });
+  const { data: canal } = await a.supabase.from("canaux").select("nom").eq("cle", cle).maybeSingle();
+  if (!canal) return { erreur: "Ce canal n'existe plus." };
+  const { data, error } = await a.supabase.rpc("admin_supprimer_canal", { p_cle: cle, p_confirmation: canal.nom as string });
   return error ? echec("Suppression du canal impossible", error) : { supprimes: data as number };
 }

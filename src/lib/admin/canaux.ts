@@ -42,6 +42,3 @@ export function adresseCanal(nom: string, existantes: readonly string[]): string
   if (existantes.includes(cle) || (ADRESSES_RESERVEES as readonly string[]).includes(cle)) return null;
   return cle;
 }
-
-/** La suppression exige de retaper exactement le nom du canal. */
-export const confirmationValide = (nomCanal: string, saisie: string) => saisie.trim() === nomCanal;

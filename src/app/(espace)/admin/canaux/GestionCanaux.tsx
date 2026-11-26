@@ -5,13 +5,13 @@ import { useState, useTransition, type FormEvent } from "react";
 import { RetourAdmin } from "@/app/(espace)/admin/ressources/EcranAdminRessources";
 import styles from "@/app/(espace)/admin/ressources/admin-ressources.module.css";
 import { BoutonPrincipal, BoutonSecondaire, Carte, Champ, FeuilleModale } from "@/components/ui";
-import { CANAL_PROTEGE, confirmationValide } from "@/lib/admin/canaux";
+import { CANAL_PROTEGE } from "@/lib/admin/canaux";
 import type { Canal } from "@/lib/club";
 import { enregistrerCanal, supprimerCanal, type ResultatCanal } from "./actions";
 
 /**
  * Canaux du Club (admin) : ajouter, renommer, réordonner, passer en « annonces seulement »,
- * supprimer définitivement (avec ses messages, en retapant le nom du canal).
+ * supprimer définitivement (avec ses messages, après une confirmation).
  * Les canaux sont toujours collectifs : lisibles par tous les membres, pas de canal privé.
  */
 export function GestionCanaux({ canaux, messagesParCanal }: { canaux: Canal[]; messagesParCanal: Record<string, number> }) {
@@ -77,9 +77,9 @@ export function GestionCanaux({ canaux, messagesParCanal }: { canaux: Canal[]; m
           nbMessages={messagesParCanal[aSupprimer.cle] ?? 0}
           enCours={enCours}
           fermer={() => setASupprimer(null)}
-          confirmer={(saisie) =>
+          confirmer={() =>
             lancer(
-              () => supprimerCanal(aSupprimer.cle, saisie),
+              () => supprimerCanal(aSupprimer.cle),
               (r) => `# ${aSupprimer.nom} supprimé, avec ${r.supprimes ?? 0} message${(r.supprimes ?? 0) > 1 ? "s" : ""}.`,
               () => setASupprimer(null),
             )
@@ -165,7 +165,7 @@ function FormulaireCanal({
   );
 }
 
-/** Suppression définitive : il faut retaper le nom du canal ; ses messages partent avec lui. */
+/** Suppression définitive : une confirmation, avec le nombre de messages qui partent avec le canal. */
 function FenetreSuppression({
   canal,
   nbMessages,
@@ -177,25 +177,19 @@ function FenetreSuppression({
   nbMessages: number;
   enCours: boolean;
   fermer: () => void;
-  confirmer: (saisie: string) => void;
+  confirmer: () => void;
 }) {
-  const [saisie, setSaisie] = useState("");
-  const ok = confirmationValide(canal.nom, saisie);
   return (
     <FeuilleModale titre={`Supprimer # ${canal.nom}`} fermer={fermer}>
       <p className="message-erreur">
         Le canal et ses {nbMessages} message{nbMessages > 1 ? "s" : ""} seront supprimés définitivement. Cette action ne peut pas être annulée.
       </p>
-      <Champ
-        libelle={`Pour confirmer, tape le nom du canal : ${canal.nom}`}
-        name="confirmation-suppression"
-        autoComplete="off"
-        value={saisie}
-        onChange={(e) => setSaisie(e.target.value)}
-      />
-      <BoutonPrincipal type="button" disabled={!ok || enCours} onClick={() => confirmer(saisie)}>
+      <BoutonPrincipal type="button" disabled={enCours} onClick={confirmer}>
         Supprimer définitivement
       </BoutonPrincipal>
+      <BoutonSecondaire type="button" onClick={fermer} disabled={enCours}>
+        Annuler
+      </BoutonSecondaire>
     </FeuilleModale>
   );
 }
