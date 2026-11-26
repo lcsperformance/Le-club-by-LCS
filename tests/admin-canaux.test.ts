@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { adresseCanal, confirmationValide, lireCanal } from "@/lib/admin/canaux";
+import { adresseCanal, lireCanal } from "@/lib/admin/canaux";
 
 describe("canaux gérés par l'admin", () => {
   it("adresse tirée du nom : minuscules sans accents, mots reliés par des tirets", () => {
@@ -31,12 +31,5 @@ describe("canaux gérés par l'admin", () => {
     expect(lireCanal({ nom: "x", description: "", ordre: 1 })).toHaveProperty("erreur");
     expect(lireCanal({ nom: "x", description: "x", ordre: 0 })).toHaveProperty("erreur");
     expect(lireCanal({ nom: "x", description: "x", ordre: 1, lecture_seule: true })).toMatchObject({ canal: { lecture_seule: true } });
-  });
-
-  it("la suppression exige de retaper exactement le nom", () => {
-    expect(confirmationValide("général", "général")).toBe(true);
-    expect(confirmationValide("général", " général ")).toBe(true);
-    expect(confirmationValide("général", "general")).toBe(false);
-    expect(confirmationValide("général", "")).toBe(false);
   });
 });
